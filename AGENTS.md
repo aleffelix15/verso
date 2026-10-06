@@ -1,0 +1,4 @@
+- Keep the mock catalog and store contact configuration in one browser-safe data module so content can be replaced without changing page logic.
+- Use a root cart provider and shared storefront shell so all routes share the same in-session bag and accessible overlays.
+- Use individual TanStack content routes and route-specific metadata so pages are directly linkable and independently described.
+- This version is a frontend demonstration: never pretend forms, freight estimates, reviews, or unconfigured contact channels are live services.
