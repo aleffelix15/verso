@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, type ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import type { Product } from '@/data/products';
 export type CartItem = {product:Product; size:string; color:string; quantity:number};
 type CartContextValue = {items:CartItem[]; open:boolean; setOpen:(open:boolean)=>void; add:(product:Product,size:string,color:string,quantity:number)=>void; update:(index:number,quantity:number)=>void; remove:(index:number)=>void; subtotal:number; count:number};

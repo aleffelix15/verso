@@ -19,7 +19,6 @@ import { Route as PagamentoPendenteRouteImport } from './routes/pagamento/penden
 import { Route as PagamentoRecusadoRouteImport } from './routes/pagamento/recusado'
 import { Route as PagamentoSucessoRouteImport } from './routes/pagamento/sucesso'
 import { Route as ProdutoSlugRouteImport } from './routes/produto.$slug'
-import { Route as ApiWebhookMercadopagoRouteImport } from './routes/api/webhook/mercadopago'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -71,11 +70,6 @@ const ProdutoSlugRoute = ProdutoSlugRouteImport.update({
   path: '/produto/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiWebhookMercadopagoRoute = ApiWebhookMercadopagoRouteImport.update({
-  id: '/api/webhook/mercadopago',
-  path: '/api/webhook/mercadopago',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -88,7 +82,6 @@ export interface FileRoutesByFullPath {
   '/pagamento/recusado': typeof PagamentoRecusadoRoute
   '/pagamento/sucesso': typeof PagamentoSucessoRoute
   '/produto/$slug': typeof ProdutoSlugRoute
-  '/api/webhook/mercadopago': typeof ApiWebhookMercadopagoRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -101,7 +94,6 @@ export interface FileRoutesByTo {
   '/pagamento/recusado': typeof PagamentoRecusadoRoute
   '/pagamento/sucesso': typeof PagamentoSucessoRoute
   '/produto/$slug': typeof ProdutoSlugRoute
-  '/api/webhook/mercadopago': typeof ApiWebhookMercadopagoRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -115,7 +107,6 @@ export interface FileRoutesById {
   '/pagamento/recusado': typeof PagamentoRecusadoRoute
   '/pagamento/sucesso': typeof PagamentoSucessoRoute
   '/produto/$slug': typeof ProdutoSlugRoute
-  '/api/webhook/mercadopago': typeof ApiWebhookMercadopagoRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -130,7 +121,6 @@ export interface FileRouteTypes {
     | '/pagamento/recusado'
     | '/pagamento/sucesso'
     | '/produto/$slug'
-    | '/api/webhook/mercadopago'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -143,7 +133,6 @@ export interface FileRouteTypes {
     | '/pagamento/recusado'
     | '/pagamento/sucesso'
     | '/produto/$slug'
-    | '/api/webhook/mercadopago'
   id:
     | '__root__'
     | '/'
@@ -156,7 +145,6 @@ export interface FileRouteTypes {
     | '/pagamento/recusado'
     | '/pagamento/sucesso'
     | '/produto/$slug'
-    | '/api/webhook/mercadopago'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -170,7 +158,6 @@ export interface RootRouteChildren {
   PagamentoRecusadoRoute: typeof PagamentoRecusadoRoute
   PagamentoSucessoRoute: typeof PagamentoSucessoRoute
   ProdutoSlugRoute: typeof ProdutoSlugRoute
-  ApiWebhookMercadopagoRoute: typeof ApiWebhookMercadopagoRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -245,13 +232,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProdutoSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/webhook/mercadopago': {
-      id: '/api/webhook/mercadopago'
-      path: '/api/webhook/mercadopago'
-      fullPath: '/api/webhook/mercadopago'
-      preLoaderRoute: typeof ApiWebhookMercadopagoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
@@ -266,7 +246,6 @@ const rootRouteChildren: RootRouteChildren = {
   PagamentoRecusadoRoute: PagamentoRecusadoRoute,
   PagamentoSucessoRoute: PagamentoSucessoRoute,
   ProdutoSlugRoute: ProdutoSlugRoute,
-  ApiWebhookMercadopagoRoute: ApiWebhookMercadopagoRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -19,11 +19,11 @@ const checkoutSchema = z.object({
   })).min(1, "Carrinho vazio"),
   payer: z.object({
     name: z.string().min(2, "Nome incompleto"),
-    surname: z.string().optional(),
+    surname: z.string().optional().default(""),
     email: z.string().email("E-mail inválido"),
     phone: z.object({
-      area_code: z.string(),
-      number: z.string()
+      area_code: z.string().default(""),
+      number: z.string().default("")
     }).optional(),
     address: z.object({
       zip_code: z.string(),
@@ -55,13 +55,13 @@ export const createPaymentPreference = createServerFn({ method: "POST" })
       subtotal += dbProduct.price * item.quantity;
 
       mpItems.push({
-        id: `${dbProduct.id}-${item.color}-${item.size}`,
+        id: `${dbProduct.slug}-${item.color}-${item.size}`,
         title: `${dbProduct.name} - ${item.size} - ${item.color}`,
         quantity: item.quantity,
         unit_price: dbProduct.price,
         currency_id: 'BRL',
-        picture_url: dbProduct.images[0].startsWith('http') ? dbProduct.images[0] : `${env.PUBLIC_SITE_URL}${dbProduct.images[0]}`,
-        category_id: dbProduct.categoryId,
+        picture_url: dbProduct.images && dbProduct.images[0] && dbProduct.images[0].startsWith('http') ? dbProduct.images[0] : `${env.PUBLIC_SITE_URL}${dbProduct.images[0]}`,
+        category_id: dbProduct.category,
       });
     }
 
