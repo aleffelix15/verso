@@ -1,8 +1,68 @@
-import {createFileRoute,Link} from '@tanstack/react-router';
-import {ArrowUpRight} from 'lucide-react';
-import {products,community,pageHead,catalogCategories} from '@/data/products';
-import {Button} from '@/components/ui/button';
-import {ProductCard} from '@/components/store/product-card';
-import {Countdown} from '@/components/store/countdown';
-export const Route=createFileRoute('/drops')({staticData:{sitemap:true},head:()=>pageHead('Drop 01 — O essencial','O primeiro capítulo da VERSO. 28 peças essenciais, fé nos detalhes e edição limitada.','/drops'),component:Drops});
-function Drops(){return <><section className="drop-banner"><img src={community} alt="Coleção Drop 01 VERSO com três jovens em cenário urbano" width={1600} height={1008} fetchPriority="high"/><div className="container-verso drop-inner"><p className="eyebrow">VERSO® / COLEÇÃO 001</p><h1 className="drop-title">DROP 01.<br/>O ESSENCIAL.</h1><p className="mb-5 max-w-sm text-xs leading-6">28 peças. Uma essência. Modelagens livres, tecidos encorpados e uma mensagem que não precisa gritar.</p><Button variant="brand" asChild><Link to="/loja">Explorar a coleção <ArrowUpRight/></Link></Button><Countdown/></div></section><section className="container-verso section-space"><div className="section-heading"><div><p className="eyebrow mb-3">EDIÇÃO LIMITADA / PRIMEIRO CAPÍTULO</p><h2 className="section-title">O DROP COMPLETO.</h2></div></div>{catalogCategories.map(category=><div key={category} className="mb-12"><h3 className="mb-6 font-display text-3xl uppercase">{category}</h3><div className="product-grid">{products.filter(p=>p.category===category).map(p=><ProductCard product={p} key={p.slug}/>)}</div></div>)}</section></>}
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { ArrowUpRight } from "lucide-react";
+import { products, community, pageHead, catalogCategories } from "@/data/products";
+import { Button } from "@/components/ui/button";
+import { ProductCard } from "@/components/store/product-card";
+import { Countdown } from "@/components/store/countdown";
+export const Route = createFileRoute("/drops")({
+  staticData: { sitemap: true },
+  head: () =>
+    pageHead(
+      "Drop 01 — O essencial",
+      "O primeiro capítulo da VERSO. 28 peças essenciais, fé nos detalhes e edição limitada.",
+      "/drops",
+    ),
+  component: Drops,
+});
+function Drops() {
+  return (
+    <>
+      <section className="drop-banner">
+        <img
+          src={community}
+          alt="Coleção Drop 01 VERSO com três jovens em cenário urbano"
+          width={1600}
+          height={1008}
+          fetchPriority="high"
+        />
+        <div className="container-verso drop-inner">
+          <p className="eyebrow">VERSO® / COLEÇÃO 001</p>
+          <h1 className="drop-title">
+            DROP 01.
+            <br />O ESSENCIAL.
+          </h1>
+          <p className="mb-5 max-w-sm text-xs leading-6">
+            28 peças. Uma essência. Modelagens livres, tecidos encorpados e uma mensagem que não
+            precisa gritar.
+          </p>
+          <Button variant="brand" asChild>
+            <Link to="/loja">
+              Explorar a coleção <ArrowUpRight />
+            </Link>
+          </Button>
+          <Countdown />
+        </div>
+      </section>
+      <section className="container-verso section-space">
+        <div className="section-heading">
+          <div>
+            <p className="eyebrow mb-3">EDIÇÃO LIMITADA / PRIMEIRO CAPÍTULO</p>
+            <h2 className="section-title">O DROP COMPLETO.</h2>
+          </div>
+        </div>
+        {catalogCategories.map((category) => (
+          <div key={category} className="mb-12">
+            <h3 className="mb-6 font-display text-3xl uppercase">{category}</h3>
+            <div className="product-grid">
+              {products
+                .filter((p) => p.category === category)
+                .map((p) => (
+                  <ProductCard product={p} key={p.slug} />
+                ))}
+            </div>
+          </div>
+        ))}
+      </section>
+    </>
+  );
+}

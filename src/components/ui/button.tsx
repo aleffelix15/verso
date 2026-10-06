@@ -9,7 +9,8 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        brand: "bg-primary text-primary-foreground hover:bg-primary/90 uppercase text-[10px] tracking-[1px]",
+        brand:
+          "bg-primary text-primary-foreground hover:bg-primary/90 uppercase text-[10px] tracking-[1px]",
         ink: "bg-ink text-paper hover:bg-ink/90",
         header: "bg-transparent text-paper hover:bg-paper/10",
         size: "border border-border bg-transparent hover:border-ink data-[selected=true]:bg-ink data-[selected=true]:text-paper",

@@ -3,7 +3,10 @@ import { z } from "zod";
 const envSchema = z.object({
   MP_ACCESS_TOKEN: z.string().min(1, "MP_ACCESS_TOKEN é obrigatório para transações."),
   MP_WEBHOOK_SECRET: z.string().optional(), // Opcional em dev, mas obrigatório em prod para assinar
-  PUBLIC_SITE_URL: z.string().url("PUBLIC_SITE_URL deve ser uma URL válida.").default("http://localhost:5173"),
+  PUBLIC_SITE_URL: z
+    .string()
+    .url("PUBLIC_SITE_URL deve ser uma URL válida.")
+    .default("http://localhost:5173"),
   FREIGHT_API_TOKEN: z.string().optional(),
 });
 
@@ -15,4 +18,3 @@ if (!_env.success) {
 }
 
 export const env = _env.data;
-

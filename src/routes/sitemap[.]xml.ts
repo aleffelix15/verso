@@ -1,7 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { getRouterInstance } from "@tanstack/react-start";
 import { products } from "@/data/products";
-import { isSitemapRouteIncluded, sitemapPathForLocation, sitemapStaticPaths, sitemapXML, type SitemapEntry } from "@/lib/sitemap";
+import {
+  isSitemapRouteIncluded,
+  sitemapPathForLocation,
+  sitemapStaticPaths,
+  sitemapXML,
+  type SitemapEntry,
+} from "@/lib/sitemap";
 
 const BASE_URL = "https://verso-streetwear.lovable.app";
 
@@ -21,7 +27,12 @@ export const Route = createFileRoute("/sitemap.xml")({
         const routeId = "/produto/$slug";
         if (isSitemapRouteIncluded(router.routesById[routeId])) {
           for (const p of products) {
-            const location = router.buildLocation({ to: "/produto/$slug", params: { slug: p.slug }, search: () => ({}), hash: "" });
+            const location = router.buildLocation({
+              to: "/produto/$slug",
+              params: { slug: p.slug },
+              search: () => ({}),
+              hash: "",
+            });
             const path = sitemapPathForLocation(router, location, routeId);
             if (path) entries.push({ path });
           }

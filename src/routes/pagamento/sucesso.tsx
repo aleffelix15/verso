@@ -3,7 +3,8 @@ import { Link } from "@tanstack/react-router";
 import { ArrowLeft, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export const Route = createFileRoute("/pagamento/sucesso")({ staticData: { sitemap: true }, 
+export const Route = createFileRoute("/pagamento/sucesso")({
+  staticData: { sitemap: true },
   component: SuccessPage,
 });
 

@@ -1,7 +1,62 @@
-import {createFileRoute,Link} from '@tanstack/react-router';
-import {ArrowUpRight} from 'lucide-react';
-import {community,pageHead} from '@/data/products';
-import {Button} from '@/components/ui/button';
-import {Newsletter} from '@/components/store/newsletter';
-export const Route=createFileRoute('/sobre')({staticData:{sitemap:true},head:()=>pageHead('Nossa história','Jovem, cristão e sem fantasia. Conheça a ideia por trás da VERSO: streetwear autêntico e propósito nos detalhes.','/sobre'),component:About});
-function About(){return <><div className="container-verso page-heading"><p className="eyebrow">VERSO / NOSSA ESSÊNCIA</p><h1>FÉ NÃO É FIGURINO.</h1></div><section className="container-verso editorial-page"><img src={community} alt="Jovens diversos com streetwear VERSO" width={1600} height={1008}/><div className="editorial-copy"><p className="eyebrow">ROUPA DE VERDADE. MENSAGEM TAMBÉM.</p><h2 className="mt-5">A GENTE VESTE<br/>O QUE ACREDITA.</h2><p>A VERSO parte de uma vontade simples: criar a roupa que a gente queria usar. Porque ser jovem, ter fé e gostar de streetwear nunca deveriam ser coisas que se excluem.</p><p>Não queremos transformar roupa em fantasia. Nem fazer você explicar quem é toda vez que sai de casa. Queremos peças que caibam na sua vida — na rua, no encontro, no caminho.</p><p>A fé está na referência pequena. Na etiqueta. Numa frase que você percebe de perto. O propósito não precisa gritar para existir.</p><p>Verso é uma parte de uma história maior. Este é o nosso primeiro.</p><Button asChild variant="brand" size="lg"><Link to="/loja">Encontre seu verso <ArrowUpRight/></Link></Button><p className="mt-6 text-[10px] text-muted-foreground">Manifesto conceitual da marca. História definitiva em construção.</p></div></section><Newsletter/></>}
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { ArrowUpRight } from "lucide-react";
+import { community, pageHead } from "@/data/products";
+import { Button } from "@/components/ui/button";
+import { Newsletter } from "@/components/store/newsletter";
+export const Route = createFileRoute("/sobre")({
+  staticData: { sitemap: true },
+  head: () =>
+    pageHead(
+      "Nossa história",
+      "Jovem, cristão e sem fantasia. Conheça a ideia por trás da VERSO: streetwear autêntico e propósito nos detalhes.",
+      "/sobre",
+    ),
+  component: About,
+});
+function About() {
+  return (
+    <>
+      <div className="container-verso page-heading">
+        <p className="eyebrow">VERSO / NOSSA ESSÊNCIA</p>
+        <h1>FÉ NÃO É FIGURINO.</h1>
+      </div>
+      <section className="container-verso editorial-page">
+        <img
+          src={community}
+          alt="Jovens diversos com streetwear VERSO"
+          width={1600}
+          height={1008}
+        />
+        <div className="editorial-copy">
+          <p className="eyebrow">ROUPA DE VERDADE. MENSAGEM TAMBÉM.</p>
+          <h2 className="mt-5">
+            A GENTE VESTE
+            <br />O QUE ACREDITA.
+          </h2>
+          <p>
+            A VERSO parte de uma vontade simples: criar a roupa que a gente queria usar. Porque ser
+            jovem, ter fé e gostar de streetwear nunca deveriam ser coisas que se excluem.
+          </p>
+          <p>
+            Não queremos transformar roupa em fantasia. Nem fazer você explicar quem é toda vez que
+            sai de casa. Queremos peças que caibam na sua vida — na rua, no encontro, no caminho.
+          </p>
+          <p>
+            A fé está na referência pequena. Na etiqueta. Numa frase que você percebe de perto. O
+            propósito não precisa gritar para existir.
+          </p>
+          <p>Verso é uma parte de uma história maior. Este é o nosso primeiro.</p>
+          <Button asChild variant="brand" size="lg">
+            <Link to="/loja">
+              Encontre seu verso <ArrowUpRight />
+            </Link>
+          </Button>
+          <p className="mt-6 text-[10px] text-muted-foreground">
+            Manifesto conceitual da marca. História definitiva em construção.
+          </p>
+        </div>
+      </section>
+      <Newsletter />
+    </>
+  );
+}

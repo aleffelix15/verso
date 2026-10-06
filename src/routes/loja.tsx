@@ -66,7 +66,7 @@ function Shop() {
           {["P", "M", "G", "GG", "Único"].map((s) => (
             <Button
               variant="size"
-              className="h-9 min-w-9 px-2 text-[10px]"
+              className="h-9 min-w-9 px-2 text-xs"
               data-selected={size === s}
               key={s}
               onClick={() => setSize(size === s ? "" : s)}

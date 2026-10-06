@@ -3,7 +3,8 @@ import { Link } from "@tanstack/react-router";
 import { ArrowLeft, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export const Route = createFileRoute("/pagamento/pendente")({ staticData: { sitemap: true }, 
+export const Route = createFileRoute("/pagamento/pendente")({
+  staticData: { sitemap: true },
   component: PendingPage,
 });
 

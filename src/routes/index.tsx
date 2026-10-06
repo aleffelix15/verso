@@ -1,10 +1,250 @@
-import {createFileRoute,Link} from '@tanstack/react-router';
-import {ArrowUpRight, ArrowDown, ArrowRight} from 'lucide-react';
-import {Button} from '@/components/ui/button';
-import {hero,community,products,pageHead} from '@/data/products';
-import {ProductCard} from '@/components/store/product-card';
-import {Newsletter} from '@/components/store/newsletter';
-import {Countdown} from '@/components/store/countdown';
-import {Reveal} from '@/components/store/reveal';
-export const Route=createFileRoute('/')({staticData:{sitemap:true},head:()=>pageHead('Fé que veste.','Streetwear com propósito. Conheça a VERSO e o Drop 01: peças essenciais, modelagem ampla e fé nos detalhes.','/'),component:Home});
-function Home(){return <><section className="hero"><img className="hero-photo" src={hero} alt="Jovem com moletom oversized VERSO em cenário urbano de concreto" width={1920} height={1120} fetchPriority="high"/><div className="hero-content container-verso"><p className="eyebrow">VERSO® &nbsp; / &nbsp; DROP 001 — ESSENCIAL</p><h1 className="hero-title">FÉ QUE<br/>VESTE.</h1><p className="hero-sub">Streetwear com propósito.<br/>Sem fantasia.</p><Button asChild variant="brand" size="lg"><Link to="/drops">Ver Drop 01 <ArrowUpRight className="ml-5"/></Link></Button></div><div className="hero-bottom"><p className="eyebrow flex items-center gap-3">MENOS RUÍDO. MAIS ESSÊNCIA. <ArrowDown size={13}/></p><div className="hero-tag eyebrow">EST. 2026<br/>FEITO COM PROPÓSITO.</div></div></section><section className="manifesto container-verso">{[['01','FEITO PRA RUA','Modelagem livre. Atitude real.'],['02','ESCRITO COM PROPÓSITO','A mensagem está nos detalhes.'],['03','EDIÇÃO LIMITADA','Poucas peças. Muito significado.']].map(([n,title,text])=><div className="manifesto-item" key={n}><span className="eyebrow text-chalk">{n} /</span><div><h3>{title}</h3><p>{text}</p></div></div>)}</section><Reveal><section className="container-verso section-space"><div className="section-heading"><div><p className="eyebrow mb-3">OS ESSENCIAIS DA VEZ</p><h2 className="section-title">MAIS VENDIDOS.</h2></div><Link to="/loja" className="text-link">Ver todas as peças <ArrowUpRight size={14}/></Link></div><div className="product-grid">{products.slice(0,4).map(p=><ProductCard product={p} key={p.slug}/>)}</div></section></Reveal><Reveal><section className="container-verso section-space border-t border-border"><div className="section-heading"><div><p className="eyebrow mb-3">NOVOS VERSOS. MESMA ESSÊNCIA.</p><h2 className="section-title">CHEGOU AGORA.</h2></div><Link to="/loja" className="text-link">Ver lançamentos <ArrowUpRight size={14}/></Link></div><div className="product-grid">{products.filter(p=>p.badge==='NOVO').slice(0,4).map(p=><ProductCard product={p} key={p.slug}/>)}</div></section></Reveal><section className="drop-banner"><img src={community} alt="Três jovens vestindo peças do Drop 01 da VERSO" loading="lazy" width={1600} height={1008}/><div className="drop-inner container-verso"><p className="eyebrow">PRIMEIRO CAPÍTULO. MESMA ESSÊNCIA.</p><h2 className="drop-title">DROP 01.<br/>O ESSENCIAL.</h2><p className="mb-5 text-xs">O que você carrega não cabe só no bolso.</p><Button asChild variant="brand" size="lg"><Link to="/drops">Conhecer o drop <ArrowUpRight className="ml-5"/></Link></Button><Countdown/></div></section><Reveal><section className="container-verso section-space"><div className="section-heading"><div><p className="eyebrow mb-3">NÃO É SÓ UMA ESTAMPA.</p><h2 className="section-title">CADA PEÇA, UM VERSO.</h2></div><span className="eyebrow hidden sm:block">FÉ NOS DETALHES.</span></div><div className="verse-grid">{[products[0],products[1],products[5]].map(p=>p&&<Link to="/produto/$slug" params={{slug:p.slug}} className="verse-item" key={p.slug}><div className="flex justify-between"><span className="verse-ref">[ {p.verse} ]</span><ArrowUpRight size={16}/></div><h3>{p.statement}</h3><p>{p.meaning}</p><span className="eyebrow mt-5 block">{p.category} / DROP 01</span></Link>)}</div></section></Reveal><Reveal><section className="container-verso section-space border-t border-border"><div className="section-heading"><div><p className="eyebrow mb-3">GENTE REAL. FÉ REAL.</p><h2 className="section-title">NA RUA COM VERSO.</h2></div><Link to="/contato" className="text-link">@verso <ArrowUpRight size={14}/></Link></div><div className="community-grid">{[['“Finalmente uma roupa que tem a minha fé, mas também tem a minha cara.”','Gabriel, 22 · São Paulo',hero],['“O caimento é absurdo. E o detalhe do verso é o que faz a peça ser diferente.”','Ana, 20 · Curitiba',community],['“Não preciso falar muito. A roupa já carrega o que importa.”','Lucas, 25 · Belo Horizonte',community]].map(([quote,name,img],i)=><div key={name}><img className="community-photo" src={img} alt="Editorial demonstrativo da comunidade VERSO" loading="lazy" width={600} height={600} style={{objectPosition:i===0?'75% center':i===1?'left center':'right center'}}/><div className="quote"><p>{quote}</p><span className="eyebrow">{name}</span></div></div>)}</div><p className="mt-4 text-[9px] text-muted-foreground">Fotografias editoriais e depoimentos ilustrativos.</p></section></Reveal><section className="about-band section-space"><div className="container-verso about-inner"><div><p className="eyebrow mb-5 text-chalk">NOSSA FÉ NÃO É UM FIGURINO.</p><h2>A GENTE VESTE<br/>O QUE ACREDITA.</h2></div><div><p>A VERSO nasceu de uma vontade simples: criar a roupa que a gente queria usar. Jovem. Cristão. Sem precisar escolher entre quem você é e o que você veste.</p><p>Sem símbolos gigantes. Sem rótulos prontos. Só streetwear de verdade, com uma mensagem que faz sentido por dentro.</p><Link to="/sobre" className="text-link">Conheça nossa história <ArrowRight size={14}/></Link></div></div></section><Newsletter/></>}
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { ArrowUpRight, ArrowDown, ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { hero, community, products, pageHead } from "@/data/products";
+import { ProductCard } from "@/components/store/product-card";
+import { Newsletter } from "@/components/store/newsletter";
+import { Countdown } from "@/components/store/countdown";
+import { Reveal } from "@/components/store/reveal";
+export const Route = createFileRoute("/")({
+  staticData: { sitemap: true },
+  head: () =>
+    pageHead(
+      "Fé que veste.",
+      "Streetwear com propósito. Conheça a VERSO e o Drop 01: peças essenciais, modelagem ampla e fé nos detalhes.",
+      "/",
+    ),
+  component: Home,
+});
+function Home() {
+  return (
+    <>
+      <section className="hero">
+        <img
+          className="hero-photo"
+          src={hero}
+          alt="Jovem com moletom oversized VERSO em cenário urbano de concreto"
+          width={1920}
+          height={1120}
+          fetchPriority="high"
+        />
+        <div className="hero-content container-verso">
+          <p className="eyebrow">VERSO® &nbsp; / &nbsp; DROP 001 — ESSENCIAL</p>
+          <h1 className="hero-title">
+            FÉ QUE
+            <br />
+            VESTE.
+          </h1>
+          <p className="hero-sub">
+            Streetwear com propósito.
+            <br />
+            Sem fantasia.
+          </p>
+          <Button asChild variant="brand" size="lg">
+            <Link to="/drops">
+              Ver Drop 01 <ArrowUpRight className="ml-5" />
+            </Link>
+          </Button>
+        </div>
+        <div className="hero-bottom">
+          <p className="eyebrow flex items-center gap-3">
+            MENOS RUÍDO. MAIS ESSÊNCIA. <ArrowDown size={13} />
+          </p>
+          <div className="hero-tag eyebrow">
+            EST. 2026
+            <br />
+            FEITO COM PROPÓSITO.
+          </div>
+        </div>
+      </section>
+      <section className="manifesto container-verso">
+        {[
+          ["01", "FEITO PRA RUA", "Modelagem livre. Atitude real."],
+          ["02", "ESCRITO COM PROPÓSITO", "A mensagem está nos detalhes."],
+          ["03", "EDIÇÃO LIMITADA", "Poucas peças. Muito significado."],
+        ].map(([n, title, text]) => (
+          <div className="manifesto-item" key={n}>
+            <span className="eyebrow text-chalk">{n} /</span>
+            <div>
+              <h3>{title}</h3>
+              <p>{text}</p>
+            </div>
+          </div>
+        ))}
+      </section>
+      <Reveal>
+        <section className="container-verso section-space">
+          <div className="section-heading">
+            <div>
+              <p className="eyebrow mb-3">OS ESSENCIAIS DA VEZ</p>
+              <h2 className="section-title">MAIS VENDIDOS.</h2>
+            </div>
+            <Link to="/loja" className="text-link">
+              Ver todas as peças <ArrowUpRight size={14} />
+            </Link>
+          </div>
+          <div className="product-grid">
+            {products.slice(0, 4).map((p) => (
+              <ProductCard product={p} key={p.slug} />
+            ))}
+          </div>
+        </section>
+      </Reveal>
+      <Reveal>
+        <section className="container-verso section-space border-t border-border">
+          <div className="section-heading">
+            <div>
+              <p className="eyebrow mb-3">NOVOS VERSOS. MESMA ESSÊNCIA.</p>
+              <h2 className="section-title">CHEGOU AGORA.</h2>
+            </div>
+            <Link to="/loja" className="text-link">
+              Ver lançamentos <ArrowUpRight size={14} />
+            </Link>
+          </div>
+          <div className="product-grid">
+            {products
+              .filter((p) => p.badge === "NOVO")
+              .slice(0, 4)
+              .map((p) => (
+                <ProductCard product={p} key={p.slug} />
+              ))}
+          </div>
+        </section>
+      </Reveal>
+      <section className="drop-banner">
+        <img
+          src={community}
+          alt="Três jovens vestindo peças do Drop 01 da VERSO"
+          loading="lazy"
+          width={1600}
+          height={1008}
+        />
+        <div className="drop-inner container-verso">
+          <p className="eyebrow">PRIMEIRO CAPÍTULO. MESMA ESSÊNCIA.</p>
+          <h2 className="drop-title">
+            DROP 01.
+            <br />O ESSENCIAL.
+          </h2>
+          <p className="mb-5 text-xs">O que você carrega não cabe só no bolso.</p>
+          <Button asChild variant="brand" size="lg">
+            <Link to="/drops">
+              Conhecer o drop <ArrowUpRight className="ml-5" />
+            </Link>
+          </Button>
+          <Countdown />
+        </div>
+      </section>
+      <Reveal>
+        <section className="container-verso section-space">
+          <div className="section-heading">
+            <div>
+              <p className="eyebrow mb-3">NÃO É SÓ UMA ESTAMPA.</p>
+              <h2 className="section-title">CADA PEÇA, UM VERSO.</h2>
+            </div>
+            <span className="eyebrow hidden sm:block">FÉ NOS DETALHES.</span>
+          </div>
+          <div className="verse-grid flex md:grid overflow-x-auto snap-x snap-mandatory pb-4">
+            {[products[0], products[1], products[5]].map(
+              (p) =>
+                p && (
+                  <Link
+                    to="/produto/$slug"
+                    params={{ slug: p.slug }}
+                    className="verse-item"
+                    key={p.slug}
+                  >
+                    <div className="flex justify-between">
+                      <span className="verse-ref">[ {p.verse} ]</span>
+                      <ArrowUpRight size={16} />
+                    </div>
+                    <h3>{p.statement}</h3>
+                    <p>{p.meaning}</p>
+                    <span className="eyebrow mt-5 block">{p.category} / DROP 01</span>
+                  </Link>
+                ),
+            )}
+          </div>
+        </section>
+      </Reveal>
+      <Reveal>
+        <section className="container-verso section-space border-t border-border">
+          <div className="section-heading">
+            <div>
+              <p className="eyebrow mb-3">GENTE REAL. FÉ REAL.</p>
+              <h2 className="section-title">NA RUA COM VERSO.</h2>
+            </div>
+            <Link to="/contato" className="text-link">
+              @verso <ArrowUpRight size={14} />
+            </Link>
+          </div>
+          <div className="community-grid flex md:grid overflow-x-auto snap-x snap-mandatory pb-4">
+            {[
+              [
+                "“Finalmente uma roupa que tem a minha fé, mas também tem a minha cara.”",
+                "Gabriel, 22 · São Paulo",
+                hero,
+              ],
+              [
+                "“O caimento é absurdo. E o detalhe do verso é o que faz a peça ser diferente.”",
+                "Ana, 20 · Curitiba",
+                community,
+              ],
+              [
+                "“Não preciso falar muito. A roupa já carrega o que importa.”",
+                "Lucas, 25 · Belo Horizonte",
+                community,
+              ],
+            ].map(([quote, name, img], i) => (
+              <div key={name}>
+                <img
+                  className="community-photo"
+                  src={img}
+                  alt="Editorial demonstrativo da comunidade VERSO"
+                  loading="lazy"
+                  width={600}
+                  height={600}
+                  style={{
+                    objectPosition:
+                      i === 0 ? "75% center" : i === 1 ? "left center" : "right center",
+                  }}
+                />
+                <div className="quote">
+                  <p>{quote}</p>
+                  <span className="eyebrow">{name}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+          <p className="mt-4 text-xs text-muted-foreground">
+            Fotografias editoriais e depoimentos ilustrativos.
+          </p>
+        </section>
+      </Reveal>
+      <section className="about-band section-space">
+        <div className="container-verso about-inner">
+          <div>
+            <p className="eyebrow mb-5 text-chalk">NOSSA FÉ NÃO É UM FIGURINO.</p>
+            <h2>
+              A GENTE VESTE
+              <br />O QUE ACREDITA.
+            </h2>
+          </div>
+          <div>
+            <p>
+              A VERSO nasceu de uma vontade simples: criar a roupa que a gente queria usar. Jovem.
+              Cristão. Sem precisar escolher entre quem você é e o que você veste.
+            </p>
+            <p>
+              Sem símbolos gigantes. Sem rótulos prontos. Só streetwear de verdade, com uma mensagem
+              que faz sentido por dentro.
+            </p>
+            <Link to="/sobre" className="text-link">
+              Conheça nossa história <ArrowRight size={14} />
+            </Link>
+          </div>
+        </div>
+      </section>
+      <Newsletter />
+    </>
+  );
+}

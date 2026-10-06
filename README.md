@@ -9,12 +9,14 @@ NOME PROVISÓRIO: VERSO (alusão a "versículo", sem ser literal)
 Tagline: "Fé que veste."
 
 IDENTIDADE VISUAL
+
 - Paleta: preto off-black (#0E0E0E), off-white/cimento (#EDEAE4), cinza chumbo, com UM acento: laranja queimado (#E4572E) usado só em botões e detalhes.
 - Tipografia: títulos em sans condensada bold, em caixa alta (ex.: Anton ou Bebas Neue); corpo em Inter. Citações bíblicas em mono pequena (ex.: JetBrains Mono), estilo "etiqueta de roupa".
 - Estilo: grid limpo, muito espaço, fotos grandes, bordas retas, microtextura de grão no hero. Sem gradientes coloridos, sem emojis.
 - Animações sutis: fade-up ao rolar, hover com zoom leve nos produtos, marquee de texto no topo.
 
 ESTRUTURA DA HOME
+
 1. Barra de aviso rolando (marquee): "FRETE GRÁTIS ACIMA DE R$ 299 • DROP 01 DISPONÍVEL • PARCELE EM 3X"
 2. Header minimalista: logo à esquerda, menu (Loja, Drops, Sobre, Contato), ícones de busca e sacola.
 3. Hero em tela cheia: foto de jovem com moletom oversized em cenário urbano, título grande "FÉ QUE VESTE.", subtítulo "Streetwear com propósito. Sem fantasia.", botão laranja "Ver Drop 01".
@@ -28,6 +30,7 @@ ESTRUTURA DA HOME
 11. Footer: links, redes sociais, formas de pagamento, política de troca.
 
 PÁGINAS
+
 - /loja: filtros (categoria, tamanho, cor, preço), grid responsivo, ordenação.
 - /produto/:slug: galeria com zoom, seletor de tamanho com guia de medidas, cor, quantidade, botão "Adicionar à sacola", acordeões (descrição, tecido, cuidados, troca), seção "O verso" mostrando a referência bíblica da peça e seu significado, produtos relacionados.
 - Sacola lateral (drawer) com subtotal, cálculo de frete por CEP e botão de finalizar via WhatsApp.
@@ -58,4 +61,3 @@ npm run dev
 npm run build
 npm run preview
 ```
-
