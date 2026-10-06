@@ -66,3 +66,5 @@ export const money = (value:number) => value.toLocaleString('pt-BR',{style:'curr
 // Preencha o número oficial, apenas dígitos com código do país, antes de publicar.
 export const storeConfig = { whatsapp:'', instagram:'', email:'', dropDeadline:'2026-10-18T23:59:59-03:00' };
 export function pageHead(title:string,description:string,path:string) { return {meta:[{title:`${title} — VERSO`},{name:'description',content:description},{property:'og:title',content:`${title} — VERSO`},{property:'og:description',content:description},{property:'og:type',content:'website'},{property:'og:url',content:path},{name:'twitter:card',content:'summary_large_image'}],links:[{rel:'canonical',href:path}]}; }
+
+export const getProductBySlug = (slug: string) => products.find(p => p.slug === slug);
