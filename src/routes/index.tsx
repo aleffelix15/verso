@@ -33,7 +33,7 @@ function Home() {
 
   const fadeUp = {
     initial: { opacity: 0, y: prefersReducedMotion ? 0 : 20 },
-    animate: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
+    animate: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" as const } },
   };
 
   return (
@@ -43,7 +43,7 @@ function Home() {
           style={{ scale: heroScale }}
           initial={{ opacity: 0, scale: prefersReducedMotion ? 1 : 1.05 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
+          transition={{ duration: 0.8, ease: "easeOut" as const }}
           className="hero-photo"
           src={hero}
           alt="Jovem com moletom oversized VERSO em cenário urbano de concreto"

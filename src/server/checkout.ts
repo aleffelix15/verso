@@ -105,7 +105,7 @@ export const createPaymentPreference = createServerFn({ method: "POST" })
           quantity: 1,
           unit_price: finalShippingCost,
           currency_id: "BRL",
-          picture_url: "",
+          picture_url: "https://verso-streetwear.vercel.app/favicon.svg",
           category_id: "shipping",
         });
       }

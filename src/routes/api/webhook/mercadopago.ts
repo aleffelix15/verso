@@ -4,6 +4,7 @@ import crypto from "crypto";
 import { getEnv } from "@/lib/env";
 
 export const Route = createFileRoute("/api/webhook/mercadopago")({
+  staticData: { sitemap: false },
   server: {
     handlers: {
       POST: async ({ request }: { request: Request }) => {

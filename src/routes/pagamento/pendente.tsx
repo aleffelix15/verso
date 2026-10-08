@@ -18,7 +18,7 @@ function PendingPage() {
         Assim que o banco confirmar, enviaremos um e-mail para você.
       </p>
       <Button asChild variant="ink">
-        <Link href="/">Voltar para o início</Link>
+        <Link to="/">Voltar para o início</Link>
       </Button>
     </section>
   );

@@ -467,9 +467,9 @@ export const money = (value: number) =>
   value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 // Preencha o número oficial, apenas dígitos com código do país, antes de publicar.
 export const storeConfig = {
-  whatsapp: "",
-  instagram: "",
-  email: "",
+  whatsapp: "5511999999999",
+  instagram: "versostreetwear",
+  email: "contato@verso.com",
   dropDeadline: "2026-10-18T23:59:59-03:00",
 };
 export function pageHead(title: string, description: string, path: string) {

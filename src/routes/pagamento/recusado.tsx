@@ -19,7 +19,7 @@ function FailurePage() {
       </p>
       <div className="flex gap-4">
         <Button asChild variant="brand">
-          <Link href="/loja">Tentar Novamente</Link>
+          <Link to="/loja">Tentar Novamente</Link>
         </Button>
       </div>
     </section>

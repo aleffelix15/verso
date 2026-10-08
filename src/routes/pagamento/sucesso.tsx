@@ -18,7 +18,7 @@ function SuccessPage() {
         envio para o seu e-mail de contato.
       </p>
       <Button asChild variant="brand">
-        <Link href="/">Voltar para o início</Link>
+        <Link to="/">Voltar para o início</Link>
       </Button>
     </section>
   );
