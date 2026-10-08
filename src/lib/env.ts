@@ -1,20 +1,32 @@
 import { z } from "zod";
 
 const envSchema = z.object({
-  MP_ACCESS_TOKEN: z.string().min(1, "MP_ACCESS_TOKEN é obrigatório para transações."),
-  MP_WEBHOOK_SECRET: z.string().optional(), // Opcional em dev, mas obrigatório em prod para assinar
-  PUBLIC_SITE_URL: z
-    .string()
-    .url("PUBLIC_SITE_URL deve ser uma URL válida.")
-    .default("http://localhost:5173"),
+  MP_ACCESS_TOKEN: z.string().optional(),
+  MP_WEBHOOK_SECRET: z.string().optional(),
+  PUBLIC_SITE_URL: z.string().optional(),
   FREIGHT_API_TOKEN: z.string().optional(),
 });
 
-const _env = envSchema.safeParse(process.env);
+let cachedEnv: any = null;
 
-if (!_env.success) {
-  console.error("❌ Erro de Variáveis de Ambiente:", _env.error.format());
-  throw new Error("Variáveis de ambiente inválidas ou ausentes.");
+export function getEnv() {
+  if (cachedEnv) return cachedEnv;
+
+  const parsed = envSchema.safeParse(process.env);
+  if (!parsed.success) {
+    console.error("Erro de Variáveis de Ambiente:", parsed.error.format());
+    cachedEnv = process.env || {};
+  } else {
+    cachedEnv = parsed.data;
+  }
+
+  if (!cachedEnv.PUBLIC_SITE_URL) {
+    if (process.env.NODE_ENV !== "production") {
+      cachedEnv.PUBLIC_SITE_URL = "http://localhost:5173";
+    } else {
+      console.warn("AVISO: PUBLIC_SITE_URL não definida em produção.");
+    }
+  }
+
+  return cachedEnv;
 }
-
-export const env = _env.data;

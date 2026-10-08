@@ -61,3 +61,14 @@ npm run dev
 npm run build
 npm run preview
 ```
+
+## Deploy na Vercel
+
+O projeto usa TanStack Start com Nitro para gerar a saída de deploy da Vercel. Configure em **Vercel > Settings > Environment Variables**:
+
+- `MP_ACCESS_TOKEN` — token privado do Mercado Pago.
+- `MP_WEBHOOK_SECRET` — segredo de assinatura de notificações do Mercado Pago.
+- `PUBLIC_SITE_URL` — domínio real do site, incluindo `https://` (por exemplo, `https://seudominio.com`).
+- `FREIGHT_API_TOKEN` — opcional; token da API de frete.
+
+No painel do Mercado Pago, cadastre a URL de webhook `{PUBLIC_SITE_URL}/api/webhook/mercadopago` e habilite notificações de pagamento.
