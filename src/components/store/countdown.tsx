@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { storeConfig } from "@/data/products";
+import { motion, AnimatePresence } from "framer-motion";
 export function Countdown() {
   const [seconds, setSeconds] = useState<number | null>(null);
   useEffect(() => {
@@ -25,8 +26,21 @@ export function Countdown() {
     <div>
       <div className="countdown" aria-label="Contagem regressiva do drop">
         {["DIAS", "HORAS", "MIN", "SEG"].map((label, i) => (
-          <div key={label}>
-            <strong>{values[i]}</strong>
+          <div key={label} className="flex flex-col items-center">
+            <div className="relative overflow-hidden h-[1.2em] w-12 flex justify-center items-center">
+              <AnimatePresence mode="popLayout">
+                <motion.strong
+                  key={values[i]}
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  exit={{ y: -20, opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="absolute"
+                >
+                  {values[i]}
+                </motion.strong>
+              </AnimatePresence>
+            </div>
             <small>{label}</small>
           </div>
         ))}

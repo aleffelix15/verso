@@ -16,11 +16,34 @@ export const Route = createFileRoute("/")({
     ),
   component: Home,
 });
+import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
+import { useRef } from "react";
+
 function Home() {
+  const { scrollY } = useScroll();
+  const prefersReducedMotion = useReducedMotion();
+  const heroScale = useTransform(scrollY, [0, 1000], [1, prefersReducedMotion ? 1 : 1.08]);
+
+  const carouselRef = useRef(null);
+  const { scrollXProgress } = useScroll({ container: carouselRef });
+
+  const stagger = {
+    animate: { transition: { staggerChildren: 0.08, delayChildren: 0.3 } },
+  };
+
+  const fadeUp = {
+    initial: { opacity: 0, y: prefersReducedMotion ? 0 : 20 },
+    animate: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
+  };
+
   return (
     <>
-      <section className="hero">
-        <img
+      <section className="hero relative overflow-hidden">
+        <motion.img
+          style={{ scale: heroScale }}
+          initial={{ opacity: 0, scale: prefersReducedMotion ? 1 : 1.05 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
           className="hero-photo"
           src={hero}
           alt="Jovem com moletom oversized VERSO em cenário urbano de concreto"
@@ -28,34 +51,49 @@ function Home() {
           height={1120}
           fetchPriority="high"
         />
-        <div className="hero-content container-verso">
-          <p className="eyebrow">VERSO® &nbsp; / &nbsp; DROP 001 — ESSENCIAL</p>
-          <h1 className="hero-title">
-            FÉ QUE
-            <br />
-            VESTE.
+        <motion.div 
+          className="hero-content container-verso"
+          initial="initial"
+          animate="animate"
+          variants={stagger}
+        >
+          <motion.p variants={fadeUp} className="eyebrow">VERSO® &nbsp; / &nbsp; DROP 001 — ESSENCIAL</motion.p>
+          <h1 className="hero-title flex flex-col">
+            <span className="overflow-hidden">
+              <motion.span variants={fadeUp} className="block">FÉ QUE</motion.span>
+            </span>
+            <span className="overflow-hidden">
+              <motion.span variants={fadeUp} className="block">VESTE.</motion.span>
+            </span>
           </h1>
-          <p className="hero-sub">
+          <motion.p variants={fadeUp} className="hero-sub">
             Streetwear com propósito.
             <br />
             Sem fantasia.
-          </p>
-          <Button asChild variant="brand" size="lg">
-            <Link to="/drops">
-              Ver Drop 01 <ArrowUpRight className="ml-5" />
-            </Link>
-          </Button>
-        </div>
-        <div className="hero-bottom">
-          <p className="eyebrow flex items-center gap-3">
+          </motion.p>
+          <motion.div variants={fadeUp}>
+            <Button asChild variant="brand" size="lg">
+              <Link to="/drops">
+                Ver Drop 01 <ArrowUpRight className="ml-5" />
+              </Link>
+            </Button>
+          </motion.div>
+        </motion.div>
+        <motion.div 
+          className="hero-bottom"
+          initial="initial"
+          animate="animate"
+          variants={stagger}
+        >
+          <motion.p variants={fadeUp} className="eyebrow flex items-center gap-3">
             MENOS RUÍDO. MAIS ESSÊNCIA. <ArrowDown size={13} />
-          </p>
-          <div className="hero-tag eyebrow">
+          </motion.p>
+          <motion.div variants={fadeUp} className="hero-tag eyebrow">
             EST. 2026
             <br />
             FEITO COM PROPÓSITO.
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </section>
       <section className="manifesto container-verso">
         {[
@@ -143,26 +181,39 @@ function Home() {
             </div>
             <span className="eyebrow hidden sm:block">FÉ NOS DETALHES.</span>
           </div>
-          <div className="verse-grid flex md:grid overflow-x-auto snap-x snap-mandatory pb-4">
-            {[products[0], products[1], products[5]].map(
-              (p) =>
-                p && (
-                  <Link
-                    to="/produto/$slug"
-                    params={{ slug: p.slug }}
-                    className="verse-item"
-                    key={p.slug}
-                  >
-                    <div className="flex justify-between">
-                      <span className="verse-ref">[ {p.verse} ]</span>
-                      <ArrowUpRight size={16} />
-                    </div>
-                    <h3>{p.statement}</h3>
-                    <p>{p.meaning}</p>
-                    <span className="eyebrow mt-5 block">{p.category} / DROP 01</span>
-                  </Link>
-                ),
-            )}
+          <div className="relative">
+            <div ref={carouselRef} className="verse-grid flex md:grid overflow-x-auto snap-x snap-mandatory pb-4 hide-scrollbar">
+              {[products[0], products[1], products[5]].map(
+                (p) =>
+                  p && (
+                    <motion.div
+                      key={p.slug}
+                      initial={prefersReducedMotion ? { opacity: 1 } : { scale: 0.92, opacity: 0.5 }}
+                      whileInView={{ scale: 1, opacity: 1 }}
+                      viewport={{ root: carouselRef, amount: 0.6 }}
+                      transition={{ duration: 0.3 }}
+                      className="snap-center w-[85vw] sm:w-auto shrink-0"
+                    >
+                      <Link
+                        to="/produto/$slug"
+                        params={{ slug: p.slug }}
+                        className="verse-item block h-full"
+                      >
+                        <div className="flex justify-between">
+                          <span className="verse-ref">[ {p.verse} ]</span>
+                          <ArrowUpRight size={16} />
+                        </div>
+                        <h3>{p.statement}</h3>
+                        <p>{p.meaning}</p>
+                        <span className="eyebrow mt-5 block">{p.category} / DROP 01</span>
+                      </Link>
+                    </motion.div>
+                  ),
+              )}
+            </div>
+            <div className="h-1 bg-border/50 w-full max-w-[100px] mt-6 rounded-full overflow-hidden sm:hidden hidden">
+              <motion.div className="h-full bg-primary" style={{ scaleX: scrollXProgress, transformOrigin: "left" }} />
+            </div>
           </div>
         </section>
       </Reveal>
@@ -195,24 +246,7 @@ function Home() {
                 community,
               ],
             ].map(([quote, name, img], i) => (
-              <div key={name}>
-                <img
-                  className="community-photo"
-                  src={img}
-                  alt="Editorial demonstrativo da comunidade VERSO"
-                  loading="lazy"
-                  width={600}
-                  height={600}
-                  style={{
-                    objectPosition:
-                      i === 0 ? "75% center" : i === 1 ? "left center" : "right center",
-                  }}
-                />
-                <div className="quote">
-                  <p>{quote}</p>
-                  <span className="eyebrow">{name}</span>
-                </div>
-              </div>
+              <CommunityItem key={name} quote={quote as string} name={name as string} img={img as string} i={i} />
             ))}
           </div>
           <p className="mt-4 text-xs text-muted-foreground">
@@ -246,5 +280,39 @@ function Home() {
       </section>
       <Newsletter />
     </>
+  );
+}
+
+function CommunityItem({ quote, name, img, i }: { quote: string; name: string; img: string; i: number }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const prefersReducedMotion = useReducedMotion();
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start end", "end start"],
+  });
+  const y = useTransform(scrollYProgress, [0, 1], [prefersReducedMotion ? 0 : -30, prefersReducedMotion ? 0 : 30]);
+
+  return (
+    <div ref={ref} className="group flex flex-col gap-3">
+      <div className="overflow-hidden bg-muted">
+        <motion.img
+          className="community-photo transition-transform duration-700 ease-out sm:group-hover:scale-[1.03]"
+          src={img}
+          alt="Editorial demonstrativo da comunidade VERSO"
+          loading="lazy"
+          width={600}
+          height={600}
+          style={{
+            y,
+            scale: prefersReducedMotion ? 1 : 1.15,
+            objectPosition: i === 0 ? "75% center" : i === 1 ? "left center" : "right center",
+          }}
+        />
+      </div>
+      <div className="quote">
+        <p>{quote}</p>
+        <span className="eyebrow">{name}</span>
+      </div>
+    </div>
   );
 }

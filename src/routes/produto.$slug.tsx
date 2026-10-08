@@ -1,11 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
-import { Minus, Plus, ArrowUpRight, ZoomIn, Ruler, ShoppingBag } from "lucide-react";
+import { useState, useRef } from "react";
+import { Minus, Plus, ArrowUpRight, ZoomIn, Ruler, ShoppingBag, Check } from "lucide-react";
 import { products, pageHead, money, type Product } from "@/data/products";
 import { useCart } from "@/components/store/cart-context";
 import { ProductCard } from "@/components/store/product-card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { motion, AnimatePresence, useMotionValue, useSpring, useReducedMotion, useInView } from "framer-motion";
+
 export const Route = createFileRoute("/produto/$slug")({
   staticData: { sitemap: true },
   head: ({ params }) => {
@@ -43,8 +45,30 @@ function ProductDetails({ product: p }: { product: Product }) {
   const [zoom, setZoom] = useState(false);
   const [guide, setGuide] = useState(false);
   const [error, setError] = useState("");
+  const [added, setAdded] = useState(false);
+
+  const addToCartRef = useRef(null);
+  const isAddToCartInView = useInView(addToCartRef, { margin: "0px 0px -100px 0px" });
+
+  const prefersReducedMotion = useReducedMotion();
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const springX = useSpring(x, { stiffness: 150, damping: 15, mass: 0.1 });
+  const springY = useSpring(y, { stiffness: 150, damping: 15, mass: 0.1 });
+
+  function handleMouse(e: React.MouseEvent<HTMLDivElement>) {
+    if (prefersReducedMotion || window.innerWidth <= 768) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    x.set((e.clientX - rect.left - rect.width / 2) * 0.15);
+    y.set((e.clientY - rect.top - rect.height / 2) * 0.15);
+  }
+  function resetMouse() {
+    x.set(0);
+    y.set(0);
+  }
+
   return (
-    <>
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.4 }}>
       <div className="container-verso pt-7">
         <Link to="/loja" className="eyebrow">
           LOJA
@@ -58,29 +82,38 @@ function ProductDetails({ product: p }: { product: Product }) {
         <div>
           <Button
             variant="ghost"
-            className="relative h-auto w-full p-0"
+            className="relative h-auto w-full p-0 overflow-hidden"
             onClick={() => setZoom(true)}
             aria-label="Ampliar foto do produto"
           >
-            <img
-              src={p.images[image]}
-              alt={p.name}
-              className="product-main-photo"
-              width={1008}
-              height={1200}
-            />
+            <AnimatePresence mode="wait">
+              <motion.img
+                key={image}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                src={p.images[image]}
+                alt={p.name}
+                className="product-main-photo object-cover"
+                width={1008}
+                height={1200}
+              />
+            </AnimatePresence>
             <ZoomIn className="absolute bottom-4 right-4" />
           </Button>
           <div className="mt-3 flex gap-3">
             {p.images.map((img, i) => (
               <Button
                 variant="size"
-                className="h-auto w-16 p-0"
-                data-selected={i === image}
+                className="h-auto w-16 p-0 relative"
                 key={img}
                 onClick={() => setImage(i)}
                 aria-label={`Foto ${i + 1}`}
               >
+                {i === image && (
+                  <motion.div layoutId="imgIndicator" className="absolute inset-0 border-2 border-primary z-10 pointer-events-none" />
+                )}
                 <img
                   src={img}
                   alt={`Ângulo ${i + 1}`}
@@ -110,13 +143,16 @@ function ProductDetails({ product: p }: { product: Product }) {
                 key={c}
                 variant="size"
                 size="icon"
-                data-selected={color === c}
+                className="relative"
                 onClick={() => {
                   setColor(c);
                   setError("");
                 }}
                 aria-label={`Cor ${c}`}
               >
+                {color === c && (
+                  <motion.div layoutId="colorIndicator" className="absolute inset-0 border-2 border-primary rounded-md z-10 pointer-events-none" />
+                )}
                 <span className="swatch" data-color={c.toLowerCase().replace(" ", "-")} />
               </Button>
             ))}
@@ -137,14 +173,16 @@ function ProductDetails({ product: p }: { product: Product }) {
               <Button
                 key={s}
                 variant="size"
-                className="h-11 min-w-12"
-                data-selected={size === s}
+                className="h-11 min-w-12 relative"
                 onClick={() => {
                   setSize(s);
                   setError("");
                 }}
               >
-                {s}
+                {size === s && (
+                  <motion.div layoutId="sizeIndicator" className="absolute inset-0 border-2 border-primary rounded-md bg-primary/5 z-0 pointer-events-none" />
+                )}
+                <span className="relative z-10">{s}</span>
               </Button>
             ))}
           </div>
@@ -153,7 +191,7 @@ function ProductDetails({ product: p }: { product: Product }) {
               {error}
             </p>
           )}
-          <div className="mt-6 flex gap-3">
+          <div className="mt-6 flex gap-3" ref={addToCartRef}>
             <div className="flex shrink-0 items-center border border-border">
               <Button
                 variant="ghost"
@@ -177,20 +215,55 @@ function ProductDetails({ product: p }: { product: Product }) {
                 <Plus />
               </Button>
             </div>
-            <Button
-              variant="brand"
-              className="h-12 min-w-0 flex-1 px-3 text-xs sm:text-xs"
-              onClick={() => {
-                if (!size || !color) {
-                  setError("Escolhe o tamanho e a cor antes de continuar.");
-                  return;
-                }
-                cart.add(p, size, color, quantity);
-              }}
+            <motion.div
+              className="flex-1"
+              style={{ x: springX, y: springY }}
+              onMouseMove={handleMouse}
+              onMouseLeave={resetMouse}
             >
-              <ShoppingBag />
-              Adicionar à sacola
-            </Button>
+              <motion.div whileTap={{ scale: prefersReducedMotion ? 1 : 0.97 }}>
+                <Button
+                  variant="brand"
+                  className="h-12 min-w-0 w-full px-3 text-xs sm:text-xs overflow-hidden relative"
+                  onClick={() => {
+                    if (!size || !color) {
+                      setError("Escolhe o tamanho e a cor antes de continuar.");
+                      return;
+                    }
+                    if (typeof navigator !== "undefined" && navigator.vibrate) navigator.vibrate(10);
+                    cart.add(p, size, color, quantity);
+                    setAdded(true);
+                    setTimeout(() => setAdded(false), 2000);
+                  }}
+                >
+                  <AnimatePresence mode="wait">
+                    {added ? (
+                      <motion.div
+                        key="added"
+                        initial={{ y: 20, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        exit={{ y: -20, opacity: 0 }}
+                        transition={{ duration: 0.2, ease: "easeOut" }}
+                        className="flex items-center gap-2"
+                      >
+                        <Check size={16} /> Adicionado
+                      </motion.div>
+                    ) : (
+                      <motion.div
+                        key="add"
+                        initial={{ y: 20, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        exit={{ y: -20, opacity: 0 }}
+                        transition={{ duration: 0.2, ease: "easeOut" }}
+                        className="flex items-center gap-2"
+                      >
+                        <ShoppingBag size={16} /> Adicionar à sacola
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </Button>
+              </motion.div>
+            </motion.div>
           </div>
           <p className="mt-4 text-xs text-muted-foreground">
             Frete grátis acima de R$ 299. Produto demonstrativo.
@@ -291,6 +364,61 @@ function ProductDetails({ product: p }: { product: Product }) {
           </p>
         </DialogContent>
       </Dialog>
-    </>
+      <AnimatePresence>
+        {!isAddToCartInView && (
+          <motion.div
+            initial={{ y: "100%" }}
+            animate={{ y: 0 }}
+            exit={{ y: "100%" }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            className="fixed bottom-0 left-0 w-full z-50 p-4 pb-safe bg-background/90 backdrop-blur-md border-t border-border sm:hidden"
+          >
+            <motion.div whileTap={{ scale: prefersReducedMotion ? 1 : 0.97 }}>
+              <Button
+                variant="brand"
+                className="h-12 min-w-0 w-full px-3 text-xs overflow-hidden relative"
+                onClick={() => {
+                  if (!size || !color) {
+                    setError("Escolhe o tamanho e a cor antes de continuar.");
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    return;
+                  }
+                  if (typeof navigator !== "undefined" && navigator.vibrate) navigator.vibrate(10);
+                  cart.add(p, size, color, quantity);
+                  setAdded(true);
+                  setTimeout(() => setAdded(false), 2000);
+                }}
+              >
+                <AnimatePresence mode="wait">
+                  {added ? (
+                    <motion.div
+                      key="added"
+                      initial={{ y: 20, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      exit={{ y: -20, opacity: 0 }}
+                      transition={{ duration: 0.2, ease: "easeOut" }}
+                      className="flex items-center gap-2"
+                    >
+                      <Check size={16} /> Adicionado
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="add"
+                      initial={{ y: 20, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      exit={{ y: -20, opacity: 0 }}
+                      transition={{ duration: 0.2, ease: "easeOut" }}
+                      className="flex items-center gap-2"
+                    >
+                      <ShoppingBag size={16} /> Adicionar
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </Button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 }

@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import { useState, useEffect, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import {
   Search,
@@ -19,6 +19,8 @@ import { Sheet, SheetContent, SheetTitle, SheetDescription } from "@/components/
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useCart } from "./cart-context";
 import { products, money, storeConfig } from "@/data/products";
+import { motion, useScroll, useMotionValueEvent, useReducedMotion, AnimatePresence } from "framer-motion";
+import Lenis from "lenis";
 
 export function StoreShell({ children }: { children: ReactNode }) {
   const [menu, setMenu] = useState(false);
@@ -29,13 +31,70 @@ export function StoreShell({ children }: { children: ReactNode }) {
   const results = products.filter((p) =>
     `${p.name} ${p.verse} ${p.category}`.toLowerCase().includes(query.toLowerCase()),
   );
+
+  const [hiddenHeader, setHiddenHeader] = useState(false);
+  const { scrollY } = useScroll();
+  const prefersReducedMotion = useReducedMotion();
+  const [loading, setLoading] = useState(true);
+
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    const previous = scrollY.getPrevious() ?? 0;
+    if (latest > previous && latest > 150) {
+      setHiddenHeader(true);
+    } else {
+      setHiddenHeader(false);
+    }
+  });
+
+  useEffect(() => {
+    let lenis: Lenis | undefined;
+    if (window.matchMedia("(min-width: 768px)").matches && !prefersReducedMotion) {
+      lenis = new Lenis({
+        lerp: 0.1,
+        smoothWheel: true,
+      });
+
+      function raf(time: number) {
+        lenis?.raf(time);
+        requestAnimationFrame(raf);
+      }
+      requestAnimationFrame(raf);
+    }
+
+    const t = setTimeout(() => setLoading(false), 800);
+
+    return () => {
+      lenis?.destroy();
+      clearTimeout(t);
+    };
+  }, [prefersReducedMotion]);
   return (
     <>
+      <AnimatePresence>
+        {loading && (
+          <motion.div
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-background pointer-events-none"
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+              className="text-4xl font-display tracking-tight"
+            >
+              VERSO<span className="text-primary">.</span>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      
       <div
         className="marquee"
         aria-label="Frete grátis acima de R$ 299, Drop 01 disponível, parcele em 3x"
       >
-        <div className="marquee-track">
+        <div className="marquee-track" style={prefersReducedMotion ? { animationPlayState: "paused" } : {}}>
           {Array.from({ length: 6 }, (_, i) => (
             <span key={i}>
               FRETE GRÁTIS ACIMA DE R$ 299 <span className="text-primary">•</span> DROP 01
@@ -44,7 +103,15 @@ export function StoreShell({ children }: { children: ReactNode }) {
           ))}
         </div>
       </div>
-      <header className="site-header container-verso">
+      <motion.header
+        variants={{
+          visible: { y: 0 },
+          hidden: { y: "-100%" },
+        }}
+        animate={hiddenHeader ? "hidden" : "visible"}
+        transition={{ duration: 0.35, ease: "easeOut" }}
+        className="site-header container-verso sticky top-0 z-50 bg-background/80 backdrop-blur-md"
+      >
         <Link to="/" className="brand" aria-label="VERSO — início">
           VERSO<span className="text-primary">.</span>
         </Link>
@@ -73,11 +140,20 @@ export function StoreShell({ children }: { children: ReactNode }) {
             className="relative"
           >
             <ShoppingBag size={19} />
-            {cart.count > 0 && (
-              <span className="absolute right-0 top-0 grid size-4 place-items-center bg-primary text-[9px] text-primary-foreground">
-                {cart.count}
-              </span>
-            )}
+            <AnimatePresence>
+              {cart.count > 0 && (
+                <motion.span 
+                  key={cart.count}
+                  initial={{ scale: 0 }}
+                  animate={{ scale: [1, 1.4, 1] }}
+                  exit={{ scale: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="absolute right-0 top-0 grid size-4 place-items-center bg-primary text-[9px] text-primary-foreground"
+                >
+                  {cart.count}
+                </motion.span>
+              )}
+            </AnimatePresence>
           </Button>
           <Button
             variant="header"
@@ -89,7 +165,7 @@ export function StoreShell({ children }: { children: ReactNode }) {
             <Menu size={20} />
           </Button>
         </div>
-      </header>
+      </motion.header>
       <main>{children}</main>
       <footer className="site-footer">
         <div className="container-verso">
@@ -166,26 +242,56 @@ export function StoreShell({ children }: { children: ReactNode }) {
           <MessageCircle size={20} />
         </Link>
       </Button>
-      <Sheet open={menu} onOpenChange={setMenu}>
-        <SheetContent side="left" className="w-[85%]">
-          <SheetTitle className="brand">VERSO.</SheetTitle>
-          <SheetDescription>Fé que veste.</SheetDescription>
-          <nav className="mt-10 flex flex-col gap-7 font-display text-4xl">
-            <Link to="/loja" onClick={() => setMenu(false)}>
-              LOJA
-            </Link>
-            <Link to="/drops" onClick={() => setMenu(false)}>
-              DROPS
-            </Link>
-            <Link to="/sobre" onClick={() => setMenu(false)}>
-              SOBRE
-            </Link>
-            <Link to="/contato" onClick={() => setMenu(false)}>
-              CONTATO
-            </Link>
-          </nav>
-        </SheetContent>
-      </Sheet>
+      <AnimatePresence>
+        {menu && (
+          <motion.div
+            initial={{ y: "-100%" }}
+            animate={{ y: 0 }}
+            exit={{ y: "-100%" }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            drag="y"
+            dragConstraints={{ top: 0, bottom: 0 }}
+            dragElastic={0.2}
+            onDragEnd={(e, { offset, velocity }) => {
+              if (offset.y > 100 || velocity.y > 500 || offset.y < -100 || velocity.y < -500) {
+                setMenu(false);
+              }
+            }}
+            className="fixed inset-0 z-[100] bg-background flex flex-col p-6 touch-none"
+          >
+            <div className="flex justify-between items-center">
+              <span className="brand text-xl">VERSO.</span>
+              <Button variant="ghost" size="icon" onClick={() => setMenu(false)}>
+                <X size={24} />
+              </Button>
+            </div>
+            <p className="text-sm text-muted-foreground mt-2">Fé que veste.</p>
+            <nav className="mt-16 flex flex-col gap-8 font-display text-5xl">
+              {[
+                { name: "LOJA", path: "/loja" },
+                { name: "DROPS", path: "/drops" },
+                { name: "SOBRE", path: "/sobre" },
+                { name: "CONTATO", path: "/contato" },
+              ].map((item, i) => (
+                <motion.div
+                  key={item.name}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ delay: 0.1 + i * 0.05, duration: 0.3, ease: "easeOut" }}
+                >
+                  <Link to={item.path} onClick={() => setMenu(false)} className="block w-full">
+                    {item.name}
+                  </Link>
+                </motion.div>
+              ))}
+            </nav>
+            <div className="mt-auto text-center text-xs text-muted-foreground pb-4 opacity-50">
+              Arraste para fechar
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
       <Dialog open={search} onOpenChange={setSearch}>
         <DialogContent className="max-h-[85svh] overflow-y-auto">
           <DialogTitle className="font-display text-3xl">ENCONTRE SEU VERSO.</DialogTitle>
@@ -353,7 +459,7 @@ function CartDrawer() {
     setLoading(false);
   });
 
-  async function finish() {
+  async function finishLegacy() {
     setLoading(true);
     try {
       const payload = {
