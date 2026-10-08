@@ -21,6 +21,25 @@ import { useCart } from "./cart-context";
 import { products, money, storeConfig } from "@/data/products";
 import { motion, useScroll, useMotionValueEvent, useReducedMotion, AnimatePresence } from "framer-motion";
 import Lenis from "lenis";
+import { calculateFreight } from "@/server/shipping";
+import { createPaymentPreference } from "@/server/checkout";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+
+const checkoutFormSchema = z.object({
+  name: z.string().min(2, "Nome muito curto"),
+  email: z.string().email("E-mail inválido"),
+  phone: z.string().min(10, "DDD + Número"),
+  zip_code: z.string().min(8, "CEP inválido"),
+  street_name: z.string().min(2, "Rua inválida"),
+  street_number: z.string().min(1, "Número obrigatório"),
+  complement: z.string().optional(),
+  neighborhood: z.string().min(2, "Bairro inválido"),
+  city: z.string().min(2, "Cidade inválida"),
+  state: z.string().length(2, "UF inválida"),
+});
+
 
 export function StoreShell({ children }: { children: ReactNode }) {
   const [menu, setMenu] = useState(false);
@@ -35,6 +54,14 @@ export function StoreShell({ children }: { children: ReactNode }) {
   const [hiddenHeader, setHiddenHeader] = useState(false);
   const { scrollY } = useScroll();
   const prefersReducedMotion = useReducedMotion();
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setMenu(false);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
   const [loading, setLoading] = useState(true);
 
   useMotionValueEvent(scrollY, "change", (latest) => {
@@ -48,6 +75,7 @@ export function StoreShell({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let lenis: Lenis | undefined;
+    let rafId: number;
     if (window.matchMedia("(min-width: 768px)").matches && !prefersReducedMotion) {
       lenis = new Lenis({
         lerp: 0.1,
@@ -56,15 +84,16 @@ export function StoreShell({ children }: { children: ReactNode }) {
 
       function raf(time: number) {
         lenis?.raf(time);
-        requestAnimationFrame(raf);
+        rafId = requestAnimationFrame(raf);
       }
-      requestAnimationFrame(raf);
+      rafId = requestAnimationFrame(raf);
     }
 
     const t = setTimeout(() => setLoading(false), 800);
 
     return () => {
       lenis?.destroy();
+      cancelAnimationFrame(rafId);
       clearTimeout(t);
     };
   }, [prefersReducedMotion]);
@@ -350,9 +379,6 @@ export function StoreShell({ children }: { children: ReactNode }) {
     </>
   );
 }
-import { calculateFreight } from "@/server/shipping";
-import { createPaymentPreference } from "@/server/checkout";
-
 function CartDrawer() {
   const cart = useCart();
   const [shippingOptions, setShippingOptions] = useState<
@@ -363,6 +389,7 @@ function CartDrawer() {
   );
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [lastCep, setLastCep] = useState("");
 
   const {
     register,
@@ -389,7 +416,7 @@ function CartDrawer() {
       const res = await calculateFreight({
         data: {
           zip_code: cleanCep,
-          total_weight_kg: cart.items.length * 0.4,
+          total_weight_kg: cart.items.reduce((acc, item) => acc + 0.4 * item.quantity, 0),
           total_value: cart.subtotal,
         },
       });
@@ -403,26 +430,34 @@ function CartDrawer() {
     setLoading(false);
   }
 
-  // Busca ViaCEP automática
-  if (cepValue && cepValue.replace(/\D/g, "").length === 8 && !shippingOptions && !loading) {
-    const clean = cepValue.replace(/\D/g, "");
-    calculate(clean);
-    fetch(`https://viacep.com.br/ws/${clean}/json/`)
-      .then((r) => r.json())
-      .then((d) => {
-        if (!d.erro) {
-          setValue("street_name", d.logradouro);
-          setValue("neighborhood", d.bairro);
-          setValue("city", d.localidade);
-          setValue("state", d.uf);
+  useEffect(() => {
+    if (cepValue) {
+      const clean = cepValue.replace(/\D/g, "");
+      if (clean.length === 8) {
+        const hash = `${clean}-${cart.subtotal}`;
+        if (lastCep !== hash && !loading) {
+          setLastCep(hash);
+          calculate(clean);
+          fetch(`https://viacep.com.br/ws/${clean}/json/`)
+            .then((r) => r.json())
+            .then((d) => {
+              if (!d.erro) {
+                setValue("street_name", d.logradouro);
+                setValue("neighborhood", d.bairro);
+                setValue("city", d.localidade);
+                setValue("state", d.uf);
+              }
+            })
+            .catch(() => {});
         }
-      })
-      .catch(() => {});
-  }
+      }
+    }
+  }, [cepValue, cart.subtotal, loading, lastCep]);
 
   const finish = handleSubmit(async (formData) => {
     setLoading(true);
     try {
+      const cleanPhone = formData.phone.replace(/\D/g, "");
       const payload = {
         items: cart.items.map((i) => ({
           slug: i.product.slug,
@@ -434,7 +469,7 @@ function CartDrawer() {
           name: formData.name,
           surname: "Comprador",
           email: formData.email,
-          phone: { area_code: formData.phone.substring(0, 2), number: formData.phone.substring(2) },
+          phone: { area_code: cleanPhone.substring(0, 2), number: cleanPhone.substring(2) },
           address: {
             zip_code: formData.zip_code.replace(/\D/g, ""),
             street_name: formData.street_name,
@@ -458,41 +493,6 @@ function CartDrawer() {
     }
     setLoading(false);
   });
-
-  async function finishLegacy() {
-    setLoading(true);
-    try {
-      const payload = {
-        items: cart.items.map((i) => ({
-          id: i.product.slug,
-          title: `${i.product.name} - ${i.size} - ${i.color}`,
-          quantity: i.quantity,
-          unit_price: i.product.price,
-          picture_url: `https://verso-streetwear.vercel.app${i.product.images[0]}`, // Fallback para logo/img local
-          category_id: i.product.category,
-        })),
-        payer: {
-          name: "Comprador",
-          surname: "Verso",
-          email: "contato@verso.com",
-          phone: { area_code: "11", number: "999999999" },
-          address: { zip_code: cep.replace(/\D/g, ""), street_name: "Rua", street_number: "0" },
-        },
-        shipping_cost: selectedShipping ? selectedShipping.price : 0,
-      };
-
-      const res = await createPaymentPreference({ data: payload });
-      if (res.success && res.init_point) {
-        // Redireciona para o checkout oficial seguro do MP
-        window.location.href = res.init_point;
-      } else {
-        setError(res.error || "Erro ao gerar o pagamento.");
-      }
-    } catch (e) {
-      setError("Erro de conexão ao gerar o pagamento.");
-    }
-    setLoading(false);
-  }
 
   return (
     <>
