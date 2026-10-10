@@ -23,8 +23,9 @@ import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/compone
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { modelsRegistry } from "@/components/three/registry";
 import { ClientOnly } from "@/components/three/client-only";
-import { Scene } from "@/components/three/scene";
-import { ThreeErrorBoundary } from "@/components/three/three-error-boundary";
+import React from "react";
+
+const LazyThreeViewer = React.lazy(() => import("@/components/three/three-viewer").then(m => ({ default: m.ThreeViewer })));
 import {
   motion,
   AnimatePresence,
@@ -172,11 +173,12 @@ function ProductDetails({ product: p }: { product: Product }) {
                       />
                     }
                   >
-                    <ThreeErrorBoundary fallbackImage={p.images[0] ?? ""}>
-                      <Scene animated={!prefersReducedMotion}>
-                        <Model autoRotate={!prefersReducedMotion} />
-                      </Scene>
-                    </ThreeErrorBoundary>
+                    <LazyThreeViewer
+                      slug={p.slug}
+                      fallbackImage={p.images[0] ?? ""}
+                      animated={!prefersReducedMotion}
+                      color={color}
+                    />
                   </Suspense>
                 </ClientOnly>
               </div>
