@@ -1,6 +1,15 @@
 import React from "react";
 
-export const modelsRegistry: Record<string, React.LazyExoticComponent<React.ComponentType<unknown>>> = {
+export interface ModelProps {
+  color?: string;
+  accent?: string;
+  autoRotate?: boolean;
+}
+
+export const modelsRegistry: Record<
+  string,
+  React.LazyExoticComponent<React.ComponentType<ModelProps>>
+> = {
   "camiseta-luz": React.lazy(() =>
     import("./models/camiseta-oversized").then((m) => ({ default: m.CamisetaOversized })),
   ),

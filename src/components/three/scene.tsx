@@ -1,5 +1,5 @@
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls, Environment } from "@react-three/drei";
+import { OrbitControls, Environment, ContactShadows } from "@react-three/drei";
 import { ReactNode, Suspense } from "react";
 import { ClientOnly } from "./client-only";
 
@@ -23,16 +23,26 @@ export function Scene({ children }: SceneProps) {
           gl={{ alpha: true, antialias: true }}
           camera={{ position: [0, 0, 5], fov: 45 }}
         >
-          {/* Luz global bem suave preenchendo as sombras */}
-          <ambientLight intensity={0.5} />
-
-          {/* Luz direcional principal atuando como Sol */}
-          <directionalLight position={[10, 10, 5]} intensity={1} />
+          {/* Iluminação de 3 pontos para maior realismo */}
+          <ambientLight intensity={0.4} />
+          <directionalLight position={[5, 5, 5]} intensity={0.8} />
+          <directionalLight position={[-5, 5, 5]} intensity={0.3} color="#ffffff" />
+          <directionalLight position={[0, 5, -5]} intensity={0.5} color="#ffffff" />
 
           <Suspense fallback={null}>
             {/* Environment com preset urbano/neutro otimizado */}
             <Environment preset="city" />
             {children}
+            {/* Sombra de contato suave e otimizada */}
+            <ContactShadows
+              position={[0, -1.2, 0]}
+              opacity={0.5}
+              scale={10}
+              blur={2}
+              far={2}
+              resolution={256}
+              color="#000000"
+            />
           </Suspense>
 
           {/* Controles restritos para não deixar o usuário se perder no void */}
