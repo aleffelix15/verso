@@ -25,7 +25,9 @@ import { modelsRegistry } from "@/components/three/registry";
 import { ClientOnly } from "@/components/three/client-only";
 import React from "react";
 
-const LazyThreeViewer = React.lazy(() => import("@/components/three/three-viewer").then(m => ({ default: m.ThreeViewer })));
+const LazyThreeViewer = React.lazy(() =>
+  import("@/components/three/three-viewer").then((m) => ({ default: m.ThreeViewer })),
+);
 import {
   motion,
   AnimatePresence,
@@ -174,6 +176,7 @@ function ProductDetails({ product: p }: { product: Product }) {
                     }
                   >
                     <LazyThreeViewer
+                      key={p.slug}
                       slug={p.slug}
                       fallbackImage={p.images[0] ?? ""}
                       animated={!prefersReducedMotion}

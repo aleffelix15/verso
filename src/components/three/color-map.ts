@@ -1,8 +1,8 @@
 export const colorMap: Record<string, string> = {
   "Preto lavado": "#1f1f1f",
   "Off-white": "#f5f5f0",
-  "Chumbo": "#363636",
-  "Cimento": "#878787",
+  Chumbo: "#363636",
+  Cimento: "#878787",
 };
 
 export function getHexColor(colorName?: string): string {

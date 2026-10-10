@@ -23,7 +23,7 @@ export function makeLabelTexture(options: LabelOptions): THREE.CanvasTexture {
     height = 256,
     fontFamily = "monospace",
   } = options;
-  
+
   const cacheKey = `${text}-${fontSize}-${color}-${bgColor}-${width}-${height}-${fontFamily}`;
 
   if (textureCache.has(cacheKey)) {
@@ -59,7 +59,7 @@ export function makeLabelTexture(options: LabelOptions): THREE.CanvasTexture {
 
 export function disposeLabelTexture(options: LabelOptions) {
   const cacheKey = `${options.text}-${options.fontSize ?? 64}-${options.color ?? "#ffffff"}-${options.bgColor ?? "transparent"}-${options.width ?? 512}-${options.height ?? 256}-${options.fontFamily ?? "monospace"}`;
-  
+
   if (textureCache.has(cacheKey)) {
     const cached = textureCache.get(cacheKey)!;
     cached.count -= 1;

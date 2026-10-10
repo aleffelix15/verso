@@ -7,6 +7,8 @@ import * as THREE from "three";
 interface SceneProps {
   children: ReactNode;
   animated?: boolean;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  controlsRef?: React.RefObject<any | null>;
 }
 
 function hasWebGL() {
@@ -23,7 +25,7 @@ function hasWebGL() {
   }
 }
 
-export function Scene({ children, animated = false }: SceneProps) {
+export function Scene({ children, animated = false, controlsRef }: SceneProps) {
   const [isSupported, setIsSupported] = useState(true);
   const [isVisible, setIsVisible] = useState(true);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -43,10 +45,9 @@ export function Scene({ children, animated = false }: SceneProps) {
 
   useEffect(() => {
     if (!containerRef.current) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => setIsVisible(entry.isIntersecting),
-      { threshold: 0.1 }
-    );
+    const observer = new IntersectionObserver(([entry]) => setIsVisible(entry.isIntersecting), {
+      threshold: 0.1,
+    });
     observer.observe(containerRef.current);
     return () => observer.disconnect();
   }, []);
@@ -56,7 +57,7 @@ export function Scene({ children, animated = false }: SceneProps) {
   }
 
   // Se estiver animado e visível, frameloop é always. Senão, demand.
-  const frameloop = (animated && isVisible) ? "always" : "demand";
+  const frameloop = animated && isVisible ? "always" : "demand";
 
   return (
     <ClientOnly
@@ -66,7 +67,11 @@ export function Scene({ children, animated = false }: SceneProps) {
         </div>
       }
     >
-      <div className="w-full h-full min-h-[300px]" ref={containerRef}>
+      <div
+        className="w-full h-full min-h-[300px]"
+        ref={containerRef}
+        style={{ touchAction: "pan-y" }}
+      >
         <Canvas
           frameloop={frameloop}
           dpr={[1, 1.5]}
@@ -101,7 +106,13 @@ export function Scene({ children, animated = false }: SceneProps) {
             />
           </Suspense>
 
-          <OrbitControls enablePan={false} minDistance={2} maxDistance={10} makeDefault />
+          <OrbitControls
+            ref={controlsRef}
+            enablePan={false}
+            minDistance={2}
+            maxDistance={10}
+            makeDefault
+          />
         </Canvas>
       </div>
     </ClientOnly>

@@ -21,7 +21,7 @@ function generateFabricBumpMap() {
     data[i + 2] = Math.min(255, Math.max(0, 128 + noise));
     data[i + 3] = 255;
   }
-  
+
   // Adding weave pattern
   for (let y = 0; y < 256; y += 4) {
     for (let x = 0; x < 256; x += 4) {
