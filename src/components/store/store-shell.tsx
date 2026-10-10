@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef, useCallback, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
-import { ThemeToggle } from "../theme/theme-toggle";
 import {
   Search,
   ShoppingBag,
@@ -163,7 +162,6 @@ export function StoreShell({ children }: { children: ReactNode }) {
           <Link to="/contato">Contato</Link>
         </nav>
         <div className="header-actions">
-          <ThemeToggle />
           <Button variant="header" size="icon" asChild aria-label="Favoritos" title="Favoritos">
             <Link to="/favoritos">
               <Heart size={19} />
@@ -617,7 +615,7 @@ function CartDrawer() {
                   className="w-full text-xs p-2 border border-border"
                 />
                 {errors.name && (
-                  <span className="text-[10px] text-red-500">{errors.name.message}</span>
+                  <span className="text-[10px] text-brand">{errors.name.message}</span>
                 )}
 
                 <input
@@ -627,7 +625,7 @@ function CartDrawer() {
                   className="w-full text-xs p-2 border border-border"
                 />
                 {errors.email && (
-                  <span className="text-[10px] text-red-500">{errors.email.message}</span>
+                  <span className="text-[10px] text-brand">{errors.email.message}</span>
                 )}
 
                 <input
@@ -636,7 +634,7 @@ function CartDrawer() {
                   className="w-full text-xs p-2 border border-border"
                 />
                 {errors.phone && (
-                  <span className="text-[10px] text-red-500">{errors.phone.message}</span>
+                  <span className="text-[10px] text-brand">{errors.phone.message}</span>
                 )}
 
                 <label className="block text-xs font-semibold mt-4">ENDEREÇO E FRETE</label>
@@ -647,7 +645,7 @@ function CartDrawer() {
                   className="w-full text-xs p-2 border border-border"
                 />
                 {errors.zip_code && (
-                  <span className="text-[10px] text-red-500">{errors.zip_code.message}</span>
+                  <span className="text-[10px] text-brand">{errors.zip_code.message}</span>
                 )}
 
                 {shippingOptions && (
@@ -707,7 +705,7 @@ function CartDrawer() {
                 </div>
 
                 {error && (
-                  <p role="alert" className="mt-2 text-xs text-red-500">
+                  <p role="alert" className="mt-2 text-xs text-brand">
                     {error}
                   </p>
                 )}

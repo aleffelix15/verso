@@ -5,8 +5,10 @@
   --color-foreground: var(--foreground);
 
   --color-primary: var(--brand);
-  --color-primary-foreground: var(--paper);
+  --color-primary-foreground: var(--on-brand);
   --color-brand: var(--brand);
+  --color-on-brand: var(--on-brand);
+  --color-surface: var(--surface);
   --color-muted: var(--border);
   --color-muted-foreground: var(--chalk);
   --color-border: var(--border);
@@ -48,28 +50,21 @@
 
 @layer base {
   :root {
-    color-scheme: light;
-    --background: #f8f8f8;
-    --foreground: #0a0a0a;
-    --ink: #0a0a0a;
-    --paper: #f8f8f8;
-    --brand: #ff4500;
-    --chalk: #737373;
-    --border: #e5e5e5;
-    --muted: #e5e5e5;
-    --shadow-float: 0 10px 40px -10px rgba(0, 0, 0, 0.2);
+    color-scheme: dark;
+    --background: #0A0A0A;
+    --paper: #0A0A0A;
+    --surface: #141414;
+    --foreground: #F8F8F8;
+    --ink: #F8F8F8;
+    --chalk: rgb(248 248 248 / 0.65);
+    --border: rgb(248 248 248 / 0.12);
+    --muted: rgb(248 248 248 / 0.12);
+    --brand: #FF4500;
+    --on-brand: #0A0A0A;
+    --shadow-float: 0 10px 40px -10px rgba(0, 0, 0, 0.5);
   }
   .dark {
-    color-scheme: dark;
-    --background: #0a0a0a;
-    --foreground: #f8f8f8;
-    --ink: #f8f8f8;
-    --paper: #0a0a0a;
-    --brand: #ff4500;
-    --chalk: #a3a3a3;
-    --border: #262626;
-    --muted: #262626;
-    --shadow-float: 0 10px 40px -10px rgba(0, 0, 0, 0.5);
+    /* alias */
   }
 
   /* 
