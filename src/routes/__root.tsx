@@ -13,6 +13,7 @@ import { type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { CartProvider } from "@/components/store/cart-context";
 import { StoreShell } from "@/components/store/store-shell";
+import { ThemeProvider } from "@/components/theme/theme-provider";
 
 function NotFoundComponent() {
   return (
@@ -122,12 +123,14 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <ThemeProvider><Outlet /></ThemeProvider> breaks all child routes. */}
-      <CartProvider>
-        <StoreShell>
-          <Outlet />
-        </StoreShell>
-      </CartProvider>
+      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+      <ThemeProvider>
+        <CartProvider>
+          <StoreShell>
+            <Outlet />
+          </StoreShell>
+        </CartProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }
