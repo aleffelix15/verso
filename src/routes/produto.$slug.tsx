@@ -1,11 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState, useRef } from "react";
-import { Minus, Plus, ArrowUpRight, ZoomIn, Ruler, ShoppingBag, Check } from "lucide-react";
+import { useState, useRef, Suspense } from "react";
+import { Minus, Plus, ArrowUpRight, ZoomIn, Ruler, ShoppingBag, Check, Box } from "lucide-react";
 import { products, pageHead, money, type Product } from "@/data/products";
 import { useCart } from "@/components/store/cart-context";
 import { ProductCard } from "@/components/store/product-card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { modelsRegistry } from "@/components/three/registry";
+import { ClientOnly } from "@/components/three/client-only";
 import {
   motion,
   AnimatePresence,
@@ -48,11 +50,13 @@ function ProductDetails({ product: p }: { product: Product }) {
   const [size, setSize] = useState(p.sizes.length === 1 ? p.sizes[0] : "");
   const [color, setColor] = useState(p.colors[0] ?? "");
   const [quantity, setQuantity] = useState(1);
-  const [image, setImage] = useState(0);
+  const [image, setImage] = useState<number | "3d">(0);
   const [zoom, setZoom] = useState(false);
   const [guide, setGuide] = useState(false);
   const [error, setError] = useState("");
   const [added, setAdded] = useState(false);
+
+  const Model = modelsRegistry[p.slug];
 
   const addToCartRef = useRef(null);
   const isAddToCartInView = useInView(addToCartRef, { margin: "0px 0px -100px 0px" });
@@ -92,28 +96,46 @@ function ProductDetails({ product: p }: { product: Product }) {
       </div>
       <section className="container-verso product-layout">
         <div>
-          <Button
-            variant="ghost"
-            className="relative h-auto w-full p-0 overflow-hidden"
-            onClick={() => setZoom(true)}
-            aria-label="Ampliar foto do produto"
-          >
-            <AnimatePresence mode="wait">
-              <motion.img
-                key={image}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
-                src={p.images[image]}
-                alt={p.name}
-                className="product-main-photo object-cover"
-                width={1008}
-                height={1200}
-              />
-            </AnimatePresence>
-            <ZoomIn className="absolute bottom-4 right-4" />
-          </Button>
+          {image === "3d" && Model ? (
+            <div className="relative h-auto w-full overflow-hidden bg-muted flex items-center justify-center product-main-photo">
+              <ClientOnly>
+                <Suspense
+                  fallback={
+                    <img
+                      src={p.images[0]}
+                      alt="Carregando 3D"
+                      className="opacity-50 object-cover w-full h-full"
+                    />
+                  }
+                >
+                  <Model autoRotate={!prefersReducedMotion} />
+                </Suspense>
+              </ClientOnly>
+            </div>
+          ) : (
+            <Button
+              variant="ghost"
+              className="relative h-auto w-full p-0 overflow-hidden"
+              onClick={() => setZoom(true)}
+              aria-label="Ampliar foto do produto"
+            >
+              <AnimatePresence mode="wait">
+                <motion.img
+                  key={image as number}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                  src={p.images[image as number]}
+                  alt={p.name}
+                  className="product-main-photo object-cover"
+                  width={1008}
+                  height={1200}
+                />
+              </AnimatePresence>
+              <ZoomIn className="absolute bottom-4 right-4" />
+            </Button>
+          )}
           <div className="mt-3 flex gap-3">
             {p.images.map((img, i) => (
               <Button
@@ -138,6 +160,25 @@ function ProductDetails({ product: p }: { product: Product }) {
                 />
               </Button>
             ))}
+            {Model && (
+              <Button
+                variant="size"
+                className="h-[80px] w-16 p-0 relative flex flex-col items-center justify-center bg-muted/30"
+                onClick={() => setImage("3d")}
+                aria-label="Ver em 3D"
+              >
+                {image === "3d" && (
+                  <motion.div
+                    layoutId="imgIndicator"
+                    className="absolute inset-0 border-2 border-primary z-10 pointer-events-none"
+                  />
+                )}
+                <Box className="w-5 h-5 text-muted-foreground" />
+                <span className="text-[10px] font-bold mt-1 text-muted-foreground tracking-widest">
+                  3D
+                </span>
+              </Button>
+            )}
           </div>
         </div>
         <div className="product-detail">
@@ -335,7 +376,7 @@ function ProductDetails({ product: p }: { product: Product }) {
           <DialogTitle className="sr-only">{p.name} — foto ampliada</DialogTitle>
           <DialogDescription className="sr-only">Detalhes da peça.</DialogDescription>
           <img
-            src={p.images[image]}
+            src={image === "3d" ? p.images[0] : p.images[image as number]}
             alt={p.name}
             className="max-h-[78svh] w-full object-contain"
             width={1008}

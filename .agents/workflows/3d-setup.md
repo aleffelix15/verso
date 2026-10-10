@@ -7,4 +7,3 @@ description: "Configura o ambiente 3D básico com Three.js e R3F com suporte seg
 3. Crie `src/components/three/client-only.tsx`: wrapper que só renderiza o filho após montar no cliente (evita quebrar o SSR).
 4. Crie `src/components/three/scene.tsx`: Canvas base com luz suave, Environment leve, OrbitControls com zoom limitado, `dpr` limitado a [1, 1.5], fundo transparente e `frameloop="demand"`.
 5. Rode `npx tsc --noEmit` e `npm run build`. Relate o resultado.
-

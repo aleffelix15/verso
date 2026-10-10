@@ -10,4 +10,3 @@ Integre o modelo da peça indicada à página `src/routes/produto.$slug.tsx`.
 4. Respeite `prefers-reduced-motion` (sem rotação automática).
 5. Mapeie `slug` → componente 3D em um único arquivo `src/components/three/registry.ts`.
 6. Não altere o visual atual da página além da aba nova.
-

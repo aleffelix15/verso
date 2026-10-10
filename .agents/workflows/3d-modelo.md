@@ -10,4 +10,3 @@ Crie um modelo procedural da peça que eu informar após o comando (ex.: "/3d-mo
 4. Centralize o modelo na origem e normalize a escala para caber em 1 unidade.
 5. Faça dispose de geometrias e materiais no cleanup.
 6. Não toque em páginas existentes. Mostre um exemplo de uso.
-

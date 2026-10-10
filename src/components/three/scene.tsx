@@ -9,7 +9,13 @@ interface SceneProps {
 
 export function Scene({ children }: SceneProps) {
   return (
-    <ClientOnly fallback={<div className="w-full h-full min-h-[300px] bg-muted/20 animate-pulse flex items-center justify-center text-sm text-muted-foreground">Carregando 3D...</div>}>
+    <ClientOnly
+      fallback={
+        <div className="w-full h-full min-h-[300px] bg-muted/20 animate-pulse flex items-center justify-center text-sm text-muted-foreground">
+          Carregando 3D...
+        </div>
+      }
+    >
       <div className="w-full h-full min-h-[300px]">
         <Canvas
           frameloop="demand"
@@ -19,26 +25,20 @@ export function Scene({ children }: SceneProps) {
         >
           {/* Luz global bem suave preenchendo as sombras */}
           <ambientLight intensity={0.5} />
-          
+
           {/* Luz direcional principal atuando como Sol */}
           <directionalLight position={[10, 10, 5]} intensity={1} />
-          
+
           <Suspense fallback={null}>
             {/* Environment com preset urbano/neutro otimizado */}
             <Environment preset="city" />
             {children}
           </Suspense>
-          
+
           {/* Controles restritos para não deixar o usuário se perder no void */}
-          <OrbitControls 
-            enablePan={false} 
-            minDistance={2} 
-            maxDistance={10} 
-            makeDefault 
-          />
+          <OrbitControls enablePan={false} minDistance={2} maxDistance={10} makeDefault />
         </Canvas>
       </div>
     </ClientOnly>
   );
 }
-

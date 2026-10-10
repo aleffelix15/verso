@@ -8,4 +8,3 @@ Integre um arquivo .glb que eu indicar (ex.: "/3d-glb public/models/moletom.glb"
 2. Crie `src/components/three/glb-viewer.tsx` com `useGLTF`, `Suspense` e `Stage`.
 3. Registre o slug no `registry.ts`.
 4. Se o `vercel.json` tiver CSP, ajuste apenas o necessário (decoder Draco/worker).
-

@@ -2,18 +2,18 @@
 
 ## Comparação dos projetos
 
-| Critério | SITE_A: ZIP indicado | SITE_B: `reference-upsite` | Preferido e justificativa |
-|---|---|---|---|
-| Stack e versões | React 19, TypeScript, TanStack Start/Router, Vite, Tailwind 4, Nitro/Vercel | Mesma base técnica e versões próximas | A: inclui integração de pagamento no servidor e configuração Vercel explícita. |
-| Rotas | Home, loja, produto, drops, sobre, contato, sitemap, pagamento e webhook | Rotas de loja, produto, drops, sobre, contato e sitemap | A: cobre os fluxos adicionais de pagamento. |
-| Componentes | Shell compartilhado, contexto de sacola, cards, animações e componentes Radix | Shell, contexto e componentes equivalentes | Empate: organização e padrões são essencialmente os mesmos. |
-| Design | Streetwear editorial, preto/off-white, acento laranja e tipografia condensada | Mesmo sistema visual e identidade | Empate: linguagem visual compartilhada. |
-| Mobile | Layout responsivo, navegação adaptável e fotos fluidas | Base responsiva equivalente | A: versão mais recente inclui aprimoramento para movimento/fotos de produto. |
-| Animação | Framer Motion, efeitos de entrada e fotos com animação finita | Framer Motion e efeitos de loja | A: mantém animação de foto compartilhada e respeita movimento reduzido. |
-| Performance | Imagens com dimensões e lazy loading em cards/conteúdo abaixo da dobra | Abordagem semelhante | Empate: ambas usam imagens locais e carregamento tardio nos grids. |
-| Acessibilidade | Semântica e controles acessíveis no shell e nos componentes | Base equivalente | Empate: sem auditoria automatizada disponível nesta etapa. |
-| SEO | Metadados por página, sitemap e robots | Metadados e sitemap | A: rotas indexáveis também incluem produtos e páginas do fluxo de pagamento. |
-| Qualidade | Dados tipados centralizados e novos testes de catálogo; contém integração antiga de telemetria do editor | Dados centralizados, sem as adições mais recentes | A: catálogo mais completo e cobertura funcional maior; integração de telemetria removida nesta cópia. |
+| Critério        | SITE_A: ZIP indicado                                                                                     | SITE_B: `reference-upsite`                              | Preferido e justificativa                                                                             |
+| --------------- | -------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| Stack e versões | React 19, TypeScript, TanStack Start/Router, Vite, Tailwind 4, Nitro/Vercel                              | Mesma base técnica e versões próximas                   | A: inclui integração de pagamento no servidor e configuração Vercel explícita.                        |
+| Rotas           | Home, loja, produto, drops, sobre, contato, sitemap, pagamento e webhook                                 | Rotas de loja, produto, drops, sobre, contato e sitemap | A: cobre os fluxos adicionais de pagamento.                                                           |
+| Componentes     | Shell compartilhado, contexto de sacola, cards, animações e componentes Radix                            | Shell, contexto e componentes equivalentes              | Empate: organização e padrões são essencialmente os mesmos.                                           |
+| Design          | Streetwear editorial, preto/off-white, acento laranja e tipografia condensada                            | Mesmo sistema visual e identidade                       | Empate: linguagem visual compartilhada.                                                               |
+| Mobile          | Layout responsivo, navegação adaptável e fotos fluidas                                                   | Base responsiva equivalente                             | A: versão mais recente inclui aprimoramento para movimento/fotos de produto.                          |
+| Animação        | Framer Motion, efeitos de entrada e fotos com animação finita                                            | Framer Motion e efeitos de loja                         | A: mantém animação de foto compartilhada e respeita movimento reduzido.                               |
+| Performance     | Imagens com dimensões e lazy loading em cards/conteúdo abaixo da dobra                                   | Abordagem semelhante                                    | Empate: ambas usam imagens locais e carregamento tardio nos grids.                                    |
+| Acessibilidade  | Semântica e controles acessíveis no shell e nos componentes                                              | Base equivalente                                        | Empate: sem auditoria automatizada disponível nesta etapa.                                            |
+| SEO             | Metadados por página, sitemap e robots                                                                   | Metadados e sitemap                                     | A: rotas indexáveis também incluem produtos e páginas do fluxo de pagamento.                          |
+| Qualidade       | Dados tipados centralizados e novos testes de catálogo; contém integração antiga de telemetria do editor | Dados centralizados, sem as adições mais recentes       | A: catálogo mais completo e cobertura funcional maior; integração de telemetria removida nesta cópia. |
 
 ## Base e elementos aproveitados
 

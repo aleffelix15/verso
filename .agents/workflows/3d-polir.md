@@ -8,4 +8,3 @@ Melhore o realismo do modelo indicado sem aumentar muito o peso.
 2. Sombra de contato suave (`ContactShadows`) e iluminação de 3 pontos.
 3. Teste em 375px de largura e confirme que o canvas não causa scroll horizontal.
 4. Informe o ganho visual e o custo de performance.
-
