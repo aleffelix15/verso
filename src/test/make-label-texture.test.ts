@@ -11,11 +11,11 @@ describe("makeLabelTexture", () => {
       createLinearGradient: vi.fn().mockReturnValue({
         addColorStop: vi.fn(),
       }),
-    } as any);
+    } as unknown as CanvasRenderingContext2D);
 
     const texture = makeLabelTexture({ text: "TEST", color: "#F8F8F8", bgColor: "#0A0A0A" });
     expect(texture).toBeInstanceOf(THREE.CanvasTexture);
-    
+
     // Dispose it
     disposeLabelTexture({ text: "TEST", color: "#F8F8F8", bgColor: "#0A0A0A" });
   });

@@ -77,7 +77,9 @@ function Home() {
           <motion.div variants={fadeUp} className="mb-6">
             <div className="inline-flex items-center gap-2 rounded-full border border-border bg-surface/80 px-4 py-2 backdrop-blur-md">
               <span className="size-2 rounded-full bg-brand animate-pulse"></span>
-              <span className="eyebrow text-foreground !m-0 !tracking-widest">DROP 001 DISPONÍVEL</span>
+              <span className="eyebrow text-foreground !m-0 !tracking-widest">
+                DROP 001 DISPONÍVEL
+              </span>
             </div>
           </motion.div>
           <h1 className="hero-title flex flex-col">
