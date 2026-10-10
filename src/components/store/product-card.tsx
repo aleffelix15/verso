@@ -3,12 +3,15 @@ import { money, type Product } from "@/data/products";
 import { motion, useReducedMotion, AnimatePresence, type PanInfo } from "framer-motion";
 import { useState } from "react";
 import { Heart } from "lucide-react";
+import { useWishlist } from "@/components/store/wishlist-context";
 
 const vibrate = () =>
   typeof navigator !== "undefined" && navigator.vibrate && navigator.vibrate(10);
 
 export function ProductCard({ product }: { product: Product }) {
   const prefersReducedMotion = useReducedMotion();
+  const wishlist = useWishlist();
+  const isFav = wishlist?.isFavorite(product.slug) ?? false;
   const [imgIndex, setImgIndex] = useState(0);
   const [loaded, setLoaded] = useState(false);
   const [showHeart, setShowHeart] = useState(false);
@@ -129,6 +132,24 @@ export function ProductCard({ product }: { product: Product }) {
               {product.badge}
             </motion.span>
           )}
+
+          <button
+            type="button"
+            className="absolute top-3 right-3 z-20 p-2 text-muted-foreground hover:text-foreground transition-colors"
+            onClick={(e) => {
+              e.preventDefault();
+              wishlist?.toggleWishlist(product.slug);
+            }}
+            aria-label={isFav ? "Remover dos favoritos" : "Adicionar aos favoritos"}
+            aria-pressed={isFav}
+          >
+            <Heart
+              size={20}
+              className="transition-colors"
+              fill={isFav ? "var(--brand)" : "none"}
+              stroke={isFav ? "var(--brand)" : "currentColor"}
+            />
+          </button>
 
           <div className="absolute bottom-0 left-0 w-full p-3 translate-y-4 opacity-0 transition-all duration-300 ease-out sm:group-hover:translate-y-0 sm:group-hover:opacity-100 hidden sm:block z-20">
             <div className="bg-background text-foreground text-center py-3 text-xs font-semibold w-full">

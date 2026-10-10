@@ -1,11 +1,26 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useRef, Suspense } from "react";
-import { Minus, Plus, ArrowUpRight, ZoomIn, Ruler, ShoppingBag, Check, Box } from "lucide-react";
+import {
+  Minus,
+  Plus,
+  ArrowUpRight,
+  ZoomIn,
+  Ruler,
+  ShoppingBag,
+  Check,
+  Box,
+  Heart,
+  Truck,
+  RefreshCcw,
+  ShieldCheck,
+} from "lucide-react";
 import { products, pageHead, money, type Product } from "@/data/products";
 import { useCart } from "@/components/store/cart-context";
+import { useWishlist } from "@/components/store/wishlist-context";
 import { ProductCard } from "@/components/store/product-card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { modelsRegistry } from "@/components/three/registry";
 import { ClientOnly } from "@/components/three/client-only";
 import { Scene } from "@/components/three/scene";
@@ -49,6 +64,8 @@ function ProductPage() {
 }
 function ProductDetails({ product: p }: { product: Product }) {
   const cart = useCart();
+  const wishlist = useWishlist();
+  const isFav = wishlist?.isFavorite(p.slug) ?? false;
   const [size, setSize] = useState(p.sizes.length === 1 ? p.sizes[0] : "");
   const [color, setColor] = useState(p.colors[0] ?? "");
   const [quantity, setQuantity] = useState(1);
@@ -97,56 +114,12 @@ function ProductDetails({ product: p }: { product: Product }) {
         </span>
       </div>
       <section className="container-verso product-layout">
-        <div>
-          {image === "3d" && Model ? (
-            <div className="relative w-full overflow-hidden bg-muted flex product-main-photo aspect-[5/6]">
-              <ClientOnly>
-                <Suspense
-                  fallback={
-                    <img
-                      src={p.images[0]}
-                      alt="Carregando 3D"
-                      className="opacity-50 object-cover w-full h-full"
-                    />
-                  }
-                >
-                  <ThreeErrorBoundary fallbackImage={p.images[0] ?? ""}>
-                    <Scene animated={!prefersReducedMotion}>
-                      <Model autoRotate={!prefersReducedMotion} />
-                    </Scene>
-                  </ThreeErrorBoundary>
-                </Suspense>
-              </ClientOnly>
-            </div>
-          ) : (
-            <Button
-              variant="ghost"
-              className="relative h-auto w-full p-0 overflow-hidden"
-              onClick={() => setZoom(true)}
-              aria-label="Ampliar foto do produto"
-            >
-              <AnimatePresence mode="wait">
-                <motion.img
-                  key={image as number}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.3 }}
-                  src={p.images[image as number]}
-                  alt={p.name}
-                  className="product-main-photo object-cover"
-                  width={1008}
-                  height={1200}
-                />
-              </AnimatePresence>
-              <ZoomIn className="absolute bottom-4 right-4" />
-            </Button>
-          )}
-          <div className="mt-3 flex gap-3">
+        <div className="flex flex-col-reverse md:flex-row gap-3 items-start w-full">
+          <div className="flex flex-row md:flex-col gap-3 overflow-x-auto snap-x snap-mandatory w-full md:w-[80px] md:shrink-0 hide-scrollbar pb-2 md:pb-0">
             {p.images.map((img, i) => (
               <Button
                 variant="size"
-                className="h-auto w-16 p-0 relative"
+                className="h-[100px] min-w-[80px] p-0 relative shrink-0 snap-center overflow-hidden rounded-md"
                 key={img}
                 onClick={() => setImage(i)}
                 aria-label={`Foto ${i + 1}`}
@@ -154,29 +127,29 @@ function ProductDetails({ product: p }: { product: Product }) {
                 {i === image && (
                   <motion.div
                     layoutId="imgIndicator"
-                    className="absolute inset-0 border-2 border-primary z-10 pointer-events-none"
+                    className="absolute inset-0 border-2 border-primary z-10 pointer-events-none rounded-md"
                   />
                 )}
                 <img
                   src={img}
                   alt={`Ângulo ${i + 1}`}
-                  width={64}
-                  height={76}
-                  className="h-20 w-16 object-cover"
+                  width={80}
+                  height={100}
+                  className="w-full h-full object-cover opacity-80 hover:opacity-100 transition-opacity"
                 />
               </Button>
             ))}
             {Model && (
               <Button
                 variant="size"
-                className="h-[80px] w-16 p-0 relative flex flex-col items-center justify-center bg-muted/30"
+                className="h-[100px] min-w-[80px] p-0 relative flex flex-col items-center justify-center bg-muted/30 shrink-0 snap-center rounded-md"
                 onClick={() => setImage("3d")}
                 aria-label="Ver em 3D"
               >
                 {image === "3d" && (
                   <motion.div
                     layoutId="imgIndicator"
-                    className="absolute inset-0 border-2 border-primary z-10 pointer-events-none"
+                    className="absolute inset-0 border-2 border-primary z-10 pointer-events-none rounded-md"
                   />
                 )}
                 <Box className="w-5 h-5 text-muted-foreground" />
@@ -186,8 +159,57 @@ function ProductDetails({ product: p }: { product: Product }) {
               </Button>
             )}
           </div>
+          <div className="flex-1 w-full shrink-0 min-w-0">
+            {image === "3d" && Model ? (
+              <div className="relative w-full overflow-hidden bg-muted flex aspect-[4/5] md:aspect-[5/6] rounded-md">
+                <ClientOnly>
+                  <Suspense
+                    fallback={
+                      <img
+                        src={p.images[0]}
+                        alt="Carregando 3D"
+                        className="opacity-50 object-cover w-full h-full"
+                      />
+                    }
+                  >
+                    <ThreeErrorBoundary fallbackImage={p.images[0] ?? ""}>
+                      <Scene animated={!prefersReducedMotion}>
+                        <Model autoRotate={!prefersReducedMotion} />
+                      </Scene>
+                    </ThreeErrorBoundary>
+                  </Suspense>
+                </ClientOnly>
+              </div>
+            ) : (
+              <Button
+                variant="ghost"
+                className="relative h-auto w-full p-0 overflow-hidden bg-muted aspect-[4/5] md:aspect-[5/6] rounded-md"
+                onClick={() => setZoom(true)}
+                aria-label="Ampliar foto do produto"
+              >
+                <AnimatePresence mode="wait">
+                  <motion.img
+                    key={image as number}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    src={p.images[image as number]}
+                    alt={p.name}
+                    className="w-full h-full object-cover"
+                    width={1008}
+                    height={1200}
+                    fetchPriority="high"
+                  />
+                </AnimatePresence>
+                <div className="absolute bottom-4 right-4 bg-background/50 rounded-full p-2 backdrop-blur-md">
+                  <ZoomIn className="size-5" />
+                </div>
+              </Button>
+            )}
+          </div>
         </div>
-        <div className="product-detail">
+        <div className="product-detail md:sticky md:top-24 h-max">
           <p className="eyebrow">DROP 001 / {p.verse}</p>
           <h1>{p.name}</h1>
           <div className="text-xl">{money(p.priceCents)}</div>
@@ -331,39 +353,121 @@ function ProductDetails({ product: p }: { product: Product }) {
                 </Button>
               </motion.div>
             </motion.div>
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-12 w-12 shrink-0 border-border rounded-none"
+              onClick={() => wishlist?.toggleWishlist(p.slug)}
+              aria-pressed={isFav}
+              aria-label={isFav ? "Remover dos favoritos" : "Adicionar aos favoritos"}
+            >
+              <Heart
+                className="transition-colors"
+                fill={isFav ? "var(--brand)" : "none"}
+                stroke={isFav ? "var(--brand)" : "currentColor"}
+              />
+            </Button>
           </div>
-          <p className="mt-4 text-xs text-muted-foreground">
-            Frete grátis acima de R$ 299. Produto demonstrativo.
-          </p>
-          <div className="accordions">
-            {[
-              [
-                "Descrição",
-                "Modelagem ampla e acabamento reforçado. Referência bíblica discreta, no detalhe. Confira as medidas antes de escolher.",
-              ],
-              ["Tecido", p.fabric],
-              [
-                "Cuidados",
-                "Lave do avesso com água fria. Não use alvejante. Seque à sombra. Não passe diretamente sobre etiquetas ou estampas.",
-              ],
-              [
-                "Troca e devolução",
-                "Direito de arrependimento em até 7 dias após o recebimento. Condições adicionais e atendimento serão confirmados na abertura da loja.",
-              ],
-            ].map(([title, text]) => (
-              <details key={title}>
-                <summary>{title}</summary>
-                <p>{text}</p>
-              </details>
-            ))}
-          </div>
-          <div className="product-verse">
-            <p className="eyebrow">O VERSO / [ {p.verse} ]</p>
-            <h2 className="my-4 text-3xl">{p.statement}</h2>
-            <p className="text-muted-foreground">{p.meaning}</p>
+          <div className="mt-6 flex flex-col gap-4">
+            <div className="flex gap-4 p-4 border border-border bg-muted/50 rounded-md">
+              <Truck className="size-5 shrink-0 text-brand" />
+              <div>
+                <span className="block text-sm font-bold">Frete Grátis</span>
+                <span className="text-xs text-muted-foreground">Para compras acima de R$ 299</span>
+              </div>
+            </div>
+            <div className="flex gap-4 p-4 border border-border bg-muted/50 rounded-md">
+              <RefreshCcw className="size-5 shrink-0 text-brand" />
+              <div>
+                <span className="block text-sm font-bold">Primeira troca grátis</span>
+                <span className="text-xs text-muted-foreground">Até 7 dias após o recebimento</span>
+              </div>
+            </div>
           </div>
         </div>
       </section>
+
+      {/* ABAS E O VERSO */}
+      <section className="container-verso section-space pt-0">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
+          <div className="flex flex-col gap-12">
+            <div className="product-verse p-8 bg-muted rounded-md border border-border">
+              <p className="eyebrow">O VERSO / [ {p.verse} ]</p>
+              <h2 className="my-4 text-3xl font-display uppercase italic">{p.statement}</h2>
+              <p className="text-muted-foreground">{p.meaning}</p>
+            </div>
+
+            <Tabs defaultValue="detalhes" className="w-full">
+              <TabsList className="w-full justify-start border-b border-border rounded-none h-auto p-0 bg-transparent mb-6 flex-wrap">
+                <TabsTrigger
+                  value="detalhes"
+                  className="rounded-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-transparent px-4 py-2"
+                >
+                  Detalhes
+                </TabsTrigger>
+                <TabsTrigger
+                  value="tecido"
+                  className="rounded-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-transparent px-4 py-2"
+                >
+                  Tecido
+                </TabsTrigger>
+                <TabsTrigger
+                  value="medidas"
+                  className="rounded-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-transparent px-4 py-2"
+                >
+                  Medidas
+                </TabsTrigger>
+                <TabsTrigger
+                  value="envio"
+                  className="rounded-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-transparent px-4 py-2"
+                >
+                  Envio
+                </TabsTrigger>
+              </TabsList>
+              <TabsContent
+                value="detalhes"
+                className="text-sm text-muted-foreground leading-relaxed mt-4"
+              >
+                Modelagem ampla e acabamento reforçado. Referência bíblica discreta, no detalhe.
+                Confira as medidas antes de escolher. Nossas peças são feitas com foco no conforto e
+                na durabilidade.
+              </TabsContent>
+              <TabsContent
+                value="tecido"
+                className="text-sm text-muted-foreground leading-relaxed mt-4"
+              >
+                {p.fabric} Lave do avesso com água fria. Não use alvejante. Seque à sombra. Não
+                passe diretamente sobre etiquetas ou estampas.
+              </TabsContent>
+              <TabsContent
+                value="medidas"
+                className="text-sm text-muted-foreground leading-relaxed mt-4"
+              >
+                As medidas podem variar até 2cm. Recomendamos medir uma peça sua que veste bem e
+                comparar com o nosso guia. Na dúvida entre dois tamanhos, escolha o maior para um
+                caimento mais solto (oversized).
+              </TabsContent>
+              <TabsContent
+                value="envio"
+                className="text-sm text-muted-foreground leading-relaxed mt-4"
+              >
+                Direito de arrependimento em até 7 dias após o recebimento. A primeira troca é por
+                nossa conta. Processamos seu pedido em até 2 dias úteis.
+              </TabsContent>
+            </Tabs>
+          </div>
+
+          <div className="hidden md:block h-full min-h-[500px] w-full rounded-md overflow-hidden bg-muted">
+            <img
+              src={p.images[p.images.length - 1]}
+              alt={`Detalhe macro de ${p.name}`}
+              loading="lazy"
+              className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700"
+            />
+          </div>
+        </div>
+      </section>
+
       <section className="container-verso section-space border-t border-border">
         <div className="section-heading">
           <h2 className="section-title">NO MESMO PROPÓSITO.</h2>
@@ -440,49 +544,66 @@ function ProductDetails({ product: p }: { product: Product }) {
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
             className="fixed bottom-0 left-0 w-full z-50 p-4 pb-safe bg-background/90 backdrop-blur-md border-t border-border sm:hidden"
           >
-            <motion.div whileTap={{ scale: prefersReducedMotion ? 1 : 0.97 }}>
+            <div className="flex gap-2">
+              <motion.div whileTap={{ scale: prefersReducedMotion ? 1 : 0.97 }} className="flex-1">
+                <Button
+                  variant="brand"
+                  className="h-12 min-w-0 w-full px-3 text-xs overflow-hidden relative"
+                  onClick={() => {
+                    if (!size || !color) {
+                      setError("Escolha o tamanho e a cor antes de continuar.");
+                      window.scrollTo({ top: 0, behavior: "smooth" });
+                      return;
+                    }
+                    if (typeof navigator !== "undefined" && navigator.vibrate)
+                      navigator.vibrate(10);
+                    cart.add(p, size, color, quantity);
+                    setAdded(true);
+                    setTimeout(() => setAdded(false), 2000);
+                  }}
+                >
+                  <AnimatePresence mode="wait">
+                    {added ? (
+                      <motion.div
+                        key="added"
+                        initial={{ y: 20, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        exit={{ y: -20, opacity: 0 }}
+                        transition={{ duration: 0.2, ease: "easeOut" }}
+                        className="flex items-center gap-2"
+                      >
+                        <Check size={16} /> Adicionado
+                      </motion.div>
+                    ) : (
+                      <motion.div
+                        key="add"
+                        initial={{ y: 20, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        exit={{ y: -20, opacity: 0 }}
+                        transition={{ duration: 0.2, ease: "easeOut" }}
+                        className="flex items-center gap-2"
+                      >
+                        <ShoppingBag size={16} /> Adicionar
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </Button>
+              </motion.div>
               <Button
-                variant="brand"
-                className="h-12 min-w-0 w-full px-3 text-xs overflow-hidden relative"
-                onClick={() => {
-                  if (!size || !color) {
-                    setError("Escolhe o tamanho e a cor antes de continuar.");
-                    window.scrollTo({ top: 0, behavior: "smooth" });
-                    return;
-                  }
-                  if (typeof navigator !== "undefined" && navigator.vibrate) navigator.vibrate(10);
-                  cart.add(p, size, color, quantity);
-                  setAdded(true);
-                  setTimeout(() => setAdded(false), 2000);
-                }}
+                variant="outline"
+                size="icon"
+                className="h-12 w-12 shrink-0 border-border rounded-none bg-background"
+                onClick={() => wishlist?.toggleWishlist(p.slug)}
+                aria-pressed={isFav}
+                aria-label={isFav ? "Remover dos favoritos" : "Adicionar aos favoritos"}
               >
-                <AnimatePresence mode="wait">
-                  {added ? (
-                    <motion.div
-                      key="added"
-                      initial={{ y: 20, opacity: 0 }}
-                      animate={{ y: 0, opacity: 1 }}
-                      exit={{ y: -20, opacity: 0 }}
-                      transition={{ duration: 0.2, ease: "easeOut" }}
-                      className="flex items-center gap-2"
-                    >
-                      <Check size={16} /> Adicionado
-                    </motion.div>
-                  ) : (
-                    <motion.div
-                      key="add"
-                      initial={{ y: 20, opacity: 0 }}
-                      animate={{ y: 0, opacity: 1 }}
-                      exit={{ y: -20, opacity: 0 }}
-                      transition={{ duration: 0.2, ease: "easeOut" }}
-                      className="flex items-center gap-2"
-                    >
-                      <ShoppingBag size={16} /> Adicionar
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                <Heart
+                  className="transition-colors"
+                  fill={isFav ? "var(--brand)" : "none"}
+                  stroke={isFav ? "var(--brand)" : "currentColor"}
+                />
               </Button>
-            </motion.div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
