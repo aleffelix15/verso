@@ -12,8 +12,8 @@ const buttonVariants = cva(
         brand:
           "bg-primary text-primary-foreground hover:bg-primary/90 uppercase text-[10px] tracking-[1px]",
         ink: "bg-ink text-paper hover:bg-ink/90",
-        header: "bg-transparent text-paper hover:bg-paper/10",
-        size: "border border-border bg-transparent hover:border-ink data-[selected=true]:bg-ink data-[selected=true]:text-paper",
+        header: "bg-transparent text-foreground hover:bg-muted/30",
+        size: "border border-border bg-transparent hover:border-muted-foreground data-[selected=true]:bg-primary data-[selected=true]:text-primary-foreground data-[selected=true]:border-primary",
         default: "bg-primary text-primary-foreground shadow hover:bg-primary/90",
         destructive: "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
         outline:

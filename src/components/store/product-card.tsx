@@ -48,7 +48,7 @@ export function ProductCard({ product }: { product: Product }) {
         className="block relative"
       >
         <div
-          className="product-photo relative overflow-hidden bg-muted touch-pan-y"
+          className="product-photo relative overflow-hidden bg-muted touch-pan-y border border-border transition-colors duration-300 group-hover:border-primary"
           onDoubleClick={handleDoubleTap}
         >
           <motion.div
@@ -101,7 +101,7 @@ export function ProductCard({ product }: { product: Product }) {
                 animate={{ opacity: 1, scale: 1.5, y: -20 }}
                 exit={{ opacity: 0, scale: 1.2 }}
                 transition={{ duration: 0.4, ease: "easeOut" }}
-                className="absolute inset-0 m-auto flex items-center justify-center text-red-500 z-30 drop-shadow-md pointer-events-none"
+                className="absolute inset-0 m-auto flex items-center justify-center text-brand z-30 drop-shadow-md pointer-events-none"
               >
                 <Heart size={48} fill="currentColor" />
                 {!prefersReducedMotion &&
@@ -116,7 +116,7 @@ export function ProductCard({ product }: { product: Product }) {
                         scale: 0,
                       }}
                       transition={{ duration: 0.6, ease: "easeOut" }}
-                      className="absolute bg-red-500 rounded-full w-2 h-2"
+                      className="absolute bg-brand rounded-full w-2 h-2"
                     />
                   ))}
               </motion.div>

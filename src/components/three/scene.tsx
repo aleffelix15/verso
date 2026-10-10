@@ -88,10 +88,10 @@ export function Scene({ children, animated = false, controlsRef }: SceneProps) {
           }}
         >
           <ambientLight intensity={0.4} />
-          <hemisphereLight args={["#ffffff", "#444444", 0.6]} />
+          <hemisphereLight args={["#F8F8F8", "#444444", 0.6]} />
           <directionalLight position={[5, 5, 5]} intensity={0.8} />
-          <directionalLight position={[-5, 5, 5]} intensity={0.3} color="#ffffff" />
-          <directionalLight position={[0, 5, -5]} intensity={0.5} color="#ffffff" />
+          <directionalLight position={[-5, 5, 5]} intensity={0.3} color="#F8F8F8" />
+          <directionalLight position={[0, 2, -5]} intensity={2} color="#ffffff" />
 
           <Suspense fallback={null}>
             {children}
@@ -102,7 +102,7 @@ export function Scene({ children, animated = false, controlsRef }: SceneProps) {
               blur={2}
               far={2}
               resolution={256}
-              color="#000000"
+              color="#0A0A0A"
             />
           </Suspense>
 

@@ -67,6 +67,7 @@ function Home() {
           height={1120}
           fetchPriority="high"
         />
+        <div className="absolute inset-0 bg-black/60 z-0 pointer-events-none"></div>
         <motion.div
           className="hero-content container-verso"
           initial="initial"
@@ -74,9 +75,9 @@ function Home() {
           variants={stagger}
         >
           <motion.div variants={fadeUp} className="mb-6">
-            <div className="inline-flex items-center gap-2 rounded-full border border-paper/30 bg-ink/40 px-4 py-2 backdrop-blur-md">
+            <div className="inline-flex items-center gap-2 rounded-full border border-border bg-surface/80 px-4 py-2 backdrop-blur-md">
               <span className="size-2 rounded-full bg-brand animate-pulse"></span>
-              <span className="eyebrow !text-paper !m-0 !tracking-widest">DROP 001 DISPONÍVEL</span>
+              <span className="eyebrow text-foreground !m-0 !tracking-widest">DROP 001 DISPONÍVEL</span>
             </div>
           </motion.div>
           <h1 className="hero-title flex flex-col">
@@ -100,14 +101,14 @@ function Home() {
             </motion.p>
 
             <motion.div variants={fadeUp} className="flex items-center gap-3">
-              <span className="eyebrow text-paper/70 mr-2 hidden sm:block">NOVO DROP</span>
+              <span className="eyebrow text-chalk mr-2 hidden sm:block">NOVO DROP</span>
               <div className="flex gap-2">
                 {products.slice(0, 3).map((p) => (
                   <Link
                     key={p.slug}
                     to="/produto/$slug"
                     params={{ slug: p.slug }}
-                    className="block overflow-hidden rounded-md border border-paper/20 hover:border-brand transition-colors bg-ink"
+                    className="block overflow-hidden rounded-md border border-paper/20 hover:border-brand transition-colors bg-surface"
                   >
                     <img
                       src={p.images[0]}
@@ -159,7 +160,7 @@ function Home() {
               <Link
                 key={col.title}
                 to="/loja"
-                className="group relative aspect-[4/5] md:aspect-[3/4] overflow-hidden rounded-md bg-ink"
+                className="group relative aspect-[4/5] md:aspect-[3/4] overflow-hidden rounded-md bg-surface"
               >
                 <img
                   src={col.img}
@@ -168,7 +169,7 @@ function Home() {
                   className="w-full h-full object-cover transition-all duration-500 grayscale group-hover:grayscale-0 group-hover:scale-105 opacity-80 group-hover:opacity-100"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-6 md:p-8">
-                  <h3 className="text-2xl md:text-3xl font-display text-white tracking-widest">
+                  <h3 className="text-2xl md:text-3xl font-display text-ink tracking-widest">
                     {col.title}
                   </h3>
                 </div>
@@ -248,7 +249,7 @@ function Home() {
           <div className="hidden lg:block absolute right-0 top-1/2 -translate-y-1/2 w-[450px] h-[550px] pointer-events-none">
             <motion.div
               style={{ y: dropY1 }}
-              className="absolute top-0 right-[50px] w-[280px] h-[360px] rounded-lg overflow-hidden border border-paper/10 shadow-2xl z-20 bg-ink"
+              className="absolute top-0 right-[50px] w-[280px] h-[360px] rounded-lg overflow-hidden border border-paper/10 shadow-2xl z-20 bg-surface"
             >
               <img
                 src={products[0].images[0]}
@@ -258,7 +259,7 @@ function Home() {
             </motion.div>
             <motion.div
               style={{ y: dropY2 }}
-              className="absolute bottom-[20px] left-0 w-[240px] h-[310px] rounded-lg overflow-hidden border border-paper/10 shadow-2xl z-10 bg-ink"
+              className="absolute bottom-[20px] left-0 w-[240px] h-[310px] rounded-lg overflow-hidden border border-paper/10 shadow-2xl z-10 bg-surface"
             >
               <img
                 src={products[2].images[0]}
@@ -433,6 +434,7 @@ function CommunityItem({
             objectPosition: i === 0 ? "75% center" : i === 1 ? "left center" : "right center",
           }}
         />
+        <div className="absolute inset-0 bg-black/60 z-0 pointer-events-none"></div>
       </div>
       <div className="quote">
         <p>{quote}</p>
