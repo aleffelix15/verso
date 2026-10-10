@@ -24,7 +24,9 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       }
       // Resolved theme has already been set by inline script in head, so we read it
       setResolvedTheme(document.documentElement.classList.contains("dark") ? "dark" : "light");
-    } catch (e) {}
+    } catch {
+      // Theme storage may be unavailable in restricted browser contexts.
+    }
   }, []);
 
   const setPreference = (newPref: ThemePreference) => {
@@ -35,10 +37,14 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       } else {
         localStorage.setItem("verso-theme", newPref);
       }
-    } catch (e) {}
+    } catch {
+      // Theme storage may be unavailable in restricted browser contexts.
+    }
 
-    const isDark = newPref === "dark" || (newPref === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
-    
+    const isDark =
+      newPref === "dark" ||
+      (newPref === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+
     document.documentElement.classList.toggle("dark", isDark);
     document.documentElement.style.colorScheme = isDark ? "dark" : "light";
     setResolvedTheme(isDark ? "dark" : "light");
@@ -60,7 +66,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       document.documentElement.classList.toggle("dark", isDark);
       document.documentElement.style.colorScheme = isDark ? "dark" : "light";
       setResolvedTheme(isDark ? "dark" : "light");
-      
+
       const metaThemeColor = document.querySelector('meta[name="theme-color"]:not([media])');
       if (metaThemeColor) {
         metaThemeColor.setAttribute("content", isDark ? "#0a0a0a" : "#f8f8f8");
@@ -89,14 +95,10 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   const value = useMemo(
     () => ({ preference, resolvedTheme, setPreference }),
-    [preference, resolvedTheme]
+    [preference, resolvedTheme],
   );
 
-  return (
-    <ThemeContext.Provider value={value}>
-      {children}
-    </ThemeContext.Provider>
-  );
+  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 }
 
 export const useTheme = () => {
