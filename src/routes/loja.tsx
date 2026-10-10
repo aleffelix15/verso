@@ -27,10 +27,10 @@ function Shop() {
       (!categories.length || categories.includes(p.category)) &&
       (!size || p.sizes.includes(size)) &&
       (!color || p.colors.includes(color)) &&
-      p.price <= max,
+      p.priceCents <= max * 100,
   );
-  if (sort === "low") filtered = [...filtered].sort((a, b) => a.price - b.price);
-  if (sort === "high") filtered = [...filtered].sort((a, b) => b.price - a.price);
+  if (sort === "low") filtered = [...filtered].sort((a, b) => a.priceCents - b.priceCents);
+  if (sort === "high") filtered = [...filtered].sort((a, b) => b.priceCents - a.priceCents);
   if (sort === "name") filtered = [...filtered].sort((a, b) => a.name.localeCompare(b.name));
   const active = categories.length + (size ? 1 : 0) + (color ? 1 : 0) + (max < 350 ? 1 : 0);
   function clear() {
@@ -93,7 +93,7 @@ function Shop() {
         </div>
       </div>
       <div className="filter-group">
-        <h3>PREÇO ATÉ {money(max)}</h3>
+        <h3>PREÇO ATÉ {money(max * 100)}</h3>
         <input
           className="w-full accent-ink"
           type="range"

@@ -43,7 +43,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         add,
         update,
         remove: (index) => setItems((prev) => prev.filter((_, i) => i !== index)),
-        subtotal: items.reduce((sum, item) => sum + item.product.price * item.quantity, 0),
+        subtotal: items.reduce((sum, item) => sum + item.product.priceCents * item.quantity, 0),
         count: items.reduce((sum, item) => sum + item.quantity, 0),
       }}
     >

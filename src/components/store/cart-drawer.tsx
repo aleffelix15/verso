@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Link } from "@tanstack/react-router";
 import {
   ShoppingBag,
@@ -14,33 +14,33 @@ import { Sheet, SheetContent, SheetTitle, SheetDescription } from "@/components/
 import { useCart } from "./cart-context";
 import { money } from "@/data/products";
 import { calculateFreight } from "@/server/shipping";
+import type { FreightOption } from "@/server/freight-calculator";
 import { createPaymentPreference } from "@/server/checkout";
+import { lookupCep } from "@/lib/viacep";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 
-const checkoutSchema = z.object({
-  name: z.string().min(2, "Nome incompleto"),
-  email: z.string().email("E-mail inválido"),
-  phone: z.string().min(10, "DDD + Número"),
-  zipCode: z.string().min(8, "CEP inválido"),
-  street: z.string().min(2, "Rua obrigatória"),
-  number: z.string().min(1, "Obrigatório"),
-  neighborhood: z.string().min(2, "Bairro obrigatório"),
-  city: z.string().min(2, "Cidade obrigatória"),
-  state: z.string().length(2, "UF inválida (ex: SP)"),
-});
+const checkoutSchema = z
+  .object({
+    name: z.string().min(2, "Nome incompleto"),
+    email: z.string().email("E-mail inválido"),
+    phone: z.string().min(10, "DDD + Número"),
+    zipCode: z.string().regex(/^\d{5}-?\d{3}$/, "CEP inválido"),
+    street: z.string().min(2, "Rua obrigatória"),
+    number: z.string().min(1, "Obrigatório"),
+    neighborhood: z.string().min(2, "Bairro obrigatório"),
+    city: z.string().min(2, "Cidade obrigatória"),
+    state: z.string().length(2, "UF inválida (ex: SP)"),
+  })
+  .strict();
 
 type CheckoutForm = z.infer<typeof checkoutSchema>;
 
 export function CartDrawer() {
   const cart = useCart();
-  const [shippingOptions, setShippingOptions] = useState<
-    { name: string; price: number; estimated_days: number }[] | null
-  >(null);
-  const [selectedShipping, setSelectedShipping] = useState<{ name: string; price: number } | null>(
-    null,
-  );
+  const [shippingOptions, setShippingOptions] = useState<FreightOption[] | null>(null);
+  const [selectedShipping, setSelectedShipping] = useState<FreightOption | null>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -55,44 +55,65 @@ export function CartDrawer() {
   });
 
   const zipCode = watch("zipCode");
+  const lastRequest = useRef("");
+  const cartLineKey = cart.items.map((item) => `${item.product.slug}:${item.quantity}`).join(",");
+
+  const calculateShipping = useCallback(
+    async (cep: string) => {
+      setLoading(true);
+      try {
+        const res = await calculateFreight({
+          data: {
+            cep,
+            items: cart.items.map((item) => ({ slug: item.product.slug, quantity: item.quantity })),
+          },
+        });
+        if (res.success && res.options) {
+          const defaultShipping = res.options.find((option) => option.id === "pac");
+          if (!defaultShipping) throw new Error("Freight option unavailable");
+          setShippingOptions(res.options);
+          setSelectedShipping(defaultShipping);
+          setError("");
+        }
+      } catch {
+        setError("Não foi possível calcular o frete.");
+      } finally {
+        setLoading(false);
+      }
+    },
+    [cart.items],
+  );
 
   useEffect(() => {
     const cleanZip = zipCode?.replace(/\D/g, "");
-    if (cleanZip?.length === 8 && !loading && !shippingOptions) {
-      calculateShipping(cleanZip);
-      fetch(`https://viacep.com.br/ws/${cleanZip}/json/`)
-        .then((res) => res.json())
-        .then((data) => {
-          if (!data.erro) {
-            setValue("street", data.logradouro);
-            setValue("neighborhood", data.bairro);
-            setValue("city", data.localidade);
-            setValue("state", data.uf);
-          }
-        })
-        .catch(() => {});
-    }
-  }, [zipCode]);
-
-  async function calculateShipping(cep: string) {
-    setLoading(true);
-    try {
-      const weight = cart.items.length * 0.4;
-      const res = await calculateFreight({
-        data: { zip_code: cep, total_weight_kg: weight, total_value: cart.subtotal },
+    if (!cleanZip || cleanZip.length !== 8) return;
+    const requestKey = `${cleanZip}-${cartLineKey}`;
+    if (lastRequest.current === requestKey) return;
+    lastRequest.current = requestKey;
+    void calculateShipping(cleanZip);
+    let active = true;
+    void lookupCep(cleanZip)
+      .then((address) => {
+        if (!active || !address) return;
+        setValue("street", address.logradouro);
+        setValue("neighborhood", address.bairro);
+        setValue("city", address.localidade);
+        setValue("state", address.uf);
+      })
+      .catch(() => {
+        if (active) setError("Não foi possível consultar o CEP. Preencha o endereço manualmente.");
       });
-      if (res.success && res.options) {
-        setShippingOptions(res.options);
-        setSelectedShipping(res.options[0]);
-        setError("");
-      }
-    } catch (e) {
-      setError("Não foi possível calcular o frete.");
-    }
-    setLoading(false);
-  }
+    return () => {
+      active = false;
+      if (lastRequest.current === requestKey) lastRequest.current = "";
+    };
+  }, [zipCode, cartLineKey, calculateShipping, setValue]);
 
   const onSubmit = async (data: CheckoutForm) => {
+    if (!selectedShipping) {
+      setError("Selecione uma opção de frete.");
+      return;
+    }
     setLoading(true);
     setError("");
     try {
@@ -107,7 +128,10 @@ export function CartDrawer() {
           name: data.name,
           surname: "",
           email: data.email,
-          phone: { area_code: data.phone.substring(0, 2), number: data.phone.substring(2) },
+          phone: (() => {
+            const cleanPhone = data.phone.replace(/\D/g, "");
+            return { area_code: cleanPhone.slice(0, 2), number: cleanPhone.slice(2) };
+          })(),
           address: {
             zip_code: data.zipCode.replace(/\D/g, ""),
             street_name: data.street,
@@ -115,16 +139,14 @@ export function CartDrawer() {
           },
         },
         shipping_cep: data.zipCode.replace(/\D/g, ""),
-        shipping_method: selectedShipping?.name.toLowerCase().includes("sedex")
-          ? "sedex"
-          : ("pac" as "pac" | "sedex"),
+        shipping_method: selectedShipping.id,
       };
 
       const res = await createPaymentPreference({ data: payload });
       if (res.success && res.init_point) {
         window.location.href = res.init_point;
       } else {
-        setError(res.error || "Erro ao gerar o pagamento no servidor.");
+        setError(res.success ? "O provedor não retornou um link de pagamento." : res.error);
       }
     } catch (e) {
       setError("Erro de conexão ao gerar o pagamento seguro.");
@@ -201,7 +223,9 @@ export function CartDrawer() {
                         <Plus />
                       </Button>
                     </div>
-                    <span className="text-xs">{money(item.product.price * item.quantity)}</span>
+                    <span className="text-xs">
+                      {money(item.product.priceCents * item.quantity)}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -342,11 +366,11 @@ export function CartDrawer() {
                         <div>
                           <p className="font-semibold">{opt.name}</p>
                           <p className="text-xs text-muted-foreground">
-                            {opt.estimated_days} dias úteis
+                            {opt.estimatedDays} dias úteis
                           </p>
                         </div>
                       </div>
-                      <span>{opt.price === 0 ? "Grátis" : money(opt.price)}</span>
+                      <span>{opt.priceCents === 0 ? "Grátis" : money(opt.priceCents)}</span>
                     </label>
                   ))}
                 </div>
@@ -360,7 +384,7 @@ export function CartDrawer() {
 
               <div className="mt-3 flex justify-between font-semibold pt-3 border-t border-border">
                 <span>Total Estimado</span>
-                <span>{money(cart.subtotal + (selectedShipping?.price || 0))}</span>
+                <span>{money(cart.subtotal + (selectedShipping?.priceCents || 0))}</span>
               </div>
 
               <Button

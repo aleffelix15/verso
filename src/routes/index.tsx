@@ -51,19 +51,25 @@ function Home() {
           height={1120}
           fetchPriority="high"
         />
-        <motion.div 
+        <motion.div
           className="hero-content container-verso"
           initial="initial"
           animate="animate"
           variants={stagger}
         >
-          <motion.p variants={fadeUp} className="eyebrow">VERSO® &nbsp; / &nbsp; DROP 001 — ESSENCIAL</motion.p>
+          <motion.p variants={fadeUp} className="eyebrow">
+            VERSO® &nbsp; / &nbsp; DROP 001 — ESSENCIAL
+          </motion.p>
           <h1 className="hero-title flex flex-col">
             <span className="overflow-hidden">
-              <motion.span variants={fadeUp} className="block">FÉ QUE</motion.span>
+              <motion.span variants={fadeUp} className="block">
+                FÉ QUE
+              </motion.span>
             </span>
             <span className="overflow-hidden">
-              <motion.span variants={fadeUp} className="block">VESTE.</motion.span>
+              <motion.span variants={fadeUp} className="block">
+                VESTE.
+              </motion.span>
             </span>
           </h1>
           <motion.p variants={fadeUp} className="hero-sub">
@@ -79,12 +85,7 @@ function Home() {
             </Button>
           </motion.div>
         </motion.div>
-        <motion.div 
-          className="hero-bottom"
-          initial="initial"
-          animate="animate"
-          variants={stagger}
-        >
+        <motion.div className="hero-bottom" initial="initial" animate="animate" variants={stagger}>
           <motion.p variants={fadeUp} className="eyebrow flex items-center gap-3">
             MENOS RUÍDO. MAIS ESSÊNCIA. <ArrowDown size={13} />
           </motion.p>
@@ -182,13 +183,18 @@ function Home() {
             <span className="eyebrow hidden sm:block">FÉ NOS DETALHES.</span>
           </div>
           <div className="relative">
-            <div ref={carouselRef} className="verse-grid flex md:grid overflow-x-auto snap-x snap-mandatory pb-4 hide-scrollbar">
+            <div
+              ref={carouselRef}
+              className="verse-grid flex md:grid overflow-x-auto snap-x snap-mandatory pb-4 hide-scrollbar"
+            >
               {[products[0], products[1], products[5]].map(
                 (p) =>
                   p && (
                     <motion.div
                       key={p.slug}
-                      initial={prefersReducedMotion ? { opacity: 1 } : { scale: 0.92, opacity: 0.5 }}
+                      initial={
+                        prefersReducedMotion ? { opacity: 1 } : { scale: 0.92, opacity: 0.5 }
+                      }
                       whileInView={{ scale: 1, opacity: 1 }}
                       viewport={{ root: carouselRef, amount: 0.6 }}
                       transition={{ duration: 0.3 }}
@@ -212,7 +218,10 @@ function Home() {
               )}
             </div>
             <div className="h-1 bg-border/50 w-full max-w-[100px] mt-6 rounded-full overflow-hidden sm:hidden hidden">
-              <motion.div className="h-full bg-primary" style={{ scaleX: scrollXProgress, transformOrigin: "left" }} />
+              <motion.div
+                className="h-full bg-primary"
+                style={{ scaleX: scrollXProgress, transformOrigin: "left" }}
+              />
             </div>
           </div>
         </section>
@@ -246,7 +255,13 @@ function Home() {
                 community,
               ],
             ].map(([quote, name, img], i) => (
-              <CommunityItem key={name} quote={quote as string} name={name as string} img={img as string} i={i} />
+              <CommunityItem
+                key={name}
+                quote={quote as string}
+                name={name as string}
+                img={img as string}
+                i={i}
+              />
             ))}
           </div>
           <p className="mt-4 text-xs text-muted-foreground">
@@ -283,14 +298,28 @@ function Home() {
   );
 }
 
-function CommunityItem({ quote, name, img, i }: { quote: string; name: string; img: string; i: number }) {
+function CommunityItem({
+  quote,
+  name,
+  img,
+  i,
+}: {
+  quote: string;
+  name: string;
+  img: string;
+  i: number;
+}) {
   const ref = useRef<HTMLDivElement>(null);
   const prefersReducedMotion = useReducedMotion();
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start end", "end start"],
   });
-  const y = useTransform(scrollYProgress, [0, 1], [prefersReducedMotion ? 0 : -30, prefersReducedMotion ? 0 : 30]);
+  const y = useTransform(
+    scrollYProgress,
+    [0, 1],
+    [prefersReducedMotion ? 0 : -30, prefersReducedMotion ? 0 : 30],
+  );
 
   return (
     <div ref={ref} className="group flex flex-col gap-3">

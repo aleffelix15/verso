@@ -1,4 +1,4 @@
-import { useState, useEffect, type ReactNode } from "react";
+import { useState, useEffect, useRef, useCallback, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { ThemeToggle } from "../theme/theme-toggle";
 import {
@@ -20,10 +20,18 @@ import { Sheet, SheetContent, SheetTitle, SheetDescription } from "@/components/
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useCart } from "./cart-context";
 import { products, money, storeConfig } from "@/data/products";
-import { motion, useScroll, useMotionValueEvent, useReducedMotion, AnimatePresence } from "framer-motion";
+import {
+  motion,
+  useScroll,
+  useMotionValueEvent,
+  useReducedMotion,
+  AnimatePresence,
+} from "framer-motion";
 import Lenis from "lenis";
 import { calculateFreight } from "@/server/shipping";
+import type { FreightOption } from "@/server/freight-calculator";
 import { createPaymentPreference } from "@/server/checkout";
+import { lookupCep } from "@/lib/viacep";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -40,7 +48,6 @@ const checkoutFormSchema = z.object({
   city: z.string().min(2, "Cidade inválida"),
   state: z.string().length(2, "UF inválida"),
 });
-
 
 export function StoreShell({ children }: { children: ReactNode }) {
   const [menu, setMenu] = useState(false);
@@ -119,12 +126,15 @@ export function StoreShell({ children }: { children: ReactNode }) {
           </motion.div>
         )}
       </AnimatePresence>
-      
+
       <div
         className="marquee"
         aria-label="Frete grátis acima de R$ 299, Drop 01 disponível, parcele em 3x"
       >
-        <div className="marquee-track" style={prefersReducedMotion ? { animationPlayState: "paused" } : {}}>
+        <div
+          className="marquee-track"
+          style={prefersReducedMotion ? { animationPlayState: "paused" } : {}}
+        >
           {Array.from({ length: 6 }, (_, i) => (
             <span key={i}>
               FRETE GRÁTIS ACIMA DE R$ 299 <span className="text-primary">•</span> DROP 01
@@ -173,7 +183,7 @@ export function StoreShell({ children }: { children: ReactNode }) {
             <ShoppingBag size={19} />
             <AnimatePresence>
               {cart.count > 0 && (
-                <motion.span 
+                <motion.span
                   key={cart.count}
                   initial={{ scale: 0 }}
                   animate={{ scale: [1, 1.4, 1] }}
@@ -217,13 +227,7 @@ export function StoreShell({ children }: { children: ReactNode }) {
             </div>
             <div className="footer-links">
               <p className="footer-heading">INFORMAÇÕES</p>
-              <Button
-                variant="header"
-                className="h-auto justify-start p-0 text-[11px]"
-                onClick={() => setPolicy("Trocas e devoluções")}
-              >
-                Trocas e devoluções
-              </Button>
+              <Link to="/trocas">Trocas e devoluções</Link>
               <Button
                 variant="header"
                 className="h-auto justify-start p-0 text-[11px]"
@@ -231,13 +235,8 @@ export function StoreShell({ children }: { children: ReactNode }) {
               >
                 Entrega e frete
               </Button>
-              <Button
-                variant="header"
-                className="h-auto justify-start p-0 text-[11px]"
-                onClick={() => setPolicy("Privacidade")}
-              >
-                Privacidade
-              </Button>
+              <Link to="/privacidade">Privacidade</Link>
+              <Link to="/termos">Termos de uso</Link>
             </div>
             <div className="footer-links">
               <p className="footer-heading">CONECTE-SE</p>
@@ -355,7 +354,7 @@ export function StoreShell({ children }: { children: ReactNode }) {
                   className="h-16 w-14 object-cover"
                 />
                 <span className="text-xs">{p.name}</span>
-                <span className="text-xs">{money(p.price)}</span>
+                <span className="text-xs">{money(p.priceCents)}</span>
               </Link>
             ))}
             {results.length === 0 && (
@@ -383,15 +382,11 @@ export function StoreShell({ children }: { children: ReactNode }) {
 }
 function CartDrawer() {
   const cart = useCart();
-  const [shippingOptions, setShippingOptions] = useState<
-    { name: string; price: number; estimated_days: number }[] | null
-  >(null);
-  const [selectedShipping, setSelectedShipping] = useState<{ name: string; price: number } | null>(
-    null,
-  );
+  const [shippingOptions, setShippingOptions] = useState<FreightOption[] | null>(null);
+  const [selectedShipping, setSelectedShipping] = useState<FreightOption | null>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [lastCep, setLastCep] = useState("");
+  const lastCep = useRef("");
 
   const {
     register,
@@ -405,58 +400,73 @@ function CartDrawer() {
 
   const cepValue = watch("zip_code");
 
-  async function calculate(cleanCep: string) {
-    if (!/^\d{8}$/.test(cleanCep)) {
-      setError("Digite um CEP válido com 8 números.");
-      setShippingOptions(null);
-      setSelectedShipping(null);
-      return;
-    }
-    setError("");
-    setLoading(true);
-    try {
-      const res = await calculateFreight({
-        data: {
-          zip_code: cleanCep,
-          total_weight_kg: cart.items.reduce((acc, item) => acc + 0.4 * item.quantity, 0),
-          total_value: cart.subtotal,
-        },
-      });
-      if (res.success && res.options) {
-        setShippingOptions(res.options);
-        setSelectedShipping(res.options[0]);
+  const calculate = useCallback(
+    async (cleanCep: string) => {
+      if (!/^\d{8}$/.test(cleanCep)) {
+        setError("Digite um CEP válido com 8 números.");
+        setShippingOptions(null);
+        setSelectedShipping(null);
+        return;
       }
-    } catch (e) {
-      setError("Não foi possível calcular o frete.");
-    }
-    setLoading(false);
-  }
+      setError("");
+      setLoading(true);
+      try {
+        const res = await calculateFreight({
+          data: {
+            cep: cleanCep,
+            items: cart.items.map((item) => ({
+              slug: item.product.slug,
+              quantity: item.quantity,
+            })),
+          },
+        });
+        if (res.success && res.options) {
+          const defaultShipping = res.options.find((option) => option.id === "pac");
+          if (!defaultShipping) throw new Error("Freight option unavailable");
+          setShippingOptions(res.options);
+          setSelectedShipping(defaultShipping);
+        }
+      } catch {
+        setError("Não foi possível calcular o frete.");
+      } finally {
+        setLoading(false);
+      }
+    },
+    [cart.items],
+  );
+
+  const cartLineKey = cart.items.map((item) => `${item.product.slug}:${item.quantity}`).join(",");
 
   useEffect(() => {
-    if (cepValue) {
-      const clean = cepValue.replace(/\D/g, "");
-      if (clean.length === 8) {
-        const hash = `${clean}-${cart.subtotal}`;
-        if (lastCep !== hash && !loading) {
-          setLastCep(hash);
-          calculate(clean);
-          fetch(`https://viacep.com.br/ws/${clean}/json/`)
-            .then((r) => r.json())
-            .then((d) => {
-              if (!d.erro) {
-                setValue("street_name", d.logradouro);
-                setValue("neighborhood", d.bairro);
-                setValue("city", d.localidade);
-                setValue("state", d.uf);
-              }
-            })
-            .catch(() => {});
-        }
-      }
-    }
-  }, [cepValue, cart.subtotal, loading, lastCep]);
+    const clean = cepValue?.replace(/\D/g, "");
+    if (!clean || clean.length !== 8) return;
+    const requestKey = `${clean}-${cartLineKey}`;
+    if (lastCep.current === requestKey) return;
+    lastCep.current = requestKey;
+    void calculate(clean);
+    let active = true;
+    void lookupCep(clean)
+      .then((address) => {
+        if (!active || !address) return;
+        setValue("street_name", address.logradouro);
+        setValue("neighborhood", address.bairro);
+        setValue("city", address.localidade);
+        setValue("state", address.uf);
+      })
+      .catch(() => {
+        if (active) setError("Não foi possível consultar o CEP. Preencha o endereço manualmente.");
+      });
+    return () => {
+      active = false;
+      if (lastCep.current === requestKey) lastCep.current = "";
+    };
+  }, [cepValue, cartLineKey, calculate, setValue]);
 
   const finish = handleSubmit(async (formData) => {
+    if (!selectedShipping) {
+      setError("Selecione uma opção de frete.");
+      return;
+    }
     setLoading(true);
     try {
       const cleanPhone = formData.phone.replace(/\D/g, "");
@@ -479,16 +489,14 @@ function CartDrawer() {
           },
         },
         shipping_cep: formData.zip_code.replace(/\D/g, ""),
-        shipping_method: (selectedShipping?.name || "").toLowerCase().includes("sedex")
-          ? "sedex"
-          : ("pac" as "pac" | "sedex"),
+        shipping_method: selectedShipping.id,
       };
 
       const res = await createPaymentPreference({ data: payload });
       if (res.success && res.init_point) {
         window.location.href = res.init_point;
       } else {
-        setError(res.error || "Erro ao gerar o pagamento.");
+        setError(res.success ? "O provedor não retornou um link de pagamento." : res.error);
       }
     } catch (e) {
       setError("Erro de conexão ao gerar o pagamento.");
@@ -575,7 +583,9 @@ function CartDrawer() {
                           <Plus />
                         </Button>
                       </div>
-                      <span className="text-xs">{money(item.product.price * item.quantity)}</span>
+                      <span className="text-xs">
+                        {money(item.product.priceCents * item.quantity)}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -589,9 +599,9 @@ function CartDrawer() {
                 <strong>{money(cart.subtotal)}</strong>
               </div>
               <p className="mt-2 text-[10px] text-muted-foreground">
-                {cart.subtotal > 299
+                {cart.subtotal >= 29900
                   ? "Seu pedido tem frete grátis."
-                  : `Faltam ${money(299.01 - cart.subtotal)} para frete grátis.`}
+                  : `Faltam ${money(29900 - cart.subtotal)} para frete grátis.`}
               </p>
               <form onSubmit={finish} className="mt-5 space-y-3">
                 <label className="block text-xs font-semibold">DADOS DO COMPRADOR</label>
@@ -638,25 +648,25 @@ function CartDrawer() {
                   <div className="mt-3 text-xs space-y-2">
                     {shippingOptions.map((opt) => (
                       <label
-                        key={opt.name}
+                        key={opt.id}
                         className="flex items-center justify-between border border-border p-2 cursor-pointer hover:bg-muted/50"
                       >
                         <div className="flex items-center gap-2">
                           <input
                             type="radio"
                             name="shipping"
-                            checked={selectedShipping?.name === opt.name}
+                            checked={selectedShipping?.id === opt.id}
                             onChange={() => setSelectedShipping(opt)}
                             className="accent-ink"
                           />
                           <div>
                             <p className="font-semibold">{opt.name}</p>
                             <p className="text-[10px] text-muted-foreground">
-                              {opt.estimated_days} dias úteis
+                              {opt.estimatedDays} dias úteis
                             </p>
                           </div>
                         </div>
-                        <span>{opt.price === 0 ? "Grátis" : money(opt.price)}</span>
+                        <span>{opt.priceCents === 0 ? "Grátis" : money(opt.priceCents)}</span>
                       </label>
                     ))}
                   </div>
@@ -698,7 +708,7 @@ function CartDrawer() {
 
                 <div className="mt-3 flex justify-between font-semibold pt-3 border-t border-border">
                   <span>Total estimado</span>
-                  <span>{money(cart.subtotal + (selectedShipping?.price || 0))}</span>
+                  <span>{money(cart.subtotal + (selectedShipping?.priceCents || 0))}</span>
                 </div>
 
                 <Button

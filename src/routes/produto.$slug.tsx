@@ -6,7 +6,14 @@ import { useCart } from "@/components/store/cart-context";
 import { ProductCard } from "@/components/store/product-card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { motion, AnimatePresence, useMotionValue, useSpring, useReducedMotion, useInView } from "framer-motion";
+import {
+  motion,
+  AnimatePresence,
+  useMotionValue,
+  useSpring,
+  useReducedMotion,
+  useInView,
+} from "framer-motion";
 
 export const Route = createFileRoute("/produto/$slug")({
   staticData: { sitemap: true },
@@ -68,7 +75,12 @@ function ProductDetails({ product: p }: { product: Product }) {
   }
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.4 }}>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.4 }}
+    >
       <div className="container-verso pt-7">
         <Link to="/loja" className="eyebrow">
           LOJA
@@ -112,7 +124,10 @@ function ProductDetails({ product: p }: { product: Product }) {
                 aria-label={`Foto ${i + 1}`}
               >
                 {i === image && (
-                  <motion.div layoutId="imgIndicator" className="absolute inset-0 border-2 border-primary z-10 pointer-events-none" />
+                  <motion.div
+                    layoutId="imgIndicator"
+                    className="absolute inset-0 border-2 border-primary z-10 pointer-events-none"
+                  />
                 )}
                 <img
                   src={img}
@@ -128,8 +143,10 @@ function ProductDetails({ product: p }: { product: Product }) {
         <div className="product-detail">
           <p className="eyebrow">DROP 001 / {p.verse}</p>
           <h1>{p.name}</h1>
-          <div className="text-xl">{money(p.price)}</div>
-          <p className="mt-2 text-muted-foreground">ou 3x de {money(p.price / 3)} sem juros</p>
+          <div className="text-xl">{money(p.priceCents)}</div>
+          <p className="mt-2 text-muted-foreground">
+            ou 3x de {money(Math.round(p.priceCents / 3))} sem juros
+          </p>
           <p className="mt-6">
             Corte livre. Presença discreta. Uma peça feita pra acompanhar você — e o que você
             acredita.
@@ -151,7 +168,10 @@ function ProductDetails({ product: p }: { product: Product }) {
                 aria-label={`Cor ${c}`}
               >
                 {color === c && (
-                  <motion.div layoutId="colorIndicator" className="absolute inset-0 border-2 border-primary rounded-md z-10 pointer-events-none" />
+                  <motion.div
+                    layoutId="colorIndicator"
+                    className="absolute inset-0 border-2 border-primary rounded-md z-10 pointer-events-none"
+                  />
                 )}
                 <span className="swatch" data-color={c.toLowerCase().replace(" ", "-")} />
               </Button>
@@ -159,11 +179,7 @@ function ProductDetails({ product: p }: { product: Product }) {
           </div>
           <div className="option-label">
             <span>TAMANHO {size && `/ ${size}`}</span>
-            <Button
-              variant="ghost"
-              className="h-auto p-0 text-xs"
-              onClick={() => setGuide(true)}
-            >
+            <Button variant="ghost" className="h-auto p-0 text-xs" onClick={() => setGuide(true)}>
               <Ruler size={13} />
               Guia de medidas
             </Button>
@@ -180,7 +196,10 @@ function ProductDetails({ product: p }: { product: Product }) {
                 }}
               >
                 {size === s && (
-                  <motion.div layoutId="sizeIndicator" className="absolute inset-0 border-2 border-primary rounded-md bg-primary/5 z-0 pointer-events-none" />
+                  <motion.div
+                    layoutId="sizeIndicator"
+                    className="absolute inset-0 border-2 border-primary rounded-md bg-primary/5 z-0 pointer-events-none"
+                  />
                 )}
                 <span className="relative z-10">{s}</span>
               </Button>
@@ -230,7 +249,8 @@ function ProductDetails({ product: p }: { product: Product }) {
                       setError("Escolhe o tamanho e a cor antes de continuar.");
                       return;
                     }
-                    if (typeof navigator !== "undefined" && navigator.vibrate) navigator.vibrate(10);
+                    if (typeof navigator !== "undefined" && navigator.vibrate)
+                      navigator.vibrate(10);
                     cart.add(p, size, color, quantity);
                     setAdded(true);
                     setTimeout(() => setAdded(false), 2000);
@@ -380,7 +400,7 @@ function ProductDetails({ product: p }: { product: Product }) {
                 onClick={() => {
                   if (!size || !color) {
                     setError("Escolhe o tamanho e a cor antes de continuar.");
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    window.scrollTo({ top: 0, behavior: "smooth" });
                     return;
                   }
                   if (typeof navigator !== "undefined" && navigator.vibrate) navigator.vibrate(10);
