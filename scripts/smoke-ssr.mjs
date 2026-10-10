@@ -13,6 +13,7 @@ const routesToTest = [
   "/sobre",
   "/contato",
   "/drops",
+  "/favoritos",
   "/pagamento/sucesso",
   "/pagamento/pendente",
   "/pagamento/recusado",

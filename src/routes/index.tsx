@@ -57,9 +57,12 @@ function Home() {
           animate="animate"
           variants={stagger}
         >
-          <motion.p variants={fadeUp} className="eyebrow">
-            VERSO® &nbsp; / &nbsp; DROP 001 — ESSENCIAL
-          </motion.p>
+          <motion.div variants={fadeUp} className="mb-6">
+            <div className="inline-flex items-center gap-2 rounded-full border border-paper/30 bg-ink/40 px-4 py-2 backdrop-blur-md">
+              <span className="size-2 rounded-full bg-brand animate-pulse"></span>
+              <span className="eyebrow !text-paper !m-0 !tracking-widest">DROP 001 DISPONÍVEL</span>
+            </div>
+          </motion.div>
           <h1 className="hero-title flex flex-col">
             <span className="overflow-hidden">
               <motion.span variants={fadeUp} className="block">
@@ -72,18 +75,34 @@ function Home() {
               </motion.span>
             </span>
           </h1>
-          <motion.p variants={fadeUp} className="hero-sub">
-            Streetwear com propósito.
-            <br />
-            Sem fantasia.
-          </motion.p>
-          <motion.div variants={fadeUp}>
-            <Button asChild variant="brand" size="lg">
-              <Link to="/drops">
-                Ver Drop 01 <ArrowUpRight className="ml-5" />
-              </Link>
-            </Button>
-          </motion.div>
+
+          <div className="mt-8 flex flex-col sm:flex-row items-start sm:items-end justify-between gap-8">
+            <motion.p variants={fadeUp} className="hero-sub !mb-0">
+              Streetwear com propósito.
+              <br />
+              Sem fantasia.
+            </motion.p>
+
+            <motion.div variants={fadeUp} className="flex items-center gap-3">
+              <span className="eyebrow text-paper/70 mr-2 hidden sm:block">NOVO DROP</span>
+              <div className="flex gap-2">
+                {products.slice(0, 3).map((p) => (
+                  <Link
+                    key={p.slug}
+                    to="/produto/$slug"
+                    params={{ slug: p.slug }}
+                    className="block overflow-hidden rounded-md border border-paper/20 hover:border-brand transition-colors bg-ink"
+                  >
+                    <img
+                      src={p.images[0]}
+                      alt={p.name}
+                      className="w-16 h-20 object-cover opacity-80 hover:opacity-100 transition-opacity"
+                    />
+                  </Link>
+                ))}
+              </div>
+            </motion.div>
+          </div>
         </motion.div>
         <motion.div className="hero-bottom" initial="initial" animate="animate" variants={stagger}>
           <motion.p variants={fadeUp} className="eyebrow flex items-center gap-3">

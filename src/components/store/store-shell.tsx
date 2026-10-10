@@ -164,13 +164,7 @@ export function StoreShell({ children }: { children: ReactNode }) {
         </nav>
         <div className="header-actions">
           <ThemeToggle />
-          <Button
-            variant="header"
-            size="icon"
-            asChild
-            aria-label="Favoritos"
-            title="Favoritos"
-          >
+          <Button variant="header" size="icon" asChild aria-label="Favoritos" title="Favoritos">
             <Link to="/favoritos">
               <Heart size={19} />
             </Link>
