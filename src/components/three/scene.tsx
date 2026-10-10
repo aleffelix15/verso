@@ -41,3 +41,4 @@ export function Scene({ children }: SceneProps) {
     </ClientOnly>
   );
 }
+
