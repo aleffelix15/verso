@@ -1,13 +1,42 @@
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls, Environment, ContactShadows } from "@react-three/drei";
-import { ReactNode, Suspense } from "react";
+import { OrbitControls, ContactShadows } from "@react-three/drei";
+import { ReactNode, Suspense, useEffect, useState } from "react";
 import { ClientOnly } from "./client-only";
 
 interface SceneProps {
   children: ReactNode;
+  animated?: boolean;
 }
 
-export function Scene({ children }: SceneProps) {
+function hasWebGL() {
+  try {
+    const canvas = document.createElement("canvas");
+    return !!(
+      window.WebGLRenderingContext &&
+      (canvas.getContext("webgl2") ||
+        canvas.getContext("webgl") ||
+        canvas.getContext("experimental-webgl"))
+    );
+  } catch (e) {
+    return false;
+  }
+}
+
+export function Scene({ children, animated = false }: SceneProps) {
+  const [isSupported, setIsSupported] = useState(true);
+
+  useEffect(() => {
+    setIsSupported(hasWebGL());
+  }, []);
+
+  if (!isSupported) {
+    return (
+      <div className="w-full h-full min-h-[300px] bg-muted/20 flex items-center justify-center text-sm text-muted-foreground">
+        WebGL não suportado
+      </div>
+    );
+  }
+
   return (
     <ClientOnly
       fallback={
@@ -18,22 +47,19 @@ export function Scene({ children }: SceneProps) {
     >
       <div className="w-full h-full min-h-[300px]">
         <Canvas
-          frameloop="demand"
-          dpr={[1, 1.5]} // Limite entre 1 e 1.5 para salvar bateria
+          frameloop={animated ? "always" : "demand"}
+          dpr={[1, 1.5]}
           gl={{ alpha: true, antialias: true }}
           camera={{ position: [0, 0, 5], fov: 45 }}
         >
-          {/* Iluminação de 3 pontos para maior realismo */}
           <ambientLight intensity={0.4} />
+          <hemisphereLight args={["#ffffff", "#444444", 0.6]} />
           <directionalLight position={[5, 5, 5]} intensity={0.8} />
           <directionalLight position={[-5, 5, 5]} intensity={0.3} color="#ffffff" />
           <directionalLight position={[0, 5, -5]} intensity={0.5} color="#ffffff" />
 
           <Suspense fallback={null}>
-            {/* Environment com preset urbano/neutro otimizado */}
-            <Environment preset="city" />
             {children}
-            {/* Sombra de contato suave e otimizada */}
             <ContactShadows
               position={[0, -1.2, 0]}
               opacity={0.5}
@@ -45,7 +71,6 @@ export function Scene({ children }: SceneProps) {
             />
           </Suspense>
 
-          {/* Controles restritos para não deixar o usuário se perder no void */}
           <OrbitControls enablePan={false} minDistance={2} maxDistance={10} makeDefault />
         </Canvas>
       </div>

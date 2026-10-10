@@ -51,7 +51,12 @@ export function JaquetaCoach({
           <cylinderGeometry args={[0.12, 0.1, 0.6, 16]} />
           <meshStandardMaterial color={color} roughness={0.7} />
         </mesh>
-        <Text position={[-0.18, 0.2, 0.111]} fontSize={0.06} color={accent}>
+        <Text
+          font="/fonts/inter.woff"
+          position={[-0.18, 0.2, 0.111]}
+          fontSize={0.06}
+          color={accent}
+        >
           GRAÇA
         </Text>
       </group>

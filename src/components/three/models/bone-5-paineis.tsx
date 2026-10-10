@@ -37,7 +37,13 @@ export function Bone5Paineis({
           <sphereGeometry args={[0.02, 8, 8]} />
           <meshStandardMaterial color={accent} />
         </mesh>
-        <Text position={[0, 0.1, 0.176]} rotation={[-0.2, 0, 0]} fontSize={0.05} color={accent}>
+        <Text
+          font="/fonts/inter.woff"
+          position={[0, 0.1, 0.176]}
+          rotation={[-0.2, 0, 0]}
+          fontSize={0.05}
+          color={accent}
+        >
           VERSO
         </Text>
       </group>

@@ -48,6 +48,7 @@ export function CalcaCargo({
           <meshStandardMaterial color={color} roughness={0.9} />
         </mesh>
         <Text
+          font="/fonts/inter.woff"
           position={[0.29, -0.2, 0.14]}
           rotation={[0, Math.PI / 2, 0]}
           fontSize={0.04}

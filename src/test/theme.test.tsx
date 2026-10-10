@@ -30,9 +30,9 @@ describe("Theme Context", () => {
     // Suppress console.error for the expected throw
     const spy = vi.spyOn(console, "error");
     spy.mockImplementation(() => {});
-    
+
     expect(() => render(<TestComponent />)).toThrow("useTheme must be used within a ThemeProvider");
-    
+
     spy.mockRestore();
   });
 
@@ -41,8 +41,8 @@ describe("Theme Context", () => {
       render(
         <ThemeProvider>
           <ThemeToggle />
-        </ThemeProvider>
-      )
+        </ThemeProvider>,
+      ),
     ).not.toThrow();
   });
 });

@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+﻿import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useRef, Suspense } from "react";
 import { Minus, Plus, ArrowUpRight, ZoomIn, Ruler, ShoppingBag, Check, Box } from "lucide-react";
 import { products, pageHead, money, type Product } from "@/data/products";
@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { modelsRegistry } from "@/components/three/registry";
 import { ClientOnly } from "@/components/three/client-only";
+import { Scene } from "@/components/three/scene";
+import { ThreeErrorBoundary } from "@/components/three/three-error-boundary";
 import {
   motion,
   AnimatePresence,
@@ -22,10 +24,10 @@ export const Route = createFileRoute("/produto/$slug")({
   head: ({ params }) => {
     const p = products.find((x) => x.slug === params.slug);
     return pageHead(
-      p?.name ?? "Peça não encontrada",
+      p?.name ?? "PeÃ§a nÃ£o encontrada",
       p
-        ? `${p.name}. ${p.meaning} Conheça os detalhes e escolha seu tamanho.`
-        : "Esta peça não está disponível.",
+        ? `${p.name}. ${p.meaning} ConheÃ§a os detalhes e escolha seu tamanho.`
+        : "Esta peÃ§a nÃ£o estÃ¡ disponÃ­vel.",
       `/produto/${params.slug}`,
     );
   },
@@ -37,7 +39,7 @@ function ProductPage() {
   if (!product)
     return (
       <section className="container-verso section-space">
-        <h1 className="text-5xl">PEÇA NÃO ENCONTRADA.</h1>
+        <h1 className="text-5xl">PEÃ‡A NÃƒO ENCONTRADA.</h1>
         <Button asChild className="mt-6" variant="brand">
           <Link to="/loja">Voltar para a loja</Link>
         </Button>
@@ -97,7 +99,7 @@ function ProductDetails({ product: p }: { product: Product }) {
       <section className="container-verso product-layout">
         <div>
           {image === "3d" && Model ? (
-            <div className="relative h-auto w-full overflow-hidden bg-muted flex items-center justify-center product-main-photo">
+            <div className="relative w-full overflow-hidden bg-muted flex product-main-photo aspect-[5/6]">
               <ClientOnly>
                 <Suspense
                   fallback={
@@ -108,7 +110,11 @@ function ProductDetails({ product: p }: { product: Product }) {
                     />
                   }
                 >
-                  <Model autoRotate={!prefersReducedMotion} />
+                  <ThreeErrorBoundary fallbackImage={p.images[0] ?? ""}>
+                    <Scene animated={!prefersReducedMotion}>
+                      <Model autoRotate={!prefersReducedMotion} />
+                    </Scene>
+                  </ThreeErrorBoundary>
                 </Suspense>
               </ClientOnly>
             </div>
@@ -153,7 +159,7 @@ function ProductDetails({ product: p }: { product: Product }) {
                 )}
                 <img
                   src={img}
-                  alt={`Ângulo ${i + 1}`}
+                  alt={`Ã‚ngulo ${i + 1}`}
                   width={64}
                   height={76}
                   className="h-20 w-16 object-cover"
@@ -189,7 +195,7 @@ function ProductDetails({ product: p }: { product: Product }) {
             ou 3x de {money(Math.round(p.priceCents / 3))} sem juros
           </p>
           <p className="mt-6">
-            Corte livre. Presença discreta. Uma peça feita pra acompanhar você — e o que você
+            Corte livre. PresenÃ§a discreta. Uma peÃ§a feita pra acompanhar vocÃª â€” e o que vocÃª
             acredita.
           </p>
           <div className="option-label">
@@ -318,7 +324,7 @@ function ProductDetails({ product: p }: { product: Product }) {
                         transition={{ duration: 0.2, ease: "easeOut" }}
                         className="flex items-center gap-2"
                       >
-                        <ShoppingBag size={16} /> Adicionar à sacola
+                        <ShoppingBag size={16} /> Adicionar Ã  sacola
                       </motion.div>
                     )}
                   </AnimatePresence>
@@ -327,22 +333,22 @@ function ProductDetails({ product: p }: { product: Product }) {
             </motion.div>
           </div>
           <p className="mt-4 text-xs text-muted-foreground">
-            Frete grátis acima de R$ 299. Produto demonstrativo.
+            Frete grÃ¡tis acima de R$ 299. Produto demonstrativo.
           </p>
           <div className="accordions">
             {[
               [
-                "Descrição",
-                "Modelagem ampla e acabamento reforçado. Referência bíblica discreta, no detalhe. Confira as medidas antes de escolher.",
+                "DescriÃ§Ã£o",
+                "Modelagem ampla e acabamento reforÃ§ado. ReferÃªncia bÃ­blica discreta, no detalhe. Confira as medidas antes de escolher.",
               ],
               ["Tecido", p.fabric],
               [
                 "Cuidados",
-                "Lave do avesso com água fria. Não use alvejante. Seque à sombra. Não passe diretamente sobre etiquetas ou estampas.",
+                "Lave do avesso com Ã¡gua fria. NÃ£o use alvejante. Seque Ã  sombra. NÃ£o passe diretamente sobre etiquetas ou estampas.",
               ],
               [
-                "Troca e devolução",
-                "Direito de arrependimento em até 7 dias após o recebimento. Condições adicionais e atendimento serão confirmados na abertura da loja.",
+                "Troca e devoluÃ§Ã£o",
+                "Direito de arrependimento em atÃ© 7 dias apÃ³s o recebimento. CondiÃ§Ãµes adicionais e atendimento serÃ£o confirmados na abertura da loja.",
               ],
             ].map(([title, text]) => (
               <details key={title}>
@@ -360,7 +366,7 @@ function ProductDetails({ product: p }: { product: Product }) {
       </section>
       <section className="container-verso section-space border-t border-border">
         <div className="section-heading">
-          <h2 className="section-title">NO MESMO PROPÓSITO.</h2>
+          <h2 className="section-title">NO MESMO PROPÃ“SITO.</h2>
         </div>
         <div className="product-grid">
           {products
@@ -373,8 +379,8 @@ function ProductDetails({ product: p }: { product: Product }) {
       </section>
       <Dialog open={zoom} onOpenChange={setZoom}>
         <DialogContent className="max-w-3xl">
-          <DialogTitle className="sr-only">{p.name} — foto ampliada</DialogTitle>
-          <DialogDescription className="sr-only">Detalhes da peça.</DialogDescription>
+          <DialogTitle className="sr-only">{p.name} â€” foto ampliada</DialogTitle>
+          <DialogDescription className="sr-only">Detalhes da peÃ§a.</DialogDescription>
           <img
             src={image === "3d" ? p.images[0] : p.images[image as number]}
             alt={p.name}
@@ -388,10 +394,10 @@ function ProductDetails({ product: p }: { product: Product }) {
         <DialogContent>
           <DialogTitle className="font-display text-3xl">GUIA DE MEDIDAS</DialogTitle>
           <DialogDescription>
-            Medidas demonstrativas em centímetros. Meça uma peça sua de corte semelhante.
+            Medidas demonstrativas em centÃ­metros. MeÃ§a uma peÃ§a sua de corte semelhante.
           </DialogDescription>
           {p.sizes.length === 1 ? (
-            <p className="text-sm">Tamanho único. Circunferência ajustável: 54–60 cm.</p>
+            <p className="text-sm">Tamanho Ãºnico. CircunferÃªncia ajustÃ¡vel: 54â€“60 cm.</p>
           ) : (
             <table className="w-full text-left text-xs">
               <thead>
@@ -420,8 +426,8 @@ function ProductDetails({ product: p }: { product: Product }) {
             </table>
           )}
           <p className="text-xs text-muted-foreground">
-            Para a calça, largura corresponde à cintura da peça aberta. Tolerância de ±2 cm. Medidas
-            finais precisam de confirmação.
+            Para a calÃ§a, largura corresponde Ã  cintura da peÃ§a aberta. TolerÃ¢ncia de Â±2 cm.
+            Medidas finais precisam de confirmaÃ§Ã£o.
           </p>
         </DialogContent>
       </Dialog>

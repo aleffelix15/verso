@@ -16,12 +16,12 @@ const routesToTest = [
   "/pagamento/sucesso",
   "/pagamento/pendente",
   "/pagamento/recusado",
-  "/nao-existe"
+  "/nao-existe",
 ];
 
 async function smokeTest() {
   console.log("Starting smoke test for SSR routes...\n");
-  
+
   let failed = false;
 
   for (const route of routesToTest) {
@@ -32,26 +32,28 @@ async function smokeTest() {
       const body = await res.text();
 
       const expectedStatus = route === "/nao-existe" ? 404 : 200;
-      const statusText = res.status === expectedStatus ? "✅ OK" : `❌ FAILED (Expected ${expectedStatus}, got ${res.status})`;
-      
+      const statusText =
+        res.status === expectedStatus
+          ? "✅ OK"
+          : `❌ FAILED (Expected ${expectedStatus}, got ${res.status})`;
+
       console.log(`Route: ${route.padEnd(30)} -> ${statusText}`);
-      
+
       if (res.status !== expectedStatus) {
         failed = true;
       }
-      
+
       if (body.includes("Error in renderToReadableStream") || body.includes("Error:")) {
-        // We only want to fail if it's an actual unexpected error text, though checking for "Error:" might catch harmless text. 
+        // We only want to fail if it's an actual unexpected error text, though checking for "Error:" might catch harmless text.
         // Let's specifically look for the error reported by the user or render errors.
         if (body.includes("useTheme must be used within a ThemeProvider")) {
-             console.error(`❌ FAILED: useTheme error found in body for ${route}`);
-             failed = true;
+          console.error(`❌ FAILED: useTheme error found in body for ${route}`);
+          failed = true;
         } else if (body.includes("Error in renderToReadableStream")) {
-             console.error(`❌ FAILED: "Error in renderToReadableStream" found in body for ${route}`);
-             failed = true;
+          console.error(`❌ FAILED: "Error in renderToReadableStream" found in body for ${route}`);
+          failed = true;
         }
       }
-
     } catch (err) {
       console.error(`Route: ${route.padEnd(30)} -> ❌ CRASHED:`, err);
       failed = true;

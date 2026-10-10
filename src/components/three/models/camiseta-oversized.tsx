@@ -37,7 +37,7 @@ export function CamisetaOversized({
           <torusGeometry args={[0.12, 0.02, 16, 32]} />
           <meshStandardMaterial color={color} roughness={0.9} />
         </mesh>
-        <Text position={[0, 0.1, 0.101]} fontSize={0.12} color={accent}>
+        <Text font="/fonts/inter.woff" position={[0, 0.1, 0.101]} fontSize={0.12} color={accent}>
           LUZ
         </Text>
       </group>

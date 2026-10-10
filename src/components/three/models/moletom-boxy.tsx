@@ -49,7 +49,7 @@ export function MoletomBoxy({
           <cylinderGeometry args={[0.005, 0.005, 0.2]} />
           <meshStandardMaterial color={accent} />
         </mesh>
-        <Text position={[0, 0.1, 0.151]} fontSize={0.08} color={accent}>
+        <Text font="/fonts/inter.woff" position={[0, 0.1, 0.151]} fontSize={0.08} color={accent}>
           SALMO 23
         </Text>
       </group>
