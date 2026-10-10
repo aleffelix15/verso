@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import { Text } from "@react-three/drei";
 import * as THREE from "three";
+import { useLabelTexture } from "../make-label-texture";
 
 export interface ModelProps {
   color?: string;
@@ -11,10 +11,12 @@ export interface ModelProps {
 
 export function Bone5Paineis({
   color = "#0E0E0E",
-  accent = "#E4572E",
+  accent = "#ff4500",
   autoRotate = false,
 }: ModelProps) {
   const groupRef = useRef<THREE.Group>(null);
+  const labelTexture = useLabelTexture({ text: "VERSO", color: accent, fontSize: 80, width: 256, height: 128 });
+  
   useFrame((_, delta) => {
     if (autoRotate && groupRef.current) groupRef.current.rotation.y += delta * 0.5;
   });
@@ -37,15 +39,10 @@ export function Bone5Paineis({
           <sphereGeometry args={[0.02, 8, 8]} />
           <meshStandardMaterial color={accent} />
         </mesh>
-        <Text
-          font="/fonts/inter.woff"
-          position={[0, 0.1, 0.176]}
-          rotation={[-0.2, 0, 0]}
-          fontSize={0.05}
-          color={accent}
-        >
-          VERSO
-        </Text>
+        <mesh position={[0, 0.1, 0.176]} rotation={[-0.2, 0, 0]}>
+          <planeGeometry args={[0.2, 0.1]} />
+          <meshBasicMaterial map={labelTexture} transparent />
+        </mesh>
       </group>
     </group>
   );

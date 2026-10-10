@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import { Text } from "@react-three/drei";
 import * as THREE from "three";
+import { useLabelTexture } from "../make-label-texture";
 
 export interface ModelProps {
   color?: string;
@@ -11,10 +11,12 @@ export interface ModelProps {
 
 export function CalcaCargo({
   color = "#0E0E0E",
-  accent = "#E4572E",
+  accent = "#ff4500",
   autoRotate = false,
 }: ModelProps) {
   const groupRef = useRef<THREE.Group>(null);
+  const labelTexture = useLabelTexture({ text: "FIRME", color: accent, fontSize: 80, width: 256, height: 128 });
+
   useFrame((_, delta) => {
     if (autoRotate && groupRef.current) groupRef.current.rotation.y += delta * 0.5;
   });
@@ -47,15 +49,10 @@ export function CalcaCargo({
           <boxGeometry args={[0.06, 0.25, 0.18]} />
           <meshStandardMaterial color={color} roughness={0.9} />
         </mesh>
-        <Text
-          font="/fonts/inter.woff"
-          position={[0.29, -0.2, 0.14]}
-          rotation={[0, Math.PI / 2, 0]}
-          fontSize={0.04}
-          color={accent}
-        >
-          FIRME
-        </Text>
+        <mesh position={[0.29, -0.2, 0.14]} rotation={[0, Math.PI / 2, 0]}>
+          <planeGeometry args={[0.15, 0.075]} />
+          <meshBasicMaterial map={labelTexture} transparent />
+        </mesh>
       </group>
     </group>
   );

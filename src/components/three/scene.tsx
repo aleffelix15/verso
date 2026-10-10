@@ -1,7 +1,8 @@
-import { Canvas } from "@react-three/fiber";
+import { Canvas, useThree } from "@react-three/fiber";
 import { OrbitControls, ContactShadows } from "@react-three/drei";
-import { ReactNode, Suspense, useEffect, useState } from "react";
+import { ReactNode, Suspense, useEffect, useState, useRef } from "react";
 import { ClientOnly } from "./client-only";
+import * as THREE from "three";
 
 interface SceneProps {
   children: ReactNode;
@@ -24,18 +25,38 @@ function hasWebGL() {
 
 export function Scene({ children, animated = false }: SceneProps) {
   const [isSupported, setIsSupported] = useState(true);
+  const [isVisible, setIsVisible] = useState(true);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setIsSupported(hasWebGL());
   }, []);
 
-  if (!isSupported) {
-    return (
-      <div className="w-full h-full min-h-[300px] bg-muted/20 flex items-center justify-center text-sm text-muted-foreground">
-        WebGL não suportado
-      </div>
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      setIsVisible(document.visibilityState === "visible");
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
+  }, []);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsVisible(entry.isIntersecting),
+      { threshold: 0.1 }
     );
+    observer.observe(containerRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  if (!isSupported) {
+    throw new Error("WebGL não suportado neste dispositivo.");
   }
+
+  // Se estiver animado e visível, frameloop é always. Senão, demand.
+  const frameloop = (animated && isVisible) ? "always" : "demand";
 
   return (
     <ClientOnly
@@ -45,12 +66,21 @@ export function Scene({ children, animated = false }: SceneProps) {
         </div>
       }
     >
-      <div className="w-full h-full min-h-[300px]">
+      <div className="w-full h-full min-h-[300px]" ref={containerRef}>
         <Canvas
-          frameloop={animated ? "always" : "demand"}
+          frameloop={frameloop}
           dpr={[1, 1.5]}
-          gl={{ alpha: true, antialias: true }}
+          gl={{ alpha: true, antialias: true, powerPreference: "high-performance" }}
           camera={{ position: [0, 0, 5], fov: 45 }}
+          onCreated={({ gl }) => {
+            gl.domElement.addEventListener("webglcontextlost", (e) => {
+              e.preventDefault();
+              setIsSupported(false);
+            });
+            gl.domElement.addEventListener("webglcontextrestored", () => {
+              setIsSupported(true);
+            });
+          }}
         >
           <ambientLight intensity={0.4} />
           <hemisphereLight args={["#ffffff", "#444444", 0.6]} />

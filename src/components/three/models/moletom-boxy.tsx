@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import { Text } from "@react-three/drei";
 import * as THREE from "three";
+import { useLabelTexture } from "../make-label-texture";
 
 export interface ModelProps {
   color?: string;
@@ -11,10 +11,12 @@ export interface ModelProps {
 
 export function MoletomBoxy({
   color = "#0E0E0E",
-  accent = "#E4572E",
+  accent = "#ff4500",
   autoRotate = false,
 }: ModelProps) {
   const groupRef = useRef<THREE.Group>(null);
+  const labelTexture = useLabelTexture({ text: "SALMO 23", color: accent, fontSize: 60, width: 256, height: 128 });
+
   useFrame((_, delta) => {
     if (autoRotate && groupRef.current) groupRef.current.rotation.y += delta * 0.5;
   });
@@ -49,9 +51,10 @@ export function MoletomBoxy({
           <cylinderGeometry args={[0.005, 0.005, 0.2]} />
           <meshStandardMaterial color={accent} />
         </mesh>
-        <Text font="/fonts/inter.woff" position={[0, 0.1, 0.151]} fontSize={0.08} color={accent}>
-          SALMO 23
-        </Text>
+        <mesh position={[0, 0.1, 0.151]}>
+          <planeGeometry args={[0.2, 0.1]} />
+          <meshBasicMaterial map={labelTexture} transparent />
+        </mesh>
       </group>
     </group>
   );

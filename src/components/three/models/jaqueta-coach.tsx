@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import { Text } from "@react-three/drei";
 import * as THREE from "three";
+import { useLabelTexture } from "../make-label-texture";
 
 export interface ModelProps {
   color?: string;
@@ -11,10 +11,12 @@ export interface ModelProps {
 
 export function JaquetaCoach({
   color = "#0E0E0E",
-  accent = "#E4572E",
+  accent = "#ff4500",
   autoRotate = false,
 }: ModelProps) {
   const groupRef = useRef<THREE.Group>(null);
+  const labelTexture = useLabelTexture({ text: "GRAÇA", color: accent, fontSize: 80, width: 256, height: 128 });
+
   useFrame((_, delta) => {
     if (autoRotate && groupRef.current) groupRef.current.rotation.y += delta * 0.5;
   });
@@ -51,14 +53,10 @@ export function JaquetaCoach({
           <cylinderGeometry args={[0.12, 0.1, 0.6, 16]} />
           <meshStandardMaterial color={color} roughness={0.7} />
         </mesh>
-        <Text
-          font="/fonts/inter.woff"
-          position={[-0.18, 0.2, 0.111]}
-          fontSize={0.06}
-          color={accent}
-        >
-          GRAÇA
-        </Text>
+        <mesh position={[-0.18, 0.2, 0.112]}>
+          <planeGeometry args={[0.2, 0.1]} />
+          <meshBasicMaterial map={labelTexture} transparent />
+        </mesh>
       </group>
     </group>
   );
