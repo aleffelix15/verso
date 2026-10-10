@@ -379,8 +379,15 @@ function ProductDetails({ product: p }: { product: Product }) {
             <div className="flex gap-4 p-4 border border-border bg-muted/50 rounded-md">
               <RefreshCcw className="size-5 shrink-0 text-brand" />
               <div>
-                <span className="block text-sm font-bold">Primeira troca grátis</span>
-                <span className="text-xs text-muted-foreground">Até 7 dias após o recebimento</span>
+                <span className="block text-sm font-bold">Direito de arrependimento</span>
+                <span className="text-xs text-muted-foreground">Devolução em até 7 dias</span>
+              </div>
+            </div>
+            <div className="flex gap-4 p-4 border border-border bg-muted/50 rounded-md">
+              <ShieldCheck className="size-5 shrink-0 text-brand" />
+              <div>
+                <span className="block text-sm font-bold">Pagamento Seguro</span>
+                <span className="text-xs text-muted-foreground">Transação via Mercado Pago</span>
               </div>
             </div>
           </div>
@@ -393,7 +400,7 @@ function ProductDetails({ product: p }: { product: Product }) {
           <div className="flex flex-col gap-12">
             <div className="product-verse p-8 bg-muted rounded-md border border-border">
               <p className="eyebrow">O VERSO / [ {p.verse} ]</p>
-              <h2 className="my-4 text-3xl font-display uppercase italic">{p.statement}</h2>
+              <h2 className="my-4 text-3xl font-display uppercase">{p.statement}</h2>
               <p className="text-muted-foreground">{p.meaning}</p>
             </div>
 
