@@ -27,6 +27,22 @@ function Home() {
   const carouselRef = useRef(null);
   const { scrollXProgress } = useScroll({ container: carouselRef });
 
+  const dropRef = useRef(null);
+  const { scrollYProgress: dropScroll } = useScroll({
+    target: dropRef,
+    offset: ["start end", "end start"],
+  });
+  const dropY1 = useTransform(
+    dropScroll,
+    [0, 1],
+    [prefersReducedMotion ? 0 : 50, prefersReducedMotion ? 0 : -100],
+  );
+  const dropY2 = useTransform(
+    dropScroll,
+    [0, 1],
+    [prefersReducedMotion ? 0 : 150, prefersReducedMotion ? 0 : -200],
+  );
+
   const stagger = {
     animate: { transition: { staggerChildren: 0.08, delayChildren: 0.3 } },
   };
@@ -169,7 +185,7 @@ function Home() {
           </div>
         </section>
       </Reveal>
-      <section className="drop-banner">
+      <section ref={dropRef} className="drop-banner relative overflow-hidden">
         <img
           src={community}
           alt="Três jovens vestindo peças do Drop 01 da VERSO"
@@ -177,19 +193,48 @@ function Home() {
           width={1600}
           height={1008}
         />
-        <div className="drop-inner container-verso">
-          <p className="eyebrow">PRIMEIRO CAPÍTULO. MESMA ESSÊNCIA.</p>
-          <h2 className="drop-title">
-            DROP 01.
-            <br />O ESSENCIAL.
-          </h2>
-          <p className="mb-5 text-xs">O que você carrega não cabe só no bolso.</p>
-          <Button asChild variant="brand" size="lg">
-            <Link to="/drops">
-              Conhecer o drop <ArrowUpRight className="ml-5" />
-            </Link>
-          </Button>
-          <Countdown />
+        <div className="drop-inner container-verso relative z-10 flex flex-col justify-center sm:block">
+          <div className="max-w-xl">
+            <p className="eyebrow">PRIMEIRO CAPÍTULO. MESMA ESSÊNCIA.</p>
+            <h2 className="drop-title">
+              DROP 01.
+              <br />O ESSENCIAL.
+            </h2>
+            <p className="mb-5 text-xs sm:text-base text-paper/80">
+              O que você carrega não cabe só no bolso.
+            </p>
+            <div className="mb-8">
+              <Button asChild variant="brand" size="lg">
+                <Link to="/drops">
+                  Conhecer o drop <ArrowUpRight className="ml-3" />
+                </Link>
+              </Button>
+            </div>
+            <Countdown />
+          </div>
+
+          <div className="hidden lg:block absolute right-0 top-1/2 -translate-y-1/2 w-[450px] h-[550px] pointer-events-none">
+            <motion.div
+              style={{ y: dropY1 }}
+              className="absolute top-0 right-[50px] w-[280px] h-[360px] rounded-lg overflow-hidden border border-paper/10 shadow-2xl z-20 bg-ink"
+            >
+              <img
+                src={products[0].images[0]}
+                className="w-full h-full object-cover opacity-90"
+                alt={products[0].name}
+              />
+            </motion.div>
+            <motion.div
+              style={{ y: dropY2 }}
+              className="absolute bottom-[20px] left-0 w-[240px] h-[310px] rounded-lg overflow-hidden border border-paper/10 shadow-2xl z-10 bg-ink"
+            >
+              <img
+                src={products[2].images[0]}
+                className="w-full h-full object-cover opacity-90"
+                alt={products[2].name}
+              />
+            </motion.div>
+          </div>
         </div>
       </section>
       <Reveal>
