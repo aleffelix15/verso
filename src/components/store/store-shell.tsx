@@ -1,5 +1,6 @@
 import { useState, useEffect, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
+import { ThemeToggle } from "../theme/theme-toggle";
 import {
   Search,
   ShoppingBag,
@@ -151,6 +152,7 @@ export function StoreShell({ children }: { children: ReactNode }) {
           <Link to="/contato">Contato</Link>
         </nav>
         <div className="header-actions">
+          <ThemeToggle />
           <Button
             variant="header"
             size="icon"

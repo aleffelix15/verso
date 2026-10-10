@@ -110,7 +110,7 @@ export const createPaymentPreference = createServerFn({ method: "POST" })
         });
       }
 
-      const body = {
+      const body: any = {
         items: mpItems,
         payer: payload.payer,
         back_urls: {

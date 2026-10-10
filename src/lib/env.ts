@@ -21,7 +21,7 @@ export function getEnv() {
   }
 
   if (!cachedEnv.PUBLIC_SITE_URL) {
-    if (process.env.NODE_ENV !== "production") {
+    if (process.env['NODE_ENV'] !== "production") {
       cachedEnv.PUBLIC_SITE_URL = "http://localhost:5173";
     } else {
       console.warn("AVISO: PUBLIC_SITE_URL não definida em produção.");

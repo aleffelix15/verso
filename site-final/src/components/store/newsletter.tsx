@@ -1,0 +1,61 @@
+import { useState } from "react";
+import { ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { z } from "zod";
+export function Newsletter() {
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+  return (
+    <section className="container-verso section-space newsletter">
+      <div>
+        <p className="eyebrow mb-3">SEM RUÍDO. SÓ O QUE IMPORTA.</p>
+        <h2>
+          ENTRA PRA LISTA.
+          <br />
+          DROPS PRIMEIRO.
+        </h2>
+      </div>
+      <div>
+        <form
+          className="newsletter-form"
+          onSubmit={(e) => {
+            e.preventDefault();
+            const parsed = z.string().trim().email().max(254).safeParse(email);
+            setMessage(
+              parsed.success
+                ? "A lista abre em breve. Nesta demonstração, seu e-mail não foi cadastrado."
+                : "Confere seu e-mail e tenta de novo.",
+            );
+          }}
+        >
+          <input
+            type="email"
+            required
+            maxLength={254}
+            aria-label="Seu e-mail para a newsletter"
+            placeholder="Seu melhor e-mail"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-12"
+            type="submit"
+            aria-label="Entrar na lista"
+          >
+            <ArrowRight size={20} />
+          </Button>
+        </form>
+        <p className="mt-3 text-[9px] text-muted-foreground">
+          Novos drops, histórias e nada de spam. Lista em breve.
+        </p>
+        {message && (
+          <p role="status" className="mt-3 text-xs leading-5">
+            {message}
+          </p>
+        )}
+      </div>
+    </section>
+  );
+}

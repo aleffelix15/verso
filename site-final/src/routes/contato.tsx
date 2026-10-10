@@ -1,0 +1,138 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
+import { ArrowUpRight, MessageCircle, Mail } from "lucide-react";
+import { pageHead, storeConfig } from "@/data/products";
+import { Button } from "@/components/ui/button";
+import { z } from "zod";
+export const Route = createFileRoute("/contato")({
+  staticData: { sitemap: true },
+  head: () =>
+    pageHead(
+      "Fala com a gente",
+      "Tamanhos, pedidos ou uma ideia. Fale com a VERSO. Atendimento e canais oficiais em breve.",
+      "/contato",
+    ),
+  component: Contact,
+});
+function Contact() {
+  const [message, setMessage] = useState("");
+  return (
+    <>
+      <div className="container-verso page-heading">
+        <p className="eyebrow">VERSO / CONTATO</p>
+        <h1>
+          SEM ROTEIRO.
+          <br />
+          PODE CHEGAR.
+        </h1>
+      </div>
+      <section className="container-verso editorial-page">
+        <div className="editorial-copy">
+          <h2>FALA COM A GENTE.</h2>
+          <p>Dúvida no tamanho? Uma ideia? Um papo sobre o próximo drop? A gente está por aqui.</p>
+          <div className="border-t border-border py-6">
+            <p className="eyebrow mb-3">WHATSAPP</p>
+            <Button
+              variant="outline"
+              onClick={() => {
+                if (storeConfig.whatsapp)
+                  window.open(
+                    `https://wa.me/${storeConfig.whatsapp}?text=${encodeURIComponent("Olá, VERSO! Quero saber mais sobre as peças.")}`,
+                    "_blank",
+                    "noopener,noreferrer",
+                  );
+                else
+                  setMessage(
+                    "O WhatsApp oficial ainda será informado. Nenhuma mensagem foi enviada.",
+                  );
+              }}
+            >
+              <MessageCircle />
+              Conversar com a VERSO <ArrowUpRight />
+            </Button>
+          </div>
+          <div className="border-t border-border py-6">
+            <p className="eyebrow mb-3">E-MAIL</p>
+            <p className="flex items-center gap-2 text-sm">
+              <Mail size={15} />
+              {storeConfig.email || "Canal oficial em breve."}
+            </p>
+          </div>
+          <p className="text-muted-foreground">
+            Estamos preparando a abertura. Os canais oficiais e horários de atendimento serão
+            divulgados aqui.
+          </p>
+        </div>
+        <form
+          className="contact-form"
+          onSubmit={(e) => {
+            e.preventDefault();
+            const values = new FormData(e.currentTarget);
+            const result = z
+              .object({
+                name: z.string().trim().min(2).max(100),
+                email: z.string().trim().email().max(254),
+                message: z.string().trim().min(5).max(2000),
+              })
+              .safeParse({
+                name: values.get("name"),
+                email: values.get("email"),
+                message: values.get("message"),
+              });
+            setMessage(
+              result.success
+                ? "Mensagem preparada. O atendimento ainda não está ativo; seus dados não foram enviados."
+                : "Confira os campos. Nome com 2 caracteres e mensagem com pelo menos 5.",
+            );
+          }}
+        >
+          <label>
+            SEU NOME
+            <input
+              name="name"
+              required
+              minLength={2}
+              maxLength={100}
+              placeholder="Como a gente te chama?"
+            />
+          </label>
+          <label>
+            E-MAIL
+            <input name="email" type="email" required maxLength={254} placeholder="seu@email.com" />
+          </label>
+          <label>
+            ASSUNTO
+            <select name="subject">
+              <option>Sobre uma peça</option>
+              <option>Tamanhos e medidas</option>
+              <option>Entrega e troca</option>
+              <option>Parcerias e ideias</option>
+            </select>
+          </label>
+          <label>
+            SUA MENSAGEM
+            <textarea
+              name="message"
+              required
+              minLength={5}
+              maxLength={2000}
+              rows={5}
+              placeholder="Manda a real."
+            />
+          </label>
+          <Button type="submit" variant="brand" size="lg">
+            Preparar mensagem <ArrowUpRight />
+          </Button>
+          <p className="text-[10px] text-muted-foreground">
+            Formulário demonstrativo. Não envia mensagens.
+          </p>
+          {message && (
+            <p className="text-xs leading-6" role="status">
+              {message}
+            </p>
+          )}
+        </form>
+      </section>
+    </>
+  );
+}
