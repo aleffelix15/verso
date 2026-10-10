@@ -14,6 +14,7 @@ import {
   Instagram,
   CreditCard,
   X,
+  Heart,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle, SheetDescription } from "@/components/ui/sheet";
@@ -166,6 +167,17 @@ export function StoreShell({ children }: { children: ReactNode }) {
           <Button
             variant="header"
             size="icon"
+            asChild
+            aria-label="Favoritos"
+            title="Favoritos"
+          >
+            <Link to="/favoritos">
+              <Heart size={19} />
+            </Link>
+          </Button>
+          <Button
+            variant="header"
+            size="icon"
             aria-label="Buscar produtos"
             title="Buscar"
             onClick={() => setSearch(true)}
@@ -219,15 +231,12 @@ export function StoreShell({ children }: { children: ReactNode }) {
               <p className="eyebrow mt-5 text-chalk">FEITO PARA A RUA. NÃO PARA UMA CAIXA.</p>
             </div>
             <div className="footer-links">
-              <p className="footer-heading">EXPLORAR</p>
+              <p className="footer-heading">COLEÇÕES</p>
               <Link to="/loja">Todas as peças</Link>
               <Link to="/drops">Drop 01</Link>
-              <Link to="/sobre">Nossa história</Link>
-              <Link to="/contato">Fala com a gente</Link>
             </div>
             <div className="footer-links">
-              <p className="footer-heading">INFORMAÇÕES</p>
-              <Link to="/trocas">Trocas e devoluções</Link>
+              <p className="footer-heading">AJUDA</p>
               <Button
                 variant="header"
                 className="h-auto justify-start p-0 text-[11px]"
@@ -235,17 +244,20 @@ export function StoreShell({ children }: { children: ReactNode }) {
               >
                 Entrega e frete
               </Button>
-              <Link to="/privacidade">Privacidade</Link>
-              <Link to="/termos">Termos de uso</Link>
-            </div>
-            <div className="footer-links">
-              <p className="footer-heading">CONECTE-SE</p>
-              <Link to="/contato" className="flex items-center gap-2">
-                <Instagram size={14} /> Instagram <ArrowUpRight size={12} />
-              </Link>
+              <Link to="/trocas">Trocas e devoluções</Link>
+              <Link to="/contato">Fale com a gente</Link>
               <Link to="/contato" className="flex items-center gap-2">
                 <MessageCircle size={14} /> WhatsApp <ArrowUpRight size={12} />
               </Link>
+            </div>
+            <div className="footer-links">
+              <p className="footer-heading">MARCA</p>
+              <Link to="/sobre">Nossa história</Link>
+              <Link to="/contato" className="flex items-center gap-2">
+                <Instagram size={14} /> Instagram <ArrowUpRight size={12} />
+              </Link>
+              <Link to="/privacidade">Privacidade</Link>
+              <Link to="/termos">Termos de uso</Link>
               <p className="footer-heading mt-4">FORMAS DE PAGAMENTO</p>
               <div className="flex flex-wrap gap-3 text-[10px]">
                 <CreditCard size={15} />

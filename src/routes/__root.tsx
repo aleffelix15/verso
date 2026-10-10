@@ -12,6 +12,7 @@ import { type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { CartProvider } from "@/components/store/cart-context";
+import { WishlistProvider } from "@/components/store/wishlist-context";
 import { StoreShell } from "@/components/store/store-shell";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 
@@ -80,10 +81,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { name: "theme-color", content: "#f8f8f8", media: "(prefers-color-scheme: light)" },
+      { name: "theme-color", content: "#0a0a0a", media: "(prefers-color-scheme: dark)" },
+      { name: "theme-color", content: "#f8f8f8", id: "theme-color-meta" },
       { property: "og:site_name", content: "VERSO" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
+    scripts: [{ src: "/theme-init.js" }],
     links: [
       {
         rel: "stylesheet",
@@ -123,13 +128,14 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <ThemeProvider>
-        <CartProvider>
-          <StoreShell>
-            <Outlet />
-          </StoreShell>
-        </CartProvider>
+        <WishlistProvider>
+          <CartProvider>
+            <StoreShell>
+              <Outlet />
+            </StoreShell>
+          </CartProvider>
+        </WishlistProvider>
       </ThemeProvider>
     </QueryClientProvider>
   );
