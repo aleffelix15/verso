@@ -146,6 +146,38 @@ function Home() {
           </div>
         ))}
       </section>
+
+      {/* COLEÇÕES */}
+      <Reveal>
+        <section className="container-verso section-space">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {[
+              { title: "CAMISETAS", img: products[0].images[0] },
+              { title: "MOLETONS", img: products[1].images[0] },
+              { title: "ACESSÓRIOS", img: products[2].images[0] },
+            ].map((col) => (
+              <Link
+                key={col.title}
+                to="/loja"
+                className="group relative aspect-[4/5] md:aspect-[3/4] overflow-hidden rounded-md bg-ink"
+              >
+                <img
+                  src={col.img}
+                  alt={col.title}
+                  loading="lazy"
+                  className="w-full h-full object-cover transition-all duration-500 grayscale group-hover:grayscale-0 group-hover:scale-105 opacity-80 group-hover:opacity-100"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-6 md:p-8">
+                  <h3 className="text-2xl md:text-3xl font-display text-white tracking-widest">
+                    {col.title}
+                  </h3>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      </Reveal>
+
       <Reveal>
         <section className="container-verso section-space">
           <div className="section-heading">
