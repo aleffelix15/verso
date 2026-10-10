@@ -8,8 +8,8 @@ export function renderErrorPage(): string {
     <style>
       body { 
         font: 15px/1.5 system-ui, -apple-system, sans-serif; 
-        background: #000; 
-        color: #fff; 
+        background: #0A0A0A; 
+        color: #F8F8F8; 
         display: grid; 
         place-items: center; 
         min-height: 100vh; 
@@ -21,7 +21,7 @@ export function renderErrorPage(): string {
         width: 100%; 
         text-align: center; 
         padding: 2rem; 
-        border: 1px solid #333;
+        border: 1px solid #141414;
         border-radius: 0.5rem;
         background: #0a0a0a;
       }
@@ -40,8 +40,8 @@ export function renderErrorPage(): string {
         letter-spacing: 0.05em;
         border-radius: 0;
       }
-      .primary { background: #fff; color: #000; }
-      .secondary { background: transparent; color: #fff; border-color: #333; }
+      .primary { background: #F8F8F8; color: #0A0A0A; }
+      .secondary { background: transparent; color: #F8F8F8; border-color: #141414; }
       .secondary:hover { background: #111; }
     </style>
   </head>

@@ -253,7 +253,7 @@ export function CartDrawer() {
                     className="w-full text-xs p-2 border border-border bg-transparent outline-none focus:border-primary"
                   />
                   {errors.name && (
-                    <span className="text-xs text-red-500">{errors.name.message}</span>
+                    <span className="text-xs text-brand">{errors.name.message}</span>
                   )}
                 </div>
 
@@ -266,7 +266,7 @@ export function CartDrawer() {
                       className="w-full text-xs p-2 border border-border bg-transparent outline-none focus:border-primary"
                     />
                     {errors.email && (
-                      <span className="text-xs text-red-500">{errors.email.message}</span>
+                      <span className="text-xs text-brand">{errors.email.message}</span>
                     )}
                   </div>
                   <div>
@@ -276,7 +276,7 @@ export function CartDrawer() {
                       className="w-full text-xs p-2 border border-border bg-transparent outline-none focus:border-primary"
                     />
                     {errors.phone && (
-                      <span className="text-xs text-red-500">{errors.phone.message}</span>
+                      <span className="text-xs text-brand">{errors.phone.message}</span>
                     )}
                   </div>
                 </div>
@@ -295,7 +295,7 @@ export function CartDrawer() {
                     className="w-full text-xs p-2 border border-border bg-transparent outline-none focus:border-primary"
                   />
                   {errors.zipCode && (
-                    <span className="text-xs text-red-500">{errors.zipCode.message}</span>
+                    <span className="text-xs text-brand">{errors.zipCode.message}</span>
                   )}
                 </div>
                 <div className="col-span-2">
@@ -305,7 +305,7 @@ export function CartDrawer() {
                     className="w-full text-xs p-2 border border-border bg-transparent outline-none focus:border-primary"
                   />
                   {errors.street && (
-                    <span className="text-xs text-red-500">{errors.street.message}</span>
+                    <span className="text-xs text-brand">{errors.street.message}</span>
                   )}
                 </div>
               </div>
@@ -318,7 +318,7 @@ export function CartDrawer() {
                     className="w-full text-xs p-2 border border-border bg-transparent outline-none focus:border-primary"
                   />
                   {errors.number && (
-                    <span className="text-xs text-red-500">{errors.number.message}</span>
+                    <span className="text-xs text-brand">{errors.number.message}</span>
                   )}
                 </div>
                 <div className="col-span-3">
@@ -377,7 +377,7 @@ export function CartDrawer() {
               )}
 
               {error && (
-                <p role="alert" className="mt-2 text-xs text-red-500 font-semibold">
+                <p role="alert" className="mt-2 text-xs text-brand font-semibold">
                   {error}
                 </p>
               )}

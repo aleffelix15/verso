@@ -17,7 +17,7 @@ export function makeLabelTexture(options: LabelOptions): THREE.CanvasTexture {
   const {
     text,
     fontSize = 64,
-    color = "#ffffff",
+    color = "#F8F8F8",
     bgColor = "transparent",
     width = 512,
     height = 256,
@@ -58,7 +58,7 @@ export function makeLabelTexture(options: LabelOptions): THREE.CanvasTexture {
 }
 
 export function disposeLabelTexture(options: LabelOptions) {
-  const cacheKey = `${options.text}-${options.fontSize ?? 64}-${options.color ?? "#ffffff"}-${options.bgColor ?? "transparent"}-${options.width ?? 512}-${options.height ?? 256}-${options.fontFamily ?? "monospace"}`;
+  const cacheKey = `${options.text}-${options.fontSize ?? 64}-${options.color ?? "#F8F8F8"}-${options.bgColor ?? "transparent"}-${options.width ?? 512}-${options.height ?? 256}-${options.fontFamily ?? "monospace"}`;
 
   if (textureCache.has(cacheKey)) {
     const cached = textureCache.get(cacheKey)!;
