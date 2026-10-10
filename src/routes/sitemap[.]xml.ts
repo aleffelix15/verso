@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { getRouterInstance } from "@tanstack/react-start";
 import { products } from "@/data/products";
+import { getEnv } from "@/lib/env";
 import {
   isSitemapRouteIncluded,
   sitemapPathForLocation,
@@ -9,14 +10,15 @@ import {
   type SitemapEntry,
 } from "@/lib/sitemap";
 
-const BASE_URL = "https://verso-streetwear.lovable.app";
-
 export const Route = createFileRoute("/sitemap.xml")({
   staticData: { sitemap: false },
   server: {
     handlers: {
       GET: async () => {
-        if (!BASE_URL) {
+        let baseUrl: string;
+        try {
+          baseUrl = getEnv().PUBLIC_SITE_URL;
+        } catch {
           return new Response("Sitemap domain not configured", {
             status: 503,
             headers: { "Cache-Control": "no-store" },
@@ -43,7 +45,7 @@ export const Route = createFileRoute("/sitemap.xml")({
             { status: 404, headers: { "Cache-Control": "no-store" } },
           );
         }
-        return new Response(sitemapXML(BASE_URL, entries), {
+        return new Response(sitemapXML(baseUrl, entries), {
           headers: { "Content-Type": "application/xml", "Cache-Control": "public, max-age=3600" },
         });
       },

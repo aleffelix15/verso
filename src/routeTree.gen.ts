@@ -13,8 +13,12 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ContatoRouteImport } from './routes/contato'
 import { Route as DropsRouteImport } from './routes/drops'
 import { Route as LojaRouteImport } from './routes/loja'
+import { Route as PrivacidadeRouteImport } from './routes/privacidade'
+import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SobreRouteImport } from './routes/sobre'
+import { Route as TermosRouteImport } from './routes/termos'
+import { Route as TrocasRouteImport } from './routes/trocas'
 import { Route as PagamentoPendenteRouteImport } from './routes/pagamento/pendente'
 import { Route as PagamentoRecusadoRouteImport } from './routes/pagamento/recusado'
 import { Route as PagamentoSucessoRouteImport } from './routes/pagamento/sucesso'
@@ -41,6 +45,16 @@ const LojaRoute = LojaRouteImport.update({
   path: '/loja',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PrivacidadeRoute = PrivacidadeRouteImport.update({
+  id: '/privacidade',
+  path: '/privacidade',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
+  id: '/robots.txt',
+  path: '/robots.txt',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
@@ -49,6 +63,16 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
 const SobreRoute = SobreRouteImport.update({
   id: '/sobre',
   path: '/sobre',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermosRoute = TermosRouteImport.update({
+  id: '/termos',
+  path: '/termos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TrocasRoute = TrocasRouteImport.update({
+  id: '/trocas',
+  path: '/trocas',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PagamentoPendenteRoute = PagamentoPendenteRouteImport.update({
@@ -82,8 +106,12 @@ export interface FileRoutesByFullPath {
   '/contato': typeof ContatoRoute
   '/drops': typeof DropsRoute
   '/loja': typeof LojaRoute
+  '/privacidade': typeof PrivacidadeRoute
+  '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sobre': typeof SobreRoute
+  '/termos': typeof TermosRoute
+  '/trocas': typeof TrocasRoute
   '/pagamento/pendente': typeof PagamentoPendenteRoute
   '/pagamento/recusado': typeof PagamentoRecusadoRoute
   '/pagamento/sucesso': typeof PagamentoSucessoRoute
@@ -95,8 +123,12 @@ export interface FileRoutesByTo {
   '/contato': typeof ContatoRoute
   '/drops': typeof DropsRoute
   '/loja': typeof LojaRoute
+  '/privacidade': typeof PrivacidadeRoute
+  '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sobre': typeof SobreRoute
+  '/termos': typeof TermosRoute
+  '/trocas': typeof TrocasRoute
   '/pagamento/pendente': typeof PagamentoPendenteRoute
   '/pagamento/recusado': typeof PagamentoRecusadoRoute
   '/pagamento/sucesso': typeof PagamentoSucessoRoute
@@ -109,8 +141,12 @@ export interface FileRoutesById {
   '/contato': typeof ContatoRoute
   '/drops': typeof DropsRoute
   '/loja': typeof LojaRoute
+  '/privacidade': typeof PrivacidadeRoute
+  '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sobre': typeof SobreRoute
+  '/termos': typeof TermosRoute
+  '/trocas': typeof TrocasRoute
   '/pagamento/pendente': typeof PagamentoPendenteRoute
   '/pagamento/recusado': typeof PagamentoRecusadoRoute
   '/pagamento/sucesso': typeof PagamentoSucessoRoute
@@ -124,8 +160,12 @@ export interface FileRouteTypes {
     | '/contato'
     | '/drops'
     | '/loja'
+    | '/privacidade'
+    | '/robots.txt'
     | '/sitemap.xml'
     | '/sobre'
+    | '/termos'
+    | '/trocas'
     | '/pagamento/pendente'
     | '/pagamento/recusado'
     | '/pagamento/sucesso'
@@ -137,8 +177,12 @@ export interface FileRouteTypes {
     | '/contato'
     | '/drops'
     | '/loja'
+    | '/privacidade'
+    | '/robots.txt'
     | '/sitemap.xml'
     | '/sobre'
+    | '/termos'
+    | '/trocas'
     | '/pagamento/pendente'
     | '/pagamento/recusado'
     | '/pagamento/sucesso'
@@ -150,8 +194,12 @@ export interface FileRouteTypes {
     | '/contato'
     | '/drops'
     | '/loja'
+    | '/privacidade'
+    | '/robots.txt'
     | '/sitemap.xml'
     | '/sobre'
+    | '/termos'
+    | '/trocas'
     | '/pagamento/pendente'
     | '/pagamento/recusado'
     | '/pagamento/sucesso'
@@ -164,8 +212,12 @@ export interface RootRouteChildren {
   ContatoRoute: typeof ContatoRoute
   DropsRoute: typeof DropsRoute
   LojaRoute: typeof LojaRoute
+  PrivacidadeRoute: typeof PrivacidadeRoute
+  RobotsDottxtRoute: typeof RobotsDottxtRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   SobreRoute: typeof SobreRoute
+  TermosRoute: typeof TermosRoute
+  TrocasRoute: typeof TrocasRoute
   PagamentoPendenteRoute: typeof PagamentoPendenteRoute
   PagamentoRecusadoRoute: typeof PagamentoRecusadoRoute
   PagamentoSucessoRoute: typeof PagamentoSucessoRoute
@@ -203,6 +255,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LojaRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/privacidade': {
+      id: '/privacidade'
+      path: '/privacidade'
+      fullPath: '/privacidade'
+      preLoaderRoute: typeof PrivacidadeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/robots.txt': {
+      id: '/robots.txt'
+      path: '/robots.txt'
+      fullPath: '/robots.txt'
+      preLoaderRoute: typeof RobotsDottxtRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sitemap.xml': {
       id: '/sitemap.xml'
       path: '/sitemap.xml'
@@ -215,6 +281,20 @@ declare module '@tanstack/react-router' {
       path: '/sobre'
       fullPath: '/sobre'
       preLoaderRoute: typeof SobreRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/termos': {
+      id: '/termos'
+      path: '/termos'
+      fullPath: '/termos'
+      preLoaderRoute: typeof TermosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/trocas': {
+      id: '/trocas'
+      path: '/trocas'
+      fullPath: '/trocas'
+      preLoaderRoute: typeof TrocasRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/pagamento/pendente': {
@@ -260,8 +340,12 @@ const rootRouteChildren: RootRouteChildren = {
   ContatoRoute: ContatoRoute,
   DropsRoute: DropsRoute,
   LojaRoute: LojaRoute,
+  PrivacidadeRoute: PrivacidadeRoute,
+  RobotsDottxtRoute: RobotsDottxtRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   SobreRoute: SobreRoute,
+  TermosRoute: TermosRoute,
+  TrocasRoute: TrocasRoute,
   PagamentoPendenteRoute: PagamentoPendenteRoute,
   PagamentoRecusadoRoute: PagamentoRecusadoRoute,
   PagamentoSucessoRoute: PagamentoSucessoRoute,
