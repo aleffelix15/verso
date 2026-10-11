@@ -4,6 +4,9 @@ import { createContext, useContext, useEffect, useState, ReactNode } from "react
 interface WishlistContextType {
   items: string[];
   toggleWishlist: (slug: string) => void;
+  addFavorite: (slug: string) => void;
+  removeFavorite: (slug: string) => void;
+  clearWishlist: () => void;
   isFavorite: (slug: string) => boolean;
   count: number;
 }
@@ -18,17 +21,49 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
     try {
       const stored = localStorage.getItem("verso-wishlist");
       if (stored) {
-        setItems(JSON.parse(stored));
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed)) {
+          // Garante unicidade e strings válidas
+          const valid = Array.from(new Set(parsed.filter((item): item is string => typeof item === "string")));
+          setItems(valid);
+        }
       }
     } catch {
-      // Ignorar
+      // Ignorar dados corrompidos
     }
     setMounted(true);
   }, []);
 
+  const saveItems = (newItems: string[]) => {
+    const unique = Array.from(new Set(newItems));
+    setItems(unique);
+    try {
+      localStorage.setItem("verso-wishlist", JSON.stringify(unique));
+    } catch {
+      // Ignorar cota de storage
+    }
+  };
+
   const toggleWishlist = (slug: string) => {
+    if (!slug) return;
     setItems((prev) => {
-      const next = prev.includes(slug) ? prev.filter((i) => i !== slug) : [...prev, slug];
+      const exists = prev.includes(slug);
+      const next = exists ? prev.filter((i) => i !== slug) : [...prev, slug];
+      const unique = Array.from(new Set(next));
+      try {
+        localStorage.setItem("verso-wishlist", JSON.stringify(unique));
+      } catch {
+        // Ignorar
+      }
+      return unique;
+    });
+  };
+
+  const addFavorite = (slug: string) => {
+    if (!slug) return;
+    setItems((prev) => {
+      if (prev.includes(slug)) return prev;
+      const next = [...prev, slug];
       try {
         localStorage.setItem("verso-wishlist", JSON.stringify(next));
       } catch {
@@ -38,14 +73,44 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
     });
   };
 
+  const removeFavorite = (slug: string) => {
+    if (!slug) return;
+    setItems((prev) => {
+      const next = prev.filter((i) => i !== slug);
+      try {
+        localStorage.setItem("verso-wishlist", JSON.stringify(next));
+      } catch {
+        // Ignorar
+      }
+      return next;
+    });
+  };
+
+  const clearWishlist = () => {
+    setItems([]);
+    try {
+      localStorage.removeItem("verso-wishlist");
+    } catch {
+      // Ignorar
+    }
+  };
+
   const isFavorite = (slug: string) => {
-    if (!mounted) return false;
+    if (!mounted || !slug) return false;
     return items.includes(slug);
   };
 
   const count = mounted ? items.length : 0;
 
-  const value = { items, toggleWishlist, isFavorite, count };
+  const value = {
+    items,
+    toggleWishlist,
+    addFavorite,
+    removeFavorite,
+    clearWishlist,
+    isFavorite,
+    count,
+  };
 
   return <WishlistContext.Provider value={value}>{children}</WishlistContext.Provider>;
 }

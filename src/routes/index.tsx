@@ -20,428 +20,266 @@ import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion
 import { useRef } from "react";
 
 function Home() {
-  const { scrollY } = useScroll();
   const prefersReducedMotion = useReducedMotion();
-  const heroScale = useTransform(scrollY, [0, 1000], [1, prefersReducedMotion ? 1 : 1.08]);
-
-  const carouselRef = useRef(null);
-  const { scrollXProgress } = useScroll({ container: carouselRef });
-
-  const dropRef = useRef(null);
-  const { scrollYProgress: dropScroll } = useScroll({
-    target: dropRef,
-    offset: ["start end", "end start"],
-  });
-  const dropY1 = useTransform(
-    dropScroll,
-    [0, 1],
-    [prefersReducedMotion ? 0 : 50, prefersReducedMotion ? 0 : -100],
-  );
-  const dropY2 = useTransform(
-    dropScroll,
-    [0, 1],
-    [prefersReducedMotion ? 0 : 150, prefersReducedMotion ? 0 : -200],
-  );
 
   const stagger = {
-    animate: { transition: { staggerChildren: 0.08, delayChildren: 0.3 } },
+    animate: { transition: { staggerChildren: 0.08, delayChildren: 0.2 } },
   };
 
   const fadeUp = {
-    initial: { opacity: 0, y: prefersReducedMotion ? 0 : 20 },
+    initial: { opacity: 0, y: prefersReducedMotion ? 0 : 15 },
     animate: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" as const } },
   };
 
   return (
-    <>
-      <section className="hero relative overflow-hidden">
-        <motion.img
-          style={{ scale: heroScale }}
-          initial={{ opacity: 0, scale: prefersReducedMotion ? 1 : 1.05 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, ease: "easeOut" as const }}
-          className="hero-photo"
-          src={hero}
-          alt="Jovem com moletom oversized VERSO em cenário urbano de concreto"
-          width={1920}
-          height={1120}
-          fetchPriority="high"
-        />
-        <div className="absolute inset-0 bg-black/60 z-0 pointer-events-none"></div>
-        <motion.div
-          className="hero-content container-verso"
-          initial="initial"
-          animate="animate"
-          variants={stagger}
-        >
-          <motion.div variants={fadeUp} className="mb-6">
-            <div className="inline-flex items-center gap-2 rounded-full border border-border bg-surface/80 px-4 py-2 backdrop-blur-md">
-              <span className="size-2 rounded-full bg-brand animate-pulse"></span>
-              <span className="eyebrow text-foreground !m-0 !tracking-widest">
-                DROP 001 DISPONÍVEL
-              </span>
-            </div>
-          </motion.div>
-          <h1 className="hero-title flex flex-col">
-            <span className="overflow-hidden">
-              <motion.span variants={fadeUp} className="block">
-                FÉ QUE
-              </motion.span>
-            </span>
-            <span className="overflow-hidden">
-              <motion.span variants={fadeUp} className="block">
-                VESTE.
-              </motion.span>
-            </span>
-          </h1>
-
-          <div className="mt-8 flex flex-col sm:flex-row items-start sm:items-end justify-between gap-8">
-            <motion.p variants={fadeUp} className="hero-sub !mb-0">
-              Streetwear com propósito.
-              <br />
-              Sem fantasia.
-            </motion.p>
-
+    <div className="bg-[#EDEAE4] text-[#0E0E0E]">
+      {/* HERO EDITORIAL — ASSYMETRIC LAYOUT */}
+      <section className="relative overflow-hidden border-b border-[#0E0E0E]/10">
+        <div className="grid grid-cols-1 lg:grid-cols-2 min-h-[620px] lg:min-h-[720px]">
+          {/* Left column: Typography, Copy, CTA */}
+          <motion.div
+            className="flex flex-col justify-between p-6 sm:p-12 lg:p-16 xl:p-20 z-10"
+            initial="initial"
+            animate="animate"
+            variants={stagger}
+          >
+            {/* Top Tag */}
             <motion.div variants={fadeUp} className="flex items-center gap-3">
-              <span className="eyebrow text-chalk mr-2 hidden sm:block">NOVO DROP</span>
-              <div className="flex gap-2">
-                {products.slice(0, 3).map((p) => (
-                  <Link
-                    key={p.slug}
-                    to="/produto/$slug"
-                    params={{ slug: p.slug }}
-                    className="block overflow-hidden rounded-md border border-paper/20 hover:border-brand transition-colors bg-surface"
-                  >
-                    <img
-                      src={p.images[0]}
-                      alt={p.name}
-                      className="w-16 h-20 object-cover opacity-80 hover:opacity-100 transition-opacity"
-                    />
-                  </Link>
-                ))}
-              </div>
+              <span className="font-mono text-xs uppercase tracking-widest text-[#0E0E0E]/70 font-medium">
+                DROP 01 / 2026
+              </span>
+              <span className="h-px w-16 bg-[#0E0E0E]/40" />
             </motion.div>
-          </div>
-        </motion.div>
-        <motion.div className="hero-bottom" initial="initial" animate="animate" variants={stagger}>
-          <motion.p variants={fadeUp} className="eyebrow flex items-center gap-3">
-            MENOS RUÍDO. MAIS ESSÊNCIA. <ArrowDown size={13} />
-          </motion.p>
-          <motion.div variants={fadeUp} className="hero-tag eyebrow">
-            EST. 2026
-            <br />
-            FEITO COM PROPÓSITO.
-          </motion.div>
-        </motion.div>
-      </section>
-      <section className="manifesto container-verso">
-        {[
-          ["01", "FEITO PRA RUA", "Modelagem livre. Atitude real."],
-          ["02", "ESCRITO COM PROPÓSITO", "A mensagem está nos detalhes."],
-          ["03", "EDIÇÃO LIMITADA", "Poucas peças. Muito significado."],
-        ].map(([n, title, text]) => (
-          <div className="manifesto-item" key={n}>
-            <span className="eyebrow text-chalk">{n} /</span>
-            <div>
-              <h3>{title}</h3>
-              <p>{text}</p>
-            </div>
-          </div>
-        ))}
-      </section>
 
-      {/* COLEÇÕES */}
-      <Reveal>
-        <section className="container-verso section-space">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {[
-              { title: "CAMISETAS", img: products[0].images[0] },
-              { title: "MOLETONS", img: products[1].images[0] },
-              { title: "ACESSÓRIOS", img: products[2].images[0] },
-            ].map((col) => (
-              <Link
-                key={col.title}
-                to="/loja"
-                className="group relative aspect-[4/5] md:aspect-[3/4] overflow-hidden rounded-md bg-surface"
+            {/* Main Headline & Subtitle */}
+            <div className="my-8 lg:my-12">
+              <motion.h1
+                variants={fadeUp}
+                className="font-display text-6xl sm:text-7xl lg:text-8xl xl:text-9xl font-bold uppercase tracking-tight text-[#0E0E0E] leading-[0.88]"
               >
-                <img
-                  src={col.img}
-                  alt={col.title}
-                  loading="lazy"
-                  className="w-full h-full object-cover transition-all duration-500 grayscale group-hover:grayscale-0 group-hover:scale-105 opacity-80 group-hover:opacity-100"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-6 md:p-8">
-                  <h3 className="text-2xl md:text-3xl font-display text-ink tracking-widest">
-                    {col.title}
-                  </h3>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </section>
-      </Reveal>
+                FÉ QUE
+                <br />
+                VESTE.
+              </motion.h1>
 
-      <Reveal>
-        <section className="container-verso section-space">
-          <div className="section-heading">
-            <div>
-              <p className="eyebrow mb-3">OS ESSENCIAIS DA VEZ</p>
-              <h2 className="section-title">MAIS VENDIDOS.</h2>
-            </div>
-            <Link to="/loja" className="text-link">
-              Ver todas as peças <ArrowUpRight size={14} />
-            </Link>
-          </div>
-          <div className="product-grid">
-            {products.slice(0, 4).map((p) => (
-              <ProductCard product={p} key={p.slug} />
-            ))}
-          </div>
-        </section>
-      </Reveal>
-      <Reveal>
-        <section className="container-verso section-space border-t border-border">
-          <div className="section-heading">
-            <div>
-              <p className="eyebrow mb-3">NOVOS VERSOS. MESMA ESSÊNCIA.</p>
-              <h2 className="section-title">CHEGOU AGORA.</h2>
-            </div>
-            <Link to="/loja" className="text-link">
-              Ver lançamentos <ArrowUpRight size={14} />
-            </Link>
-          </div>
-          <div className="product-grid">
-            {products
-              .filter((p) => p.badge === "NOVO")
-              .slice(0, 4)
-              .map((p) => (
-                <ProductCard product={p} key={p.slug} />
-              ))}
-          </div>
-        </section>
-      </Reveal>
-      <section ref={dropRef} className="drop-banner relative overflow-hidden">
-        <img
-          src={community}
-          alt="Três jovens vestindo peças do Drop 01 da VERSO"
-          loading="lazy"
-          width={1600}
-          height={1008}
-        />
-        <div className="drop-inner container-verso relative z-10 flex flex-col justify-center sm:block">
-          <div className="max-w-xl">
-            <p className="eyebrow">PRIMEIRO CAPÍTULO. MESMA ESSÊNCIA.</p>
-            <h2 className="drop-title">
-              DROP 01.
-              <br />O ESSENCIAL.
-            </h2>
-            <p className="mb-5 text-xs sm:text-base text-paper/80">
-              O que você carrega não cabe só no bolso.
-            </p>
-            <div className="mb-8">
-              <Button asChild variant="brand" size="lg">
-                <Link to="/drops">
-                  Conhecer o drop <ArrowUpRight className="ml-3" />
+              <motion.p
+                variants={fadeUp}
+                className="mt-6 text-base sm:text-lg text-[#0E0E0E]/80 max-w-md font-normal leading-relaxed"
+              >
+                Streetwear com propósito. Sem fantasia.
+              </motion.p>
+
+              {/* Main CTA Button */}
+              <motion.div variants={fadeUp} className="mt-8">
+                <Link
+                  to="/drops"
+                  className="inline-flex items-center justify-center gap-3 bg-[#E4572E] text-white px-8 py-4 text-xs font-semibold uppercase tracking-widest hover:bg-[#D04B24] transition-all duration-200 shadow-sm"
+                >
+                  EXPLORAR DROP 01 <ArrowRight size={16} />
                 </Link>
-              </Button>
+              </motion.div>
             </div>
-            <Countdown />
-          </div>
 
-          <div className="hidden lg:block absolute right-0 top-1/2 -translate-y-1/2 w-[450px] h-[550px] pointer-events-none">
-            <motion.div
-              style={{ y: dropY1 }}
-              className="absolute top-0 right-[50px] w-[280px] h-[360px] rounded-lg overflow-hidden border border-paper/10 shadow-2xl z-20 bg-surface"
-            >
-              <img
-                src={products[0].images[0]}
-                className="w-full h-full object-cover opacity-90"
-                alt={products[0].name}
-              />
+            {/* Bottom Verse Tag Detail */}
+            <motion.div variants={fadeUp} className="pt-4 border-t border-[#0E0E0E]/10">
+              <span className="font-mono text-[11px] uppercase tracking-wider text-[#0E0E0E]/70">
+                JO 1:5 — A luz brilha nas trevas.
+              </span>
             </motion.div>
-            <motion.div
-              style={{ y: dropY2 }}
-              className="absolute bottom-[20px] left-0 w-[240px] h-[310px] rounded-lg overflow-hidden border border-paper/10 shadow-2xl z-10 bg-surface"
-            >
-              <img
-                src={products[2].images[0]}
-                className="w-full h-full object-cover opacity-90"
-                alt={products[2].name}
-              />
-            </motion.div>
+          </motion.div>
+
+          {/* Right column: Editorial Fashion Photography */}
+          <div className="relative min-h-[420px] lg:min-h-full overflow-hidden bg-[#1E1E1E]">
+            <motion.img
+              initial={{ scale: prefersReducedMotion ? 1 : 1.05, opacity: 0.8 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+              src={hero}
+              alt="Modelo usando streetwear oversized VERSO em cenário urbano de arquitetura brutalista"
+              width={1600}
+              height={1200}
+              className="w-full h-full object-cover object-center lg:object-top"
+              fetchPriority="high"
+            />
+            {/* Subtle drop pagination indicator on the right edge */}
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 hidden lg:flex flex-col gap-4 font-mono text-[11px] tracking-widest z-10">
+              <span className="text-[#E4572E] font-bold">01</span>
+              <span className="text-white/60">02</span>
+              <span className="text-white/60">03</span>
+            </div>
           </div>
         </div>
       </section>
+
+      {/* BRAND MANIFESTO BAR — 3 PILLARS */}
+      <section className="bg-[#0E0E0E] text-[#EDEAE4] border-b border-[#0E0E0E]">
+        <div className="container-verso py-5 sm:py-6 grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-white/10 gap-4 md:gap-0">
+          <div className="flex items-center gap-4 md:px-6 first:pl-0">
+            <span className="font-mono text-sm text-[#E4572E] font-bold">01</span>
+            <span className="font-display text-lg sm:text-xl uppercase tracking-wider font-bold">
+              FEITO PRA RUA
+            </span>
+          </div>
+          <div className="flex items-center gap-4 md:px-6 pt-3 md:pt-0">
+            <span className="font-mono text-sm text-[#E4572E] font-bold">02</span>
+            <span className="font-display text-lg sm:text-xl uppercase tracking-wider font-bold">
+              PROPÓSITO EM CADA DETALHE
+            </span>
+          </div>
+          <div className="flex items-center gap-4 md:px-6 pt-3 md:pt-0 last:pr-0">
+            <span className="font-mono text-sm text-[#E4572E] font-bold">03</span>
+            <span className="font-display text-lg sm:text-xl uppercase tracking-wider font-bold">
+              PEÇAS EM EDIÇÃO LIMITADA
+            </span>
+          </div>
+        </div>
+      </section>
+
+      {/* PEÇAS EM DESTAQUE */}
+      <section className="container-verso section-space">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 sm:mb-12 gap-4">
+          <div>
+            <div className="w-10 h-1 bg-[#E4572E] mb-3" />
+            <h2 className="font-display text-4xl sm:text-5xl font-bold uppercase tracking-tight text-[#0E0E0E]">
+              PEÇAS EM DESTAQUE
+            </h2>
+          </div>
+          <Link
+            to="/loja"
+            className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-[#0E0E0E] hover:text-[#E4572E] font-semibold transition-colors group"
+          >
+            VER TODA A LOJA{" "}
+            <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
+          </Link>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
+          {products.slice(0, 4).map((p) => (
+            <ProductCard product={p} key={p.slug} />
+          ))}
+        </div>
+      </section>
+
+      {/* EDITORIAL COLLECTION BANNER */}
+      <section className="relative overflow-hidden bg-[#0E0E0E] text-[#EDEAE4]">
+        <div className="relative min-h-[500px] md:min-h-[580px] flex items-center">
+          <img
+            src={community}
+            alt="Coleção Drop 01 VERSO em cenário urbano"
+            className="absolute inset-0 w-full h-full object-cover opacity-40"
+            loading="lazy"
+            width={1600}
+            height={1008}
+          />
+          <div className="container-verso relative z-10 py-16 md:py-24 max-w-2xl">
+            <p className="font-mono text-xs text-[#E4572E] tracking-widest uppercase mb-3 font-semibold">
+              PRIMEIRO CAPÍTULO / DROP 01
+            </p>
+            <h2 className="font-display text-5xl sm:text-7xl lg:text-8xl font-bold uppercase leading-[0.9] mb-6">
+              DROP 01.
+              <br />O ESSENCIAL.
+            </h2>
+            <p className="text-sm sm:text-base text-[#EDEAE4]/80 leading-relaxed mb-8 max-w-lg">
+              Modelagens oversized, tecidos encorpados de até 400 g/m² e versos que carregam verdade. Sem fantasia. Feito pra rua.
+            </p>
+            <div className="flex flex-wrap items-center gap-6">
+              <Link
+                to="/drops"
+                className="inline-flex items-center gap-3 bg-[#E4572E] text-white px-8 py-4 text-xs font-semibold uppercase tracking-widest hover:bg-[#D04B24] transition-colors"
+              >
+                CONHECER O DROP <ArrowRight size={16} />
+              </Link>
+              <Countdown />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* SEÇÃO VERSOS */}
       <Reveal>
         <section className="container-verso section-space">
-          <div className="section-heading">
+          <div className="flex justify-between items-end mb-10 border-b border-[#0E0E0E]/10 pb-6">
             <div>
-              <p className="eyebrow mb-3">NÃO É SÓ UMA ESTAMPA.</p>
-              <h2 className="section-title">CADA PEÇA, UM VERSO.</h2>
+              <p className="font-mono text-xs uppercase tracking-widest text-[#0E0E0E]/60 mb-2 font-medium">
+                NÃO É SÓ UMA ESTAMPA
+              </p>
+              <h2 className="font-display text-4xl sm:text-5xl font-bold uppercase text-[#0E0E0E]">
+                CADA PEÇA, UM VERSO.
+              </h2>
             </div>
-            <span className="eyebrow hidden sm:block">FÉ NOS DETALHES.</span>
+            <span className="font-mono text-xs uppercase tracking-wider text-[#0E0E0E]/60 hidden sm:block">
+              FÉ NOS DETALHES
+            </span>
           </div>
-          <div className="relative">
-            <div
-              ref={carouselRef}
-              className="verse-grid flex md:grid overflow-x-auto snap-x snap-mandatory pb-4 hide-scrollbar"
-            >
-              {[products[0], products[1], products[5]].map(
-                (p) =>
-                  p && (
-                    <motion.div
-                      key={p.slug}
-                      initial={
-                        prefersReducedMotion ? { opacity: 1 } : { scale: 0.92, opacity: 0.5 }
-                      }
-                      whileInView={{ scale: 1, opacity: 1 }}
-                      viewport={{ root: carouselRef, amount: 0.6 }}
-                      transition={{ duration: 0.3 }}
-                      className="snap-center w-[85vw] sm:w-auto shrink-0"
-                    >
-                      <Link
-                        to="/produto/$slug"
-                        params={{ slug: p.slug }}
-                        className="verse-item block h-full"
-                      >
-                        <div className="flex justify-between">
-                          <span className="verse-ref">[ {p.verse} ]</span>
-                          <ArrowUpRight size={16} />
-                        </div>
-                        <h3>{p.statement}</h3>
-                        <p>{p.meaning}</p>
-                        <span className="eyebrow mt-5 block">{p.category} / DROP 01</span>
-                      </Link>
-                    </motion.div>
-                  ),
-              )}
-            </div>
-            <div className="h-1 bg-border/50 w-full max-w-[100px] mt-6 rounded-full overflow-hidden sm:hidden hidden">
-              <motion.div
-                className="h-full bg-primary"
-                style={{ scaleX: scrollXProgress, transformOrigin: "left" }}
-              />
-            </div>
-          </div>
-        </section>
-      </Reveal>
-      <Reveal>
-        <section className="container-verso section-space border-t border-border">
-          <div className="section-heading">
-            <div>
-              <p className="eyebrow mb-3">GENTE REAL. FÉ REAL.</p>
-              <h2 className="section-title">NA RUA COM VERSO.</h2>
-            </div>
-            <Link to="/contato" className="text-link">
-              @verso <ArrowUpRight size={14} />
-            </Link>
-          </div>
-          <div className="community-grid flex md:grid overflow-x-auto snap-x snap-mandatory pb-4">
-            {[
-              [
-                "“Finalmente uma roupa que tem a minha fé, mas também tem a minha cara.”",
-                "Gabriel, 22 · São Paulo",
-                hero,
-              ],
-              [
-                "“O caimento é absurdo. E o detalhe do verso é o que faz a peça ser diferente.”",
-                "Ana, 20 · Curitiba",
-                community,
-              ],
-              [
-                "“Não preciso falar muito. A roupa já carrega o que importa.”",
-                "Lucas, 25 · Belo Horizonte",
-                community,
-              ],
-            ].map(([quote, name, img], i) => (
-              <CommunityItem
-                key={name}
-                quote={quote as string}
-                name={name as string}
-                img={img as string}
-                i={i}
-              />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[products[0], products[1], products[3]].map((p) => (
+              <div
+                key={p.slug}
+                className="p-8 bg-[#F5F2EB] border border-[#0E0E0E]/10 flex flex-col justify-between hover:border-[#0E0E0E]/30 transition-colors"
+              >
+                <div>
+                  <div className="flex justify-between items-center mb-6">
+                    <span className="font-mono text-xs font-bold tracking-wider text-[#E4572E]">
+                      [ {p.verse} ]
+                    </span>
+                    <span className="font-mono text-[10px] text-[#0E0E0E]/50 uppercase tracking-wider">
+                      {p.category}
+                    </span>
+                  </div>
+                  <h3 className="font-display text-2xl sm:text-3xl font-bold uppercase mb-3 text-[#0E0E0E]">
+                    {p.statement}
+                  </h3>
+                  <p className="text-xs sm:text-sm text-[#0E0E0E]/70 leading-relaxed">
+                    {p.meaning}
+                  </p>
+                </div>
+                <Link
+                  to="/produto/$slug"
+                  params={{ slug: p.slug }}
+                  className="mt-8 inline-flex items-center gap-2 font-mono text-xs font-semibold uppercase tracking-wider text-[#0E0E0E] hover:text-[#E4572E] transition-colors group"
+                >
+                  CONHECER A PEÇA{" "}
+                  <ArrowRight size={13} className="transition-transform group-hover:translate-x-1" />
+                </Link>
+              </div>
             ))}
           </div>
-          <p className="mt-4 text-xs text-muted-foreground">
-            Fotografias editoriais e depoimentos ilustrativos.
-          </p>
         </section>
       </Reveal>
-      <section className="about-band section-space">
-        <div className="container-verso about-inner">
+
+      {/* HISTÓRIA DA MARCA / NOSSA ESSÊNCIA */}
+      <section className="bg-[#0E0E0E] text-[#EDEAE4] section-space">
+        <div className="container-verso grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div>
-            <p className="eyebrow mb-5 text-chalk">NOSSA FÉ NÃO É UM FIGURINO.</p>
-            <h2>
+            <p className="font-mono text-xs text-[#E4572E] uppercase tracking-widest mb-4 font-semibold">
+              NOSSA FÉ NÃO É UM FIGURINO
+            </p>
+            <h2 className="font-display text-5xl sm:text-6xl lg:text-7xl font-bold uppercase leading-[0.95]">
               A GENTE VESTE
               <br />O QUE ACREDITA.
             </h2>
           </div>
-          <div>
+          <div className="space-y-6 text-[#EDEAE4]/80 text-sm sm:text-base leading-relaxed">
             <p>
-              A VERSO nasceu de uma vontade simples: criar a roupa que a gente queria usar. Jovem.
-              Cristão. Sem precisar escolher entre quem você é e o que você veste.
+              A VERSO nasceu de uma vontade simples: criar o streetwear que a gente queria usar. Jovem, autêntico e com mensagem real, sem precisar escolher entre quem você é e o que você veste.
             </p>
             <p>
-              Sem símbolos gigantes. Sem rótulos prontos. Só streetwear de verdade, com uma mensagem
-              que faz sentido por dentro.
+              Sem slogans vazios ou rótulos institucionais. Peças com modelagem oversized premium, tecido encorpado e referências bíblicas sutis nos detalhes e nas etiquetas.
             </p>
-            <Link to="/sobre" className="text-link">
-              Conheça nossa história <ArrowRight size={14} />
-            </Link>
+            <div>
+              <Link
+                to="/sobre"
+                className="inline-flex items-center gap-2 font-mono text-xs font-semibold uppercase tracking-widest text-[#EDEAE4] hover:text-[#E4572E] transition-colors pt-2 group"
+              >
+                CONHEÇA NOSSA HISTÓRIA{" "}
+                <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
+              </Link>
+            </div>
           </div>
         </div>
       </section>
+
+      {/* NEWSLETTER */}
       <Newsletter />
-    </>
-  );
-}
-
-function CommunityItem({
-  quote,
-  name,
-  img,
-  i,
-}: {
-  quote: string;
-  name: string;
-  img: string;
-  i: number;
-}) {
-  const ref = useRef<HTMLDivElement>(null);
-  const prefersReducedMotion = useReducedMotion();
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"],
-  });
-  const y = useTransform(
-    scrollYProgress,
-    [0, 1],
-    [prefersReducedMotion ? 0 : -30, prefersReducedMotion ? 0 : 30],
-  );
-
-  return (
-    <div ref={ref} className="group flex flex-col gap-3">
-      <div className="overflow-hidden bg-muted">
-        <motion.img
-          className="community-photo transition-transform duration-700 ease-out sm:group-hover:scale-[1.03]"
-          src={img}
-          alt="Editorial demonstrativo da comunidade VERSO"
-          loading="lazy"
-          width={600}
-          height={600}
-          style={{
-            y,
-            scale: prefersReducedMotion ? 1 : 1.15,
-            objectPosition: i === 0 ? "75% center" : i === 1 ? "left center" : "right center",
-          }}
-        />
-        <div className="absolute inset-0 bg-black/60 z-0 pointer-events-none"></div>
-      </div>
-      <div className="quote">
-        <p>{quote}</p>
-        <span className="eyebrow">{name}</span>
-      </div>
     </div>
   );
 }

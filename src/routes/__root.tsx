@@ -21,11 +21,9 @@ function NotFoundComponent() {
       <div className="max-w-md text-center">
         <h1 className="text-7xl font-bold text-foreground font-heading">404</h1>
         <h2 className="mt-4 text-xl font-semibold text-foreground uppercase tracking-wider">
-          Páginão encontrada
+          Página não encontrada
         </h2>
-        <p className="mt-2 text-sm text-muted-foreground">
-          A páginão existe ou foi movida.
-        </p>
+        <p className="mt-2 text-sm text-muted-foreground">A página não existe ou foi movida.</p>
         <div className="mt-6">
           <Link
             to="/"
@@ -80,8 +78,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-            { name: "theme-color", content: "#0A0A0A" },
-            { property: "og:site_name", content: "VERSO" },
+      { name: "theme-color", content: "#EDEAE4" },
+      { property: "og:site_name", content: "VERSO" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -125,13 +123,13 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-              <WishlistProvider>
-          <CartProvider>
-            <StoreShell>
-              <Outlet />
-            </StoreShell>
-          </CartProvider>
-        </WishlistProvider>
-          </QueryClientProvider>
+      <WishlistProvider>
+        <CartProvider>
+          <StoreShell>
+            <Outlet />
+          </StoreShell>
+        </CartProvider>
+      </WishlistProvider>
+    </QueryClientProvider>
   );
 }

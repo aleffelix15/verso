@@ -15,6 +15,7 @@ export function ProductCard({ product }: { product: Product }) {
   const [imgIndex, setImgIndex] = useState(0);
   const [loaded, setLoaded] = useState(false);
   const [showHeart, setShowHeart] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
   const handleDragEnd = (_event: MouseEvent | TouchEvent | PointerEvent, { offset }: PanInfo) => {
     const swipe = offset.x;
@@ -25,146 +26,173 @@ export function ProductCard({ product }: { product: Product }) {
     }
   };
 
-  const handleDoubleTap = (e: React.MouseEvent) => {
+  const toggleFav = (e: React.MouseEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     vibrate();
-    setShowHeart(true);
-    setTimeout(() => setShowHeart(false), 1000);
+    wishlist?.toggleWishlist(product.slug);
+    if (!isFav) {
+      setShowHeart(true);
+      setTimeout(() => setShowHeart(false), 800);
+    }
   };
 
   return (
     <motion.article
-      className="product-card group relative"
-      initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 30 }}
+      className="product-card group relative flex flex-col"
+      initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-50px" }}
-      transition={{ duration: 0.4, ease: "easeOut" }}
-      whileTap={{ scale: prefersReducedMotion ? 1 : 0.97 }}
+      transition={{ duration: 0.35, ease: "easeOut" }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
       <Link
         to="/produto/$slug"
         params={{ slug: product.slug }}
         aria-label={`Ver ${product.name}`}
-        className="block relative"
+        className="block relative focus-visible:outline-2 focus-visible:outline-[#E4572E]"
       >
         <div
-          className="product-photo relative overflow-hidden bg-muted touch-pan-y border border-border transition-colors duration-300 group-hover:border-primary"
-          onDoubleClick={handleDoubleTap}
+          className="product-photo relative aspect-[4/5] overflow-hidden bg-[#E7E4DC] border border-[rgba(14,14,14,0.08)] transition-colors duration-300 group-hover:border-[#0E0E0E]/40"
         >
-          <motion.div
-            className="w-full h-full flex"
-            drag={product.images[1] ? "x" : false}
-            dragConstraints={{ left: 0, right: 0 }}
-            onDragEnd={handleDragEnd}
-            animate={{ x: imgIndex === 0 ? "0%" : "-100%" }}
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
-          >
-            {product.images.slice(0, 2).map((img, i) => (
+          {/* Main image & Hover secondary image */}
+          <div className="relative w-full h-full overflow-hidden">
+            <motion.img
+              src={product.images[0]}
+              sizes="(min-width:1024px) 25vw, 50vw"
+              alt={product.name}
+              loading="lazy"
+              width={1008}
+              height={1200}
+              onLoad={() => setLoaded(true)}
+              className={`w-full h-full object-cover transition-all duration-500 ease-out sm:group-hover:scale-[1.03] ${
+                product.images[1] && isHovered ? "sm:opacity-0" : "opacity-100"
+              }`}
+            />
+            {product.images[1] && (
               <motion.img
-                key={img}
-                src={img}
+                src={product.images[1]}
                 sizes="(min-width:1024px) 25vw, 50vw"
-                alt={`${product.name} - imagem ${i + 1}`}
+                alt={`${product.name} - detalhe`}
                 loading="lazy"
                 width={1008}
                 height={1200}
-                initial={{ filter: prefersReducedMotion ? "blur(0px)" : "blur(10px)", opacity: 0 }}
-                animate={{
-                  filter: loaded ? "blur(0px)" : prefersReducedMotion ? "blur(0px)" : "blur(10px)",
-                  opacity: loaded ? 1 : 0,
-                }}
-                transition={{ duration: 0.4 }}
-                onLoad={() => setLoaded(true)}
-                className="w-full h-full object-cover shrink-0 pointer-events-none transition-transform duration-500 ease-out sm:group-hover:scale-[1.03]"
+                className={`absolute inset-0 w-full h-full object-cover transition-all duration-500 ease-out sm:group-hover:scale-[1.03] hidden sm:block ${
+                  isHovered ? "opacity-100" : "opacity-0"
+                }`}
               />
-            ))}
-          </motion.div>
+            )}
+          </div>
+
+          {/* Swipeable on mobile if second image exists */}
+          {product.images[1] && (
+            <motion.div
+              className="absolute inset-0 w-full h-full flex sm:hidden"
+              drag="x"
+              dragConstraints={{ left: 0, right: 0 }}
+              onDragEnd={handleDragEnd}
+              animate={{ x: imgIndex === 0 ? "0%" : "-100%" }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            >
+              {product.images.slice(0, 2).map((img, i) => (
+                <img
+                  key={img}
+                  src={img}
+                  alt={`${product.name} - foto ${i + 1}`}
+                  className="w-full h-full object-cover shrink-0 pointer-events-none"
+                />
+              ))}
+            </motion.div>
+          )}
 
           {/* Dots for mobile */}
           {product.images[1] && (
             <div className="absolute bottom-3 left-0 w-full flex justify-center gap-1.5 z-10 sm:hidden">
               {[0, 1].map((i) => (
-                <motion.div
+                <div
                   key={i}
-                  className={`h-1.5 rounded-full ${imgIndex === i ? "bg-foreground" : "bg-foreground/40"}`}
-                  animate={{ width: imgIndex === i ? 12 : 6 }}
-                  transition={{ duration: 0.2 }}
+                  className={`h-1.5 rounded-full transition-all duration-200 ${
+                    imgIndex === i ? "w-3 bg-[#0E0E0E]" : "w-1.5 bg-[#0E0E0E]/40"
+                  }`}
                 />
               ))}
             </div>
           )}
 
+          {/* Heart burst microinteraction */}
           <AnimatePresence>
             {showHeart && (
               <motion.div
                 initial={{ opacity: 0, scale: 0.5, y: 0 }}
-                animate={{ opacity: 1, scale: 1.5, y: -20 }}
-                exit={{ opacity: 0, scale: 1.2 }}
+                animate={{ opacity: 1, scale: 1.4, y: -15 }}
+                exit={{ opacity: 0, scale: 1.1 }}
                 transition={{ duration: 0.4, ease: "easeOut" }}
-                className="absolute inset-0 m-auto flex items-center justify-center text-brand z-30 drop-shadow-md pointer-events-none"
+                className="absolute inset-0 m-auto flex items-center justify-center text-[#E4572E] z-30 pointer-events-none"
               >
-                <Heart size={48} fill="currentColor" />
-                {!prefersReducedMotion &&
-                  [...Array(4)].map((_, i) => (
-                    <motion.div
-                      key={i}
-                      initial={{ x: 0, y: 0, opacity: 1, scale: 1 }}
-                      animate={{
-                        x: (Math.random() - 0.5) * 80,
-                        y: (Math.random() - 0.5) * 80,
-                        opacity: 0,
-                        scale: 0,
-                      }}
-                      transition={{ duration: 0.6, ease: "easeOut" }}
-                      className="absolute bg-brand rounded-full w-2 h-2"
-                    />
-                  ))}
+                <Heart size={44} fill="currentColor" />
               </motion.div>
             )}
           </AnimatePresence>
 
+          {/* Badge */}
           {product.badge && (
-            <motion.span
-              className="product-badge absolute top-3 left-3 z-10"
-              animate={prefersReducedMotion ? {} : { scale: [1, 1.05, 1] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            >
+            <span className="product-badge absolute top-3 left-3 z-10 bg-[#0E0E0E] text-[#EDEAE4] font-mono text-[9px] uppercase tracking-wider px-2 py-1">
               {product.badge}
-            </motion.span>
+            </span>
           )}
 
+          {/* Wishlist toggle button */}
           <button
             type="button"
-            className="absolute top-3 right-3 z-20 p-2 text-muted-foreground hover:text-foreground transition-colors"
-            onClick={(e) => {
-              e.preventDefault();
-              wishlist?.toggleWishlist(product.slug);
-            }}
-            aria-label={isFav ? "Remover dos favoritos" : "Adicionar aos favoritos"}
+            className="absolute top-2.5 right-2.5 z-20 p-2 rounded-full bg-white/70 hover:bg-white text-[#0E0E0E] transition-all backdrop-blur-xs shadow-xs"
+            onClick={toggleFav}
+            aria-label={isFav ? `Remover ${product.name} dos favoritos` : `Adicionar ${product.name} aos favoritos`}
             aria-pressed={isFav}
           >
             <Heart
-              size={20}
-              className="transition-colors"
-              fill={isFav ? "var(--brand)" : "none"}
-              stroke={isFav ? "var(--brand)" : "currentColor"}
+              size={18}
+              className="transition-transform duration-200 hover:scale-110"
+              fill={isFav ? "#E4572E" : "transparent"}
+              stroke={isFav ? "#E4572E" : "#0E0E0E"}
+              strokeWidth={1.75}
             />
           </button>
 
-          <div className="absolute bottom-0 left-0 w-full p-3 translate-y-4 opacity-0 transition-all duration-300 ease-out sm:group-hover:translate-y-0 sm:group-hover:opacity-100 hidden sm:block z-20">
-            <div className="bg-background text-foreground text-center py-3 text-xs font-semibold w-full">
+          {/* Hover overlay CTA */}
+          <div className="absolute bottom-0 left-0 w-full p-3 translate-y-3 opacity-0 transition-all duration-200 ease-out sm:group-hover:translate-y-0 sm:group-hover:opacity-100 hidden sm:block z-20">
+            <div className="bg-[#0E0E0E] text-[#EDEAE4] text-center py-2.5 text-[11px] font-semibold tracking-wider uppercase w-full">
               VER PEÇA
             </div>
           </div>
         </div>
-        <div className="product-info mt-3 flex justify-between items-start">
-          <div>
-            <div className="product-name font-semibold text-sm">{product.shortName}</div>
-            <div className="product-meta text-xs text-muted-foreground mt-1">
-              {product.category} · {product.colors[0]}
+
+        {/* Product meta & info */}
+        <div className="product-info mt-3 flex justify-between items-start gap-2">
+          <div className="min-w-0 flex-1">
+            <span className="block font-mono text-[10px] tracking-widest text-[#0E0E0E]/60 uppercase mb-1">
+              {product.category}
+            </span>
+            <h3 className="product-name font-semibold text-xs sm:text-sm text-[#0E0E0E] truncate">
+              {product.shortName}
+            </h3>
+            {/* Color swatches */}
+            <div className="flex items-center gap-1.5 mt-2">
+              {product.colors.map((c) => (
+                <span
+                  key={c}
+                  className="swatch-dot"
+                  data-color={c.toLowerCase().replace(" ", "-")}
+                  title={c}
+                />
+              ))}
             </div>
           </div>
-          <div className="product-price text-sm">{money(product.priceCents)}</div>
+          <div className="text-right shrink-0">
+            <span className="product-price text-xs sm:text-sm font-semibold text-[#0E0E0E]">
+              {money(product.priceCents)}
+            </span>
+          </div>
         </div>
       </Link>
     </motion.article>

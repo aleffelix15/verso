@@ -17,10 +17,12 @@ export const Route = createFileRoute("/contato")({
 function Contact() {
   const [message, setMessage] = useState("");
   return (
-    <>
-      <div className="container-verso page-heading">
-        <p className="eyebrow">VERSO / CONTATO</p>
-        <h1>
+    <div className="bg-[#EDEAE4] text-[#0E0E0E] min-h-[75vh]">
+      <div className="container-verso page-heading border-b border-[#0E0E0E]/10 pb-8">
+        <p className="font-mono text-xs uppercase tracking-widest text-[#0E0E0E]/60 mb-2 font-medium">
+          VERSO / CONTATO
+        </p>
+        <h1 className="font-display text-5xl sm:text-7xl font-bold uppercase tracking-tight text-[#0E0E0E]">
           SEM ROTEIRO.
           <br />
           PODE CHEGAR.
@@ -133,6 +135,6 @@ function Contact() {
           )}
         </form>
       </section>
-    </>
+    </div>
   );
 }

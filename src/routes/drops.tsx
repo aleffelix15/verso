@@ -16,7 +16,7 @@ export const Route = createFileRoute("/drops")({
 });
 function Drops() {
   return (
-    <>
+    <div className="bg-[#EDEAE4] text-[#0E0E0E] min-h-[75vh]">
       <section className="drop-banner">
         <img
           src={community}
@@ -44,15 +44,21 @@ function Drops() {
         </div>
       </section>
       <section className="container-verso section-space">
-        <div className="section-heading">
+        <div className="section-heading border-b border-[#0E0E0E]/10 pb-6 mb-10">
           <div>
-            <p className="eyebrow mb-3">EDIÇÃO LIMITADA / PRIMEIRO CAPÍTULO</p>
-            <h2 className="section-title">O DROP COMPLETO.</h2>
+            <p className="font-mono text-xs uppercase tracking-widest text-[#0E0E0E]/60 mb-2 font-medium">
+              EDIÇÃO LIMITADA / PRIMEIRO CAPÍTULO
+            </p>
+            <h2 className="font-display text-4xl sm:text-6xl font-bold uppercase text-[#0E0E0E]">
+              O DROP COMPLETO.
+            </h2>
           </div>
         </div>
         {catalogCategories.map((category) => (
-          <div key={category} className="mb-12">
-            <h3 className="mb-6 font-display text-3xl uppercase">{category}</h3>
+          <div key={category} className="mb-14">
+            <h3 className="mb-6 font-display text-2xl sm:text-3xl uppercase font-bold text-[#0E0E0E] border-b border-[#0E0E0E]/10 pb-2">
+              {category}
+            </h3>
             <div className="product-grid">
               {products
                 .filter((p) => p.category === category)
@@ -63,6 +69,6 @@ function Drops() {
           </div>
         ))}
       </section>
-    </>
+    </div>
   );
 }

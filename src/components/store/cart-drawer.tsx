@@ -252,9 +252,7 @@ export function CartDrawer() {
                     placeholder="Nome Completo"
                     className="w-full text-xs p-2 border border-border bg-transparent outline-none focus:border-primary"
                   />
-                  {errors.name && (
-                    <span className="text-xs text-brand">{errors.name.message}</span>
-                  )}
+                  {errors.name && <span className="text-xs text-brand">{errors.name.message}</span>}
                 </div>
 
                 <div className="grid grid-cols-2 gap-2">
