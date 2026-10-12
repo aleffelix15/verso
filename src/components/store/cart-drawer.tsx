@@ -56,6 +56,11 @@ export function CartDrawer() {
 
   const zipCode = watch("zipCode");
   const lastRequest = useRef("");
+  const idempotencyKey = useRef(
+    typeof crypto !== "undefined" && "randomUUID" in crypto
+      ? crypto.randomUUID()
+      : Math.random().toString(36).substring(2),
+  );
   const cartLineKey = cart.items.map((item) => `${item.product.slug}:${item.quantity}`).join(",");
 
   const calculateShipping = useCallback(
@@ -140,6 +145,7 @@ export function CartDrawer() {
         },
         shipping_cep: data.zipCode.replace(/\D/g, ""),
         shipping_method: selectedShipping.id,
+        idempotency_key: idempotencyKey.current,
       };
 
       const res = await createPaymentPreference({ data: payload });
@@ -252,9 +258,7 @@ export function CartDrawer() {
                     placeholder="Nome Completo"
                     className="w-full text-xs p-2 border border-border bg-transparent outline-none focus:border-primary"
                   />
-                  {errors.name && (
-                    <span className="text-xs text-red-500">{errors.name.message}</span>
-                  )}
+                  {errors.name && <span className="text-xs text-brand">{errors.name.message}</span>}
                 </div>
 
                 <div className="grid grid-cols-2 gap-2">
@@ -266,7 +270,7 @@ export function CartDrawer() {
                       className="w-full text-xs p-2 border border-border bg-transparent outline-none focus:border-primary"
                     />
                     {errors.email && (
-                      <span className="text-xs text-red-500">{errors.email.message}</span>
+                      <span className="text-xs text-brand">{errors.email.message}</span>
                     )}
                   </div>
                   <div>
@@ -276,7 +280,7 @@ export function CartDrawer() {
                       className="w-full text-xs p-2 border border-border bg-transparent outline-none focus:border-primary"
                     />
                     {errors.phone && (
-                      <span className="text-xs text-red-500">{errors.phone.message}</span>
+                      <span className="text-xs text-brand">{errors.phone.message}</span>
                     )}
                   </div>
                 </div>
@@ -295,7 +299,7 @@ export function CartDrawer() {
                     className="w-full text-xs p-2 border border-border bg-transparent outline-none focus:border-primary"
                   />
                   {errors.zipCode && (
-                    <span className="text-xs text-red-500">{errors.zipCode.message}</span>
+                    <span className="text-xs text-brand">{errors.zipCode.message}</span>
                   )}
                 </div>
                 <div className="col-span-2">
@@ -305,7 +309,7 @@ export function CartDrawer() {
                     className="w-full text-xs p-2 border border-border bg-transparent outline-none focus:border-primary"
                   />
                   {errors.street && (
-                    <span className="text-xs text-red-500">{errors.street.message}</span>
+                    <span className="text-xs text-brand">{errors.street.message}</span>
                   )}
                 </div>
               </div>
@@ -318,7 +322,7 @@ export function CartDrawer() {
                     className="w-full text-xs p-2 border border-border bg-transparent outline-none focus:border-primary"
                   />
                   {errors.number && (
-                    <span className="text-xs text-red-500">{errors.number.message}</span>
+                    <span className="text-xs text-brand">{errors.number.message}</span>
                   )}
                 </div>
                 <div className="col-span-3">
@@ -377,7 +381,7 @@ export function CartDrawer() {
               )}
 
               {error && (
-                <p role="alert" className="mt-2 text-xs text-red-500 font-semibold">
+                <p role="alert" className="mt-2 text-xs text-brand font-semibold">
                   {error}
                 </p>
               )}
@@ -392,6 +396,7 @@ export function CartDrawer() {
                 variant="brand"
                 className="mt-5 h-12 w-full text-xs tracking-widest"
                 disabled={!selectedShipping || loading}
+                loading={loading}
               >
                 <CreditCard size={15} className="mr-2" />{" "}
                 {loading ? "Gerando Pagamento..." : "IR PARA O PAGAMENTO"}{" "}

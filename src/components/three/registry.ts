@@ -1,10 +1,6 @@
 import React from "react";
 
-export interface ModelProps {
-  color?: string;
-  accent?: string;
-  autoRotate?: boolean;
-}
+import type { ModelProps } from "./types";
 
 export const modelsRegistry: Record<
   string,

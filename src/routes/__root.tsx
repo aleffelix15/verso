@@ -11,9 +11,10 @@ import {
 import { type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
+import { ThemeProvider } from "@/components/store/theme-context";
 import { CartProvider } from "@/components/store/cart-context";
+import { WishlistProvider } from "@/components/store/wishlist-context";
 import { StoreShell } from "@/components/store/store-shell";
-import { ThemeProvider } from "@/components/theme/theme-provider";
 
 function NotFoundComponent() {
   return (
@@ -23,9 +24,7 @@ function NotFoundComponent() {
         <h2 className="mt-4 text-xl font-semibold text-foreground uppercase tracking-wider">
           Página não encontrada
         </h2>
-        <p className="mt-2 text-sm text-muted-foreground">
-          A página que você está procurando não existe ou foi movida.
-        </p>
+        <p className="mt-2 text-sm text-muted-foreground">A página não existe ou foi movida.</p>
         <div className="mt-6">
           <Link
             to="/"
@@ -80,9 +79,25 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { name: "theme-color", content: "#0E0E0E" },
       { property: "og:site_name", content: "VERSO" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+    ],
+    scripts: [
+      {
+        children: `
+          try {
+            const saved = localStorage.getItem('verso-theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (saved === 'light') {
+              document.documentElement.classList.remove('dark');
+            } else {
+              document.documentElement.classList.add('dark');
+            }
+          } catch (e) {}
+        `,
+      },
     ],
     links: [
       {
@@ -106,7 +121,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="pt-BR" suppressHydrationWarning>
+    <html lang="pt-BR" className="dark" suppressHydrationWarning>
       <head>
         <HeadContent />
       </head>
@@ -123,13 +138,14 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <ThemeProvider>
-        <CartProvider>
-          <StoreShell>
-            <Outlet />
-          </StoreShell>
-        </CartProvider>
+        <WishlistProvider>
+          <CartProvider>
+            <StoreShell>
+              <Outlet />
+            </StoreShell>
+          </CartProvider>
+        </WishlistProvider>
       </ThemeProvider>
     </QueryClientProvider>
   );

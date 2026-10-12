@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ContatoRouteImport } from './routes/contato'
 import { Route as DropsRouteImport } from './routes/drops'
+import { Route as FavoritosRouteImport } from './routes/favoritos'
 import { Route as LojaRouteImport } from './routes/loja'
 import { Route as PrivacidadeRouteImport } from './routes/privacidade'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
@@ -38,6 +39,11 @@ const ContatoRoute = ContatoRouteImport.update({
 const DropsRoute = DropsRouteImport.update({
   id: '/drops',
   path: '/drops',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FavoritosRoute = FavoritosRouteImport.update({
+  id: '/favoritos',
+  path: '/favoritos',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LojaRoute = LojaRouteImport.update({
@@ -105,6 +111,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/contato': typeof ContatoRoute
   '/drops': typeof DropsRoute
+  '/favoritos': typeof FavoritosRoute
   '/loja': typeof LojaRoute
   '/privacidade': typeof PrivacidadeRoute
   '/robots.txt': typeof RobotsDottxtRoute
@@ -122,6 +129,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/contato': typeof ContatoRoute
   '/drops': typeof DropsRoute
+  '/favoritos': typeof FavoritosRoute
   '/loja': typeof LojaRoute
   '/privacidade': typeof PrivacidadeRoute
   '/robots.txt': typeof RobotsDottxtRoute
@@ -140,6 +148,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/contato': typeof ContatoRoute
   '/drops': typeof DropsRoute
+  '/favoritos': typeof FavoritosRoute
   '/loja': typeof LojaRoute
   '/privacidade': typeof PrivacidadeRoute
   '/robots.txt': typeof RobotsDottxtRoute
@@ -159,6 +168,7 @@ export interface FileRouteTypes {
     | '/'
     | '/contato'
     | '/drops'
+    | '/favoritos'
     | '/loja'
     | '/privacidade'
     | '/robots.txt'
@@ -176,6 +186,7 @@ export interface FileRouteTypes {
     | '/'
     | '/contato'
     | '/drops'
+    | '/favoritos'
     | '/loja'
     | '/privacidade'
     | '/robots.txt'
@@ -193,6 +204,7 @@ export interface FileRouteTypes {
     | '/'
     | '/contato'
     | '/drops'
+    | '/favoritos'
     | '/loja'
     | '/privacidade'
     | '/robots.txt'
@@ -211,6 +223,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ContatoRoute: typeof ContatoRoute
   DropsRoute: typeof DropsRoute
+  FavoritosRoute: typeof FavoritosRoute
   LojaRoute: typeof LojaRoute
   PrivacidadeRoute: typeof PrivacidadeRoute
   RobotsDottxtRoute: typeof RobotsDottxtRoute
@@ -246,6 +259,13 @@ declare module '@tanstack/react-router' {
       path: '/drops'
       fullPath: '/drops'
       preLoaderRoute: typeof DropsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/favoritos': {
+      id: '/favoritos'
+      path: '/favoritos'
+      fullPath: '/favoritos'
+      preLoaderRoute: typeof FavoritosRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/loja': {
@@ -339,6 +359,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ContatoRoute: ContatoRoute,
   DropsRoute: DropsRoute,
+  FavoritosRoute: FavoritosRoute,
   LojaRoute: LojaRoute,
   PrivacidadeRoute: PrivacidadeRoute,
   RobotsDottxtRoute: RobotsDottxtRoute,

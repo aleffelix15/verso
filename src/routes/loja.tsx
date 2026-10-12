@@ -113,66 +113,97 @@ function Shop() {
     </>
   );
   return (
-    <>
-      <div className="container-verso page-heading">
-        <p className="eyebrow">VERSO / LOJA / DROP 01</p>
-        <h1>TODAS AS PEÇAS.</h1>
-        <p className="mt-4 text-xs text-muted-foreground">
-          Essenciais no corte. Intencionais nos detalhes.
+    <div className="bg-[#EDEAE4] dark:bg-[#1E1E1E] text-[#0E0E0E] dark:text-[#EDEAE4] min-h-[75vh] transition-colors duration-200">
+      <div className="container-verso page-heading border-b border-black/10 dark:border-white/10 pb-8">
+        <p className="font-mono text-xs uppercase tracking-widest text-[#0E0E0E]/60 dark:text-[#A0A0A0] mb-2 font-medium">
+          VERSO / LOJA / DROP 01
+        </p>
+        <h1 className="font-display text-5xl sm:text-7xl font-bold uppercase tracking-tight text-[#0E0E0E] dark:text-[#F5F5F5]">
+          TODAS AS PEÇAS.
+        </h1>
+        <p className="mt-3 text-xs sm:text-sm text-[#0E0E0E]/70 dark:text-[#A0A0A0] max-w-lg">
+          Essenciais no corte. Intencionais nos detalhes. 28 peças do Drop 01.
         </p>
       </div>
-      <div className="container-verso shop-layout">
+
+      <div className="container-verso shop-layout pt-8">
         <aside className="desktop-filters">{panel}</aside>
         <div>
-          <div className="shop-toolbar">
+          <div className="shop-toolbar flex items-center justify-between border-b border-black/10 dark:border-white/10 pb-4 mb-8">
             <div className="flex items-center gap-3">
               <Button
                 variant="ghost"
-                className="h-auto p-0 sm:hidden"
+                className="h-auto p-0 sm:hidden text-xs font-semibold"
                 onClick={() => setFilters(true)}
               >
-                <SlidersHorizontal size={14} />
+                <SlidersHorizontal size={14} className="mr-1" />
                 Filtros {active > 0 && `(${active})`}
               </Button>
-              <span>{filtered.length} peças</span>
+              <span className="font-mono text-xs text-[#0E0E0E]/60 dark:text-[#A0A0A0] uppercase tracking-wider">
+                {filtered.length} {filtered.length === 1 ? "peça" : "peças"}
+              </span>
             </div>
             <select
               value={sort}
               onChange={(e) => setSort(e.target.value)}
               aria-label="Ordenar produtos"
+              className="bg-transparent border border-black/20 dark:border-white/20 text-xs px-3 py-2 font-mono uppercase focus:outline-none focus:border-[#FF4D00] text-[#0E0E0E] dark:text-[#EDEAE4] dark:bg-[#1E1E1E]"
             >
-              <option value="featured">Mais relevantes</option>
-              <option value="low">Menor preço</option>
-              <option value="high">Maior preço</option>
-              <option value="name">Nome: A–Z</option>
+              <option value="featured" className="dark:bg-[#1E1E1E]">
+                Mais relevantes
+              </option>
+              <option value="low" className="dark:bg-[#1E1E1E]">
+                Menor preço
+              </option>
+              <option value="high" className="dark:bg-[#1E1E1E]">
+                Maior preço
+              </option>
+              <option value="name" className="dark:bg-[#1E1E1E]">
+                Nome: A–Z
+              </option>
             </select>
           </div>
+
           <div className="product-grid shop-grid">
             {filtered.map((p) => (
               <ProductCard product={p} key={p.slug} />
             ))}
           </div>
+
           {!filtered.length && (
-            <div className="py-16 text-center">
-              <h2 className="text-3xl">NENHUMA PEÇA POR AQUI.</h2>
-              <p className="my-5 text-xs">Tenta mudar os filtros.</p>
-              <Button variant="ink" onClick={clear}>
-                Limpar filtros
+            <div className="py-20 text-center max-w-md mx-auto">
+              <h2 className="font-display text-3xl sm:text-4xl font-bold uppercase text-[#0E0E0E] dark:text-[#F5F5F5] mb-3">
+                NENHUMA PEÇA ENCONTRADA
+              </h2>
+              <p className="text-sm text-[#0E0E0E]/70 dark:text-[#A0A0A0] mb-6">
+                Não encontramos peças com os filtros selecionados. Tente ajustar os parâmetros de
+                tamanho, cor ou preço.
+              </p>
+              <Button variant="brand" onClick={clear}>
+                Limpar todos os filtros
               </Button>
             </div>
           )}
         </div>
       </div>
+
       <Sheet open={filters} onOpenChange={setFilters}>
-        <SheetContent side="left" className="overflow-y-auto">
-          <SheetTitle className="font-display text-3xl">FILTROS</SheetTitle>
-          <SheetDescription>Encontre sua próxima peça.</SheetDescription>
-          {panel}
-          <Button variant="brand" className="mt-5 w-full" onClick={() => setFilters(false)}>
+        <SheetContent
+          side="left"
+          className="overflow-y-auto bg-[#EDEAE4] dark:bg-[#1E1E1E] text-[#0E0E0E] dark:text-[#EDEAE4]"
+        >
+          <SheetTitle className="font-display text-3xl font-bold uppercase text-[#0E0E0E] dark:text-[#F5F5F5]">
+            FILTROS
+          </SheetTitle>
+          <SheetDescription className="text-xs text-[#0E0E0E]/70 dark:text-[#A0A0A0]">
+            Encontre sua próxima peça VERSO.
+          </SheetDescription>
+          <div className="mt-6">{panel}</div>
+          <Button variant="brand" className="mt-8 w-full" onClick={() => setFilters(false)}>
             Ver {filtered.length} peças
           </Button>
         </SheetContent>
       </Sheet>
-    </>
+    </div>
   );
 }

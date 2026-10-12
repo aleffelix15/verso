@@ -12,7 +12,7 @@ dist
 dist-ssr
 .output
 .vinxi
-.tanstack/**
+.tanstack/
 .nitro
 *.local
 
@@ -38,4 +38,3 @@ dist-ssr
 
 # Vercel output
 .vercel
-

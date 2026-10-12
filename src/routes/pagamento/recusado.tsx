@@ -11,7 +11,7 @@ export const Route = createFileRoute("/pagamento/recusado")({
 function FailurePage() {
   return (
     <section className="container-verso section-space flex flex-col items-center text-center">
-      <XCircle size={80} className="text-red-500 mb-6" />
+      <XCircle size={80} className="text-brand mb-6" />
       <h1 className="text-4xl font-display mb-4">PAGAMENTO RECUSADO.</h1>
       <p className="text-muted-foreground mb-8 max-w-md">
         Infelizmente o seu pagamento não foi aprovado pela operadora. Você pode tentar novamente

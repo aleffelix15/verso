@@ -1,9 +1,14 @@
 import { createServerFn } from "@tanstack/react-start";
-import { calculateFreightOptions, freightRequestSchema } from "./freight-calculator";
+import { calculateFreightWithProvider, freightServiceRequestSchema } from "./freight-service";
 
 export const calculateFreight = createServerFn({ method: "POST" })
-  .validator(freightRequestSchema)
-  .handler(async ({ data }) => ({
-    success: true as const,
-    options: calculateFreightOptions(data),
-  }));
+  .validator(freightServiceRequestSchema)
+  .handler(async ({ data }) => {
+    const result = await calculateFreightWithProvider(data);
+    return {
+      success: true as const,
+      options: result.options,
+      expiresAt: result.expiresAt,
+      isFreeShippingEligible: result.isFreeShippingEligible,
+    };
+  });
