@@ -56,6 +56,11 @@ export function CartDrawer() {
 
   const zipCode = watch("zipCode");
   const lastRequest = useRef("");
+  const idempotencyKey = useRef(
+    typeof crypto !== "undefined" && "randomUUID" in crypto
+      ? crypto.randomUUID()
+      : Math.random().toString(36).substring(2),
+  );
   const cartLineKey = cart.items.map((item) => `${item.product.slug}:${item.quantity}`).join(",");
 
   const calculateShipping = useCallback(
@@ -140,6 +145,7 @@ export function CartDrawer() {
         },
         shipping_cep: data.zipCode.replace(/\D/g, ""),
         shipping_method: selectedShipping.id,
+        idempotency_key: idempotencyKey.current,
       };
 
       const res = await createPaymentPreference({ data: payload });
@@ -390,6 +396,7 @@ export function CartDrawer() {
                 variant="brand"
                 className="mt-5 h-12 w-full text-xs tracking-widest"
                 disabled={!selectedShipping || loading}
+                loading={loading}
               >
                 <CreditCard size={15} className="mr-2" />{" "}
                 {loading ? "Gerando Pagamento..." : "IR PARA O PAGAMENTO"}{" "}

@@ -45,9 +45,14 @@ export function Scene({ children, animated = false, controlsRef }: SceneProps) {
 
   useEffect(() => {
     if (!containerRef.current) return;
-    const observer = new IntersectionObserver(([entry]) => setIsVisible(entry.isIntersecting), {
-      threshold: 0.1,
-    });
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry) setIsVisible(entry.isIntersecting);
+      },
+      {
+        threshold: 0.1,
+      },
+    );
     observer.observe(containerRef.current);
     return () => observer.disconnect();
   }, []);

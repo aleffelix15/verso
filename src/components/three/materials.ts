@@ -26,9 +26,12 @@ function generateFabricBumpMap() {
   for (let y = 0; y < 256; y += 4) {
     for (let x = 0; x < 256; x += 4) {
       const idx = (y * 256 + x) * 4;
-      data[idx] += 15;
-      data[idx + 1] += 15;
-      data[idx + 2] += 15;
+      const d0 = data[idx];
+      const d1 = data[idx + 1];
+      const d2 = data[idx + 2];
+      if (d0 !== undefined) data[idx] = Math.min(255, d0 + 15);
+      if (d1 !== undefined) data[idx + 1] = Math.min(255, d1 + 15);
+      if (d2 !== undefined) data[idx + 2] = Math.min(255, d2 + 15);
     }
   }
 

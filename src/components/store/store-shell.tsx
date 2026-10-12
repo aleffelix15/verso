@@ -65,7 +65,9 @@ export function StoreShell({ children }: { children: ReactNode }) {
   const { theme, toggleTheme } = useTheme();
   const results = query.trim()
     ? products.filter((p) =>
-        `${p.name} ${p.verse} ${p.category} ${p.statement}`.toLowerCase().includes(query.toLowerCase()),
+        `${p.name} ${p.verse} ${p.category} ${p.statement}`
+          .toLowerCase()
+          .includes(query.toLowerCase()),
       )
     : [];
 
@@ -170,14 +172,33 @@ export function StoreShell({ children }: { children: ReactNode }) {
         transition={{ duration: 0.3, ease: "easeOut" }}
         className="site-header container-verso sticky top-0 z-50 bg-[#EDEAE4]/95 dark:bg-[#0E0E0E]/95 backdrop-blur-md border-b border-black/10 dark:border-white/10"
       >
-        <Link to="/" className="brand text-[#0E0E0E] dark:text-[#EDEAE4] font-display font-extrabold tracking-wider text-2xl sm:text-3xl" aria-label="VERSO — início">
+        <Link
+          to="/"
+          className="brand text-[#0E0E0E] dark:text-[#EDEAE4] font-display font-extrabold tracking-wider text-2xl sm:text-3xl"
+          aria-label="VERSO — início"
+        >
           VERSO<span className="text-[#FF4D00]">.</span>
         </Link>
 
         <nav className="site-nav" aria-label="Menu principal">
-          <Link to="/loja" className="text-[#0E0E0E] dark:text-[#EDEAE4] hover:text-[#FF4D00] dark:hover:text-[#FF4D00] transition-colors">Loja</Link>
-          <Link to="/drops" className="text-[#0E0E0E] dark:text-[#EDEAE4] hover:text-[#FF4D00] dark:hover:text-[#FF4D00] transition-colors">Drops</Link>
-          <Link to="/sobre" className="text-[#0E0E0E] dark:text-[#EDEAE4] hover:text-[#FF4D00] dark:hover:text-[#FF4D00] transition-colors">Nossa Essência</Link>
+          <Link
+            to="/loja"
+            className="text-[#0E0E0E] dark:text-[#EDEAE4] hover:text-[#FF4D00] dark:hover:text-[#FF4D00] transition-colors"
+          >
+            Loja
+          </Link>
+          <Link
+            to="/drops"
+            className="text-[#0E0E0E] dark:text-[#EDEAE4] hover:text-[#FF4D00] dark:hover:text-[#FF4D00] transition-colors"
+          >
+            Drops
+          </Link>
+          <Link
+            to="/sobre"
+            className="text-[#0E0E0E] dark:text-[#EDEAE4] hover:text-[#FF4D00] dark:hover:text-[#FF4D00] transition-colors"
+          >
+            Nossa Essência
+          </Link>
         </nav>
 
         <div className="header-actions items-center">
@@ -378,13 +399,18 @@ export function StoreShell({ children }: { children: ReactNode }) {
                 <X size={24} />
               </Button>
             </div>
-            <p className="text-xs font-mono text-[#0E0E0E]/60 dark:text-[#EDEAE4]/60 mt-1 uppercase tracking-wider">FÉ QUE VESTE.</p>
+            <p className="text-xs font-mono text-[#0E0E0E]/60 dark:text-[#EDEAE4]/60 mt-1 uppercase tracking-wider">
+              FÉ QUE VESTE.
+            </p>
             <nav className="mt-12 flex flex-col gap-6 font-display text-4xl sm:text-5xl">
               {[
                 { name: "LOJA", path: "/loja" },
                 { name: "DROPS", path: "/drops" },
                 { name: "NOSSA ESSÊNCIA", path: "/sobre" },
-                { name: `FAVORITOS ${wishlist.count > 0 ? `(${wishlist.count})` : ""}`, path: "/favoritos" },
+                {
+                  name: `FAVORITOS ${wishlist.count > 0 ? `(${wishlist.count})` : ""}`,
+                  path: "/favoritos",
+                },
                 { name: "CONTATO", path: "/contato" },
               ].map((item, i) => (
                 <motion.div
@@ -412,7 +438,11 @@ export function StoreShell({ children }: { children: ReactNode }) {
               className="mt-6 flex items-center justify-between w-full py-4 border-t border-black/10 dark:border-white/10 font-mono text-sm tracking-wider uppercase text-left text-[#0E0E0E] dark:text-[#EDEAE4] hover:text-[#FF4D00] transition-colors"
             >
               <span>{theme === "dark" ? "MODO CLARO" : "MODO ESCURO"}</span>
-              {theme === "dark" ? <Sun size={20} className="text-[#FF4D00]" /> : <Moon size={20} className="text-[#FF4D00]" />}
+              {theme === "dark" ? (
+                <Sun size={20} className="text-[#FF4D00]" />
+              ) : (
+                <Moon size={20} className="text-[#FF4D00]" />
+              )}
             </button>
 
             <div className="mt-auto text-center text-xs text-[#0E0E0E]/40 dark:text-[#EDEAE4]/40 pb-4 font-mono uppercase tracking-widest">
@@ -471,10 +501,16 @@ export function StoreShell({ children }: { children: ReactNode }) {
                   className="h-16 w-14 object-cover"
                 />
                 <div className="min-w-0">
-                  <span className="text-[10px] font-mono text-[#FF4D00] block uppercase">{p.verse} · {p.category}</span>
-                  <span className="text-xs font-semibold text-[#0E0E0E] dark:text-[#EDEAE4] block truncate">{p.name}</span>
+                  <span className="text-[10px] font-mono text-[#FF4D00] block uppercase">
+                    {p.verse} · {p.category}
+                  </span>
+                  <span className="text-xs font-semibold text-[#0E0E0E] dark:text-[#EDEAE4] block truncate">
+                    {p.name}
+                  </span>
                 </div>
-                <span className="text-xs font-semibold text-[#0E0E0E] dark:text-[#EDEAE4] shrink-0">{money(p.priceCents)}</span>
+                <span className="text-xs font-semibold text-[#0E0E0E] dark:text-[#EDEAE4] shrink-0">
+                  {money(p.priceCents)}
+                </span>
               </Link>
             ))}
             {query.trim() && results.length === 0 && (
@@ -505,13 +541,21 @@ export function StoreShell({ children }: { children: ReactNode }) {
               <span className="font-mono text-[10px] uppercase tracking-wider text-[#FF4D00] font-semibold block mb-1">
                 STATUS DA SESSÃO
               </span>
-              <p className="text-sm font-semibold text-[#0E0E0E] dark:text-[#EDEAE4]">Visitante Convidado</p>
+              <p className="text-sm font-semibold text-[#0E0E0E] dark:text-[#EDEAE4]">
+                Visitante Convidado
+              </p>
               <p className="text-xs text-[#0E0E0E]/70 dark:text-[#EDEAE4]/70 mt-1 leading-relaxed">
-                Suas peças favoritas e itens na sacola são salvos com segurança no seu navegador. Quando você finaliza uma compra pelo Mercado Pago, os dados do pedido são confirmados no checkout.
+                Suas peças favoritas e itens na sacola são salvos com segurança no seu navegador.
+                Quando você finaliza uma compra pelo Mercado Pago, os dados do pedido são
+                confirmados no checkout.
               </p>
             </div>
             <div className="grid grid-cols-2 gap-3 pt-2">
-              <Button asChild variant="outline" className="border-black/20 dark:border-white/20 text-xs">
+              <Button
+                asChild
+                variant="outline"
+                className="border-black/20 dark:border-white/20 text-xs"
+              >
                 <Link to="/favoritos" onClick={() => setAccount(false)}>
                   Favoritos ({wishlist.count})
                 </Link>

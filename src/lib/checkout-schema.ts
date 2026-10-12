@@ -36,6 +36,7 @@ export const checkoutRequestSchema = z
     payer: payerSchema,
     shipping_cep: z.string().regex(/^\d{8}$/),
     shipping_method: z.enum(["pac", "sedex"]),
+    idempotency_key: z.string().max(100).optional(),
   })
   .strict()
   .refine((data) => data.shipping_cep === data.payer.address.zip_code, {

@@ -1,5 +1,5 @@
 export interface ModelProps {
-  color?: string;
-  accent?: string;
-  autoRotate?: boolean;
+  color?: string | undefined;
+  accent?: string | undefined;
+  autoRotate?: boolean | undefined;
 }

@@ -24,7 +24,9 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
         const parsed = JSON.parse(stored);
         if (Array.isArray(parsed)) {
           // Garante unicidade e strings válidas
-          const valid = Array.from(new Set(parsed.filter((item): item is string => typeof item === "string")));
+          const valid = Array.from(
+            new Set(parsed.filter((item): item is string => typeof item === "string")),
+          );
           setItems(valid);
         }
       }

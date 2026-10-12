@@ -33,15 +33,17 @@ export function FavoritosPage() {
     .filter(Boolean) as Product[];
 
   const handleOpenAdd = (product: Product) => {
-    if (product.sizes.length === 1 && product.colors.length === 1) {
-      cart.add(product, product.sizes[0], product.colors[0], 1);
+    const firstSize = product.sizes[0];
+    const firstColor = product.colors[0];
+    if (product.sizes.length === 1 && product.colors.length === 1 && firstSize && firstColor) {
+      cart.add(product, firstSize, firstColor, 1);
       setAddedSlug(product.slug);
       setTimeout(() => setAddedSlug(null), 1800);
       return;
     }
     setSelectedProduct(product);
-    setSelectedSize(product.sizes.length === 1 ? product.sizes[0] : "");
-    setSelectedColor(product.colors[0] ?? "");
+    setSelectedSize(product.sizes.length === 1 ? (firstSize ?? "") : "");
+    setSelectedColor(firstColor ?? "");
     setError("");
   };
 
@@ -85,7 +87,11 @@ export function FavoritosPage() {
                 Limpar lista
               </Button>
             )}
-            <Button asChild variant="outline" className="border-black/20 dark:border-white/20 text-xs text-[#0E0E0E] dark:text-[#EDEAE4]">
+            <Button
+              asChild
+              variant="outline"
+              className="border-black/20 dark:border-white/20 text-xs text-[#0E0E0E] dark:text-[#EDEAE4]"
+            >
               <Link to="/loja" className="inline-flex items-center gap-2">
                 CONTINUAR COMPRANDO <ArrowRight size={14} />
               </Link>
@@ -109,7 +115,8 @@ export function FavoritosPage() {
               Você ainda não salvou suas peças favoritas
             </h2>
             <p className="text-sm text-[#0E0E0E]/70 dark:text-[#A0A0A0] leading-relaxed mb-8">
-              Explore nossa loja, conheça os versos e referências de cada peça e clique no ícone de coração para guardar o que você mais gostou.
+              Explore nossa loja, conheça os versos e referências de cada peça e clique no ícone de
+              coração para guardar o que você mais gostou.
             </p>
             <Link
               to="/loja"

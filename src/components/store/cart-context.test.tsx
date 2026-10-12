@@ -49,7 +49,7 @@ describe("CartContext", () => {
       result.current.update(0, 3);
     });
 
-    expect(result.current.items[0].quantity).toBe(3);
+    expect(result.current.items[0]?.quantity).toBe(3);
     expect(result.current.count).toBe(3);
     expect(result.current.subtotal).toBe(38700);
 
@@ -76,16 +76,16 @@ describe("CartContext", () => {
 
     const stored = JSON.parse(localStorage.getItem("verso-cart") || "[]");
     expect(stored.length).toBe(1);
-    expect(stored[0].product.slug).toBe("camiseta-luz");
-    expect(stored[0].size).toBe("G");
+    expect(stored[0]?.product?.slug).toBe("camiseta-luz");
+    expect(stored[0]?.size).toBe("G");
 
     unmount();
 
     // Re-mount and check hydration from localStorage
     const { result: rehydrated } = renderHook(() => useCart(), { wrapper });
     expect(rehydrated.current.items.length).toBe(1);
-    expect(rehydrated.current.items[0].product.slug).toBe("camiseta-luz");
-    expect(rehydrated.current.items[0].size).toBe("G");
+    expect(rehydrated.current.items[0]?.product.slug).toBe("camiseta-luz");
+    expect(rehydrated.current.items[0]?.size).toBe("G");
   });
 
   it("should clear all items with clear()", () => {
@@ -106,6 +106,41 @@ describe("CartContext", () => {
       result.current.clear();
     });
 
+    expect(result.current.items).toEqual([]);
+    expect(result.current.count).toBe(0);
+  });
+
+  it("should discard obsolete products and deduplicate identical variants on hydration", () => {
+    // Coloca item com slug inexistente e duplicata de variante no localStorage
+    localStorage.setItem(
+      "verso-cart",
+      JSON.stringify([
+        { slug: "produto-antigo-apagado", size: "M", color: "Preto", quantity: 2 },
+        { slug: "camiseta-luz", size: "G", color: "Preto lavado", quantity: 3 },
+        { slug: "camiseta-luz", size: "G", color: "Preto lavado", quantity: 2 },
+      ]),
+    );
+
+    const wrapper = ({ children }: { children: React.ReactNode }) => (
+      <CartProvider>{children}</CartProvider>
+    );
+
+    const { result } = renderHook(() => useCart(), { wrapper });
+
+    // Produto inexistente descartado, duplicatas agrupadas (3 + 2 = 5)
+    expect(result.current.items.length).toBe(1);
+    expect(result.current.items[0]?.product.slug).toBe("camiseta-luz");
+    expect(result.current.items[0]?.quantity).toBe(5);
+  });
+
+  it("gracefully recovers from corrupted JSON in localStorage", () => {
+    localStorage.setItem("verso-cart", "corrupted-invalid-json{{{");
+
+    const wrapper = ({ children }: { children: React.ReactNode }) => (
+      <CartProvider>{children}</CartProvider>
+    );
+
+    const { result } = renderHook(() => useCart(), { wrapper });
     expect(result.current.items).toEqual([]);
     expect(result.current.count).toBe(0);
   });

@@ -86,7 +86,10 @@ export function Home() {
             </div>
 
             {/* Bottom Verse Tag Detail */}
-            <motion.div variants={fadeUp} className="pt-4 border-t border-black/10 dark:border-white/10">
+            <motion.div
+              variants={fadeUp}
+              className="pt-4 border-t border-black/10 dark:border-white/10"
+            >
               <span className="font-mono text-[11px] uppercase tracking-wider text-[#0E0E0E]/70 dark:text-[#EDEAE4]/70">
                 JO 1:5 — A luz brilha nas trevas.
               </span>
@@ -208,7 +211,8 @@ export function Home() {
               <br />O ESSENCIAL.
             </h2>
             <p className="text-sm sm:text-base text-[#EDEAE4]/80 leading-relaxed mb-8 max-w-lg">
-              Modelagens oversized, tecidos encorpados de até 400 g/m² e versos que carregam verdade. Sem fantasia. Feito pra rua.
+              Modelagens oversized, tecidos encorpados de até 400 g/m² e versos que carregam
+              verdade. Sem fantasia. Feito pra rua.
             </p>
             <div className="flex flex-wrap items-center gap-6">
               <Link
@@ -240,37 +244,42 @@ export function Home() {
             </span>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[products[0], products[1], products[3]].map((p) => (
-              <div
-                key={p.slug}
-                className="p-8 bg-[#F5F2EB] dark:bg-[#262626] border border-black/10 dark:border-white/10 flex flex-col justify-between hover:border-black/30 dark:hover:border-white/30 transition-colors"
-              >
-                <div>
-                  <div className="flex justify-between items-center mb-6">
-                    <span className="font-mono text-xs font-bold tracking-wider text-[#FF4D00]">
-                      [ {p.verse} ]
-                    </span>
-                    <span className="font-mono text-[10px] text-[#0E0E0E]/50 dark:text-white/50 uppercase tracking-wider">
-                      {p.category}
-                    </span>
-                  </div>
-                  <h3 className="font-display text-2xl sm:text-3xl font-bold uppercase mb-3 text-[#0E0E0E] dark:text-[#F5F5F5]">
-                    {p.statement}
-                  </h3>
-                  <p className="text-xs sm:text-sm text-[#0E0E0E]/70 dark:text-[#A0A0A0] leading-relaxed">
-                    {p.meaning}
-                  </p>
-                </div>
-                <Link
-                  to="/produto/$slug"
-                  params={{ slug: p.slug }}
-                  className="mt-8 inline-flex items-center gap-2 font-mono text-xs font-semibold uppercase tracking-wider text-[#0E0E0E] dark:text-[#EDEAE4] hover:text-[#FF4D00] dark:hover:text-[#FF4D00] transition-colors group"
+            {[products[0], products[1], products[3]]
+              .filter((p): p is (typeof products)[number] => Boolean(p))
+              .map((p) => (
+                <div
+                  key={p.slug}
+                  className="p-8 bg-[#F5F2EB] dark:bg-[#262626] border border-black/10 dark:border-white/10 flex flex-col justify-between hover:border-black/30 dark:hover:border-white/30 transition-colors"
                 >
-                  CONHECER A PEÇA{" "}
-                  <ArrowRight size={13} className="transition-transform group-hover:translate-x-1" />
-                </Link>
-              </div>
-            ))}
+                  <div>
+                    <div className="flex justify-between items-center mb-6">
+                      <span className="font-mono text-xs font-bold tracking-wider text-[#FF4D00]">
+                        [ {p.verse} ]
+                      </span>
+                      <span className="font-mono text-[10px] text-[#0E0E0E]/50 dark:text-white/50 uppercase tracking-wider">
+                        {p.category}
+                      </span>
+                    </div>
+                    <h3 className="font-display text-2xl sm:text-3xl font-bold uppercase mb-3 text-[#0E0E0E] dark:text-[#F5F5F5]">
+                      {p.statement}
+                    </h3>
+                    <p className="text-xs sm:text-sm text-[#0E0E0E]/70 dark:text-[#A0A0A0] leading-relaxed">
+                      {p.meaning}
+                    </p>
+                  </div>
+                  <Link
+                    to="/produto/$slug"
+                    params={{ slug: p.slug }}
+                    className="mt-8 inline-flex items-center gap-2 font-mono text-xs font-semibold uppercase tracking-wider text-[#0E0E0E] dark:text-[#EDEAE4] hover:text-[#FF4D00] dark:hover:text-[#FF4D00] transition-colors group"
+                  >
+                    CONHECER A PEÇA{" "}
+                    <ArrowRight
+                      size={13}
+                      className="transition-transform group-hover:translate-x-1"
+                    />
+                  </Link>
+                </div>
+              ))}
           </div>
         </section>
       </Reveal>
@@ -368,10 +377,13 @@ export function Home() {
           </div>
           <div className="space-y-6 text-[#EDEAE4]/80 text-sm sm:text-base leading-relaxed">
             <p>
-              A VERSO nasceu de uma vontade simples: criar o streetwear que a gente queria usar. Jovem, autêntico e com mensagem real, sem precisar escolher entre quem você é e o que você veste.
+              A VERSO nasceu de uma vontade simples: criar o streetwear que a gente queria usar.
+              Jovem, autêntico e com mensagem real, sem precisar escolher entre quem você é e o que
+              você veste.
             </p>
             <p>
-              Sem slogans vazios ou rótulos institucionais. Peças com modelagem oversized premium, tecido encorpado e referências bíblicas sutis nos detalhes e nas etiquetas.
+              Sem slogans vazios ou rótulos institucionais. Peças com modelagem oversized premium,
+              tecido encorpado e referências bíblicas sutis nos detalhes e nas etiquetas.
             </p>
             <div>
               <Link

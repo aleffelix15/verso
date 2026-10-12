@@ -53,9 +53,7 @@ export function ProductCard({ product }: { product: Product }) {
         aria-label={`Ver ${product.name}`}
         className="block relative focus-visible:outline-2 focus-visible:outline-[#FF4D00]"
       >
-        <div
-          className="product-photo relative aspect-[4/5] overflow-hidden bg-[#E8E6E1] border border-black/10 dark:border-white/10 transition-colors duration-300 group-hover:border-black/30 dark:group-hover:border-white/30"
-        >
+        <div className="product-photo relative aspect-[4/5] overflow-hidden bg-[#E8E6E1] border border-black/10 dark:border-white/10 transition-colors duration-300 group-hover:border-black/30 dark:group-hover:border-white/30">
           {/* Main image & Hover secondary image */}
           <div className="relative w-full h-full overflow-hidden">
             <motion.img
@@ -147,7 +145,11 @@ export function ProductCard({ product }: { product: Product }) {
             type="button"
             className="absolute top-2.5 right-2.5 z-20 p-2 rounded-full bg-white/80 dark:bg-black/60 hover:bg-white dark:hover:bg-black/90 text-[#0E0E0E] dark:text-[#EDEAE4] transition-all backdrop-blur-xs shadow-xs"
             onClick={toggleFav}
-            aria-label={isFav ? `Remover ${product.name} dos favoritos` : `Adicionar ${product.name} aos favoritos`}
+            aria-label={
+              isFav
+                ? `Remover ${product.name} dos favoritos`
+                : `Adicionar ${product.name} aos favoritos`
+            }
             aria-pressed={isFav}
           >
             <Heart

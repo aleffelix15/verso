@@ -149,10 +149,18 @@ function Shop() {
               aria-label="Ordenar produtos"
               className="bg-transparent border border-black/20 dark:border-white/20 text-xs px-3 py-2 font-mono uppercase focus:outline-none focus:border-[#FF4D00] text-[#0E0E0E] dark:text-[#EDEAE4] dark:bg-[#1E1E1E]"
             >
-              <option value="featured" className="dark:bg-[#1E1E1E]">Mais relevantes</option>
-              <option value="low" className="dark:bg-[#1E1E1E]">Menor preço</option>
-              <option value="high" className="dark:bg-[#1E1E1E]">Maior preço</option>
-              <option value="name" className="dark:bg-[#1E1E1E]">Nome: A–Z</option>
+              <option value="featured" className="dark:bg-[#1E1E1E]">
+                Mais relevantes
+              </option>
+              <option value="low" className="dark:bg-[#1E1E1E]">
+                Menor preço
+              </option>
+              <option value="high" className="dark:bg-[#1E1E1E]">
+                Maior preço
+              </option>
+              <option value="name" className="dark:bg-[#1E1E1E]">
+                Nome: A–Z
+              </option>
             </select>
           </div>
 
@@ -168,7 +176,8 @@ function Shop() {
                 NENHUMA PEÇA ENCONTRADA
               </h2>
               <p className="text-sm text-[#0E0E0E]/70 dark:text-[#A0A0A0] mb-6">
-                Não encontramos peças com os filtros selecionados. Tente ajustar os parâmetros de tamanho, cor ou preço.
+                Não encontramos peças com os filtros selecionados. Tente ajustar os parâmetros de
+                tamanho, cor ou preço.
               </p>
               <Button variant="brand" onClick={clear}>
                 Limpar todos os filtros
@@ -179,8 +188,13 @@ function Shop() {
       </div>
 
       <Sheet open={filters} onOpenChange={setFilters}>
-        <SheetContent side="left" className="overflow-y-auto bg-[#EDEAE4] dark:bg-[#1E1E1E] text-[#0E0E0E] dark:text-[#EDEAE4]">
-          <SheetTitle className="font-display text-3xl font-bold uppercase text-[#0E0E0E] dark:text-[#F5F5F5]">FILTROS</SheetTitle>
+        <SheetContent
+          side="left"
+          className="overflow-y-auto bg-[#EDEAE4] dark:bg-[#1E1E1E] text-[#0E0E0E] dark:text-[#EDEAE4]"
+        >
+          <SheetTitle className="font-display text-3xl font-bold uppercase text-[#0E0E0E] dark:text-[#F5F5F5]">
+            FILTROS
+          </SheetTitle>
           <SheetDescription className="text-xs text-[#0E0E0E]/70 dark:text-[#A0A0A0]">
             Encontre sua próxima peça VERSO.
           </SheetDescription>
