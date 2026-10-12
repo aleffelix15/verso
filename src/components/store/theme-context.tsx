@@ -16,14 +16,11 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       try {
         const saved = localStorage.getItem("verso-theme");
         if (saved === "light" || saved === "dark") return saved;
-        if (window.matchMedia("(prefers-color-scheme: light)").matches) {
-          return "light";
-        }
       } catch {
-        // Fallback para dark caso localStorage esteja inacessível
+        // Fallback para dark caso localStorage esteja inacessivel
       }
     }
-    return "dark"; // Modo escuro é o padrão da marca
+    return "dark"; // Modo escuro e o padrao da marca
   });
 
   useEffect(() => {

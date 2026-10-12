@@ -71,7 +71,7 @@ export function FavoritosPage() {
                 SEUS FAVORITOS
               </h1>
               {count > 0 && (
-                <span className="font-mono text-xs sm:text-sm bg-[#0E0E0E] text-[#EDEAE4] dark:bg-[#FF4D00] dark:text-white px-2.5 py-1 font-bold">
+                <span className="font-mono text-xs sm:text-sm bg-[#0E0E0E] text-[#EDEAE4] dark:bg-brand dark:text-white px-2.5 py-1 font-bold">
                   {count} {count === 1 ? "PEÇA" : "PEÇAS"}
                 </span>
               )}
@@ -82,7 +82,7 @@ export function FavoritosPage() {
               <Button
                 variant="ghost"
                 onClick={clearWishlist}
-                className="text-xs font-mono text-[#0E0E0E]/60 dark:text-[#A0A0A0] hover:text-[#FF4D00] dark:hover:text-[#FF4D00] px-2 h-auto py-1 uppercase tracking-wider"
+                className="text-xs font-mono text-[#0E0E0E]/60 dark:text-[#A0A0A0] hover:text-brand dark:hover:text-brand px-2 h-auto py-1 uppercase tracking-wider"
               >
                 Limpar lista
               </Button>
@@ -120,7 +120,7 @@ export function FavoritosPage() {
             </p>
             <Link
               to="/loja"
-              className="inline-flex items-center gap-3 bg-[#FF4D00] text-white px-8 py-4 text-xs font-semibold uppercase tracking-widest hover:bg-[#E04400] transition-colors shadow-sm"
+              className="inline-flex items-center gap-3 bg-brand text-white px-8 py-4 text-xs font-semibold uppercase tracking-widest hover:bg-brand-hover transition-colors shadow-sm"
             >
               EXPLORAR A LOJA <ArrowRight size={16} />
             </Link>
@@ -151,7 +151,7 @@ export function FavoritosPage() {
                     <button
                       type="button"
                       onClick={() => removeFavorite(p.slug)}
-                      className="absolute top-2.5 right-2.5 p-2 rounded-full bg-white/80 dark:bg-black/60 hover:bg-white dark:hover:bg-black text-[#0E0E0E] dark:text-[#EDEAE4] hover:text-[#FF4D00] transition-colors shadow-xs"
+                      className="absolute top-2.5 right-2.5 p-2 rounded-full bg-white/80 dark:bg-black/60 hover:bg-white dark:hover:bg-black text-[#0E0E0E] dark:text-[#EDEAE4] hover:text-brand transition-colors shadow-xs"
                       aria-label={`Remover ${p.name} dos favoritos`}
                       title="Remover dos favoritos"
                     >
@@ -168,14 +168,14 @@ export function FavoritosPage() {
                   <div className="p-5 flex-1 flex flex-col justify-between">
                     <div>
                       <div className="flex justify-between items-baseline mb-1">
-                        <span className="font-mono text-[10px] text-[#FF4D00] font-semibold uppercase tracking-wider">
+                        <span className="font-mono text-[10px] text-brand font-semibold uppercase tracking-wider">
                           [ {p.verse} ] · {p.category}
                         </span>
                       </div>
                       <Link
                         to="/produto/$slug"
                         params={{ slug: p.slug }}
-                        className="font-semibold text-sm text-[#0E0E0E] dark:text-[#F5F5F5] hover:text-[#FF4D00] dark:hover:text-[#FF4D00] transition-colors line-clamp-1 block mb-2"
+                        className="font-semibold text-sm text-[#0E0E0E] dark:text-[#F5F5F5] hover:text-brand dark:hover:text-brand transition-colors line-clamp-1 block mb-2"
                       >
                         {p.name}
                       </Link>
@@ -248,8 +248,8 @@ export function FavoritosPage() {
                       }}
                       className={`px-3 py-2 text-xs border transition-colors ${
                         selectedColor === c
-                          ? "border-[#FF4D00] bg-[#FF4D00] text-white font-semibold"
-                          : "border-black/20 dark:border-white/20 bg-white dark:bg-[#262626] text-[#0E0E0E] dark:text-[#EDEAE4] hover:border-[#FF4D00]"
+                          ? "border-brand bg-brand text-white font-semibold"
+                          : "border-black/20 dark:border-white/20 bg-white dark:bg-[#262626] text-[#0E0E0E] dark:text-[#EDEAE4] hover:border-brand"
                       }`}
                     >
                       {c}
@@ -273,8 +273,8 @@ export function FavoritosPage() {
                       }}
                       className={`min-w-10 px-3 py-2 text-xs border text-center transition-colors ${
                         selectedSize === s
-                          ? "border-[#FF4D00] bg-[#FF4D00] text-white font-semibold"
-                          : "border-black/20 dark:border-white/20 bg-white dark:bg-[#262626] text-[#0E0E0E] dark:text-[#EDEAE4] hover:border-[#FF4D00]"
+                          ? "border-brand bg-brand text-white font-semibold"
+                          : "border-black/20 dark:border-white/20 bg-white dark:bg-[#262626] text-[#0E0E0E] dark:text-[#EDEAE4] hover:border-brand"
                       }`}
                     >
                       {s}
@@ -284,7 +284,7 @@ export function FavoritosPage() {
               </div>
 
               {error && (
-                <p role="alert" className="text-xs text-[#FF4D00] font-medium">
+                <p role="alert" className="text-xs text-brand font-medium">
                   {error}
                 </p>
               )}

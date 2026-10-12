@@ -33,7 +33,7 @@ function About() {
           className="border border-black/10 dark:border-white/10"
         />
         <div className="editorial-copy">
-          <p className="font-mono text-xs uppercase tracking-widest text-[#FF4D00] font-semibold mb-3">
+          <p className="font-mono text-xs uppercase tracking-widest text-brand font-semibold mb-3">
             ROUPA DE VERDADE. MENSAGEM TAMBÉM.
           </p>
           <h2 className="font-display text-4xl sm:text-5xl font-bold uppercase text-[#0E0E0E] dark:text-[#F5F5F5] leading-tight mb-6">

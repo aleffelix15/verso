@@ -5,21 +5,21 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-none text-xs font-semibold uppercase tracking-wider cursor-pointer transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4D00] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.99] [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-none text-xs font-semibold uppercase tracking-wider cursor-pointer transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.99] [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
-        brand: "bg-[#FF4D00] text-white hover:bg-[#E04400] shadow-sm border border-transparent",
+        brand: "bg-brand text-on-brand hover:bg-brand-hover shadow-sm border border-transparent",
         ink: "bg-ink text-paper hover:bg-ink/90 border border-transparent",
         header: "bg-transparent text-foreground hover:bg-muted/30",
-        size: "border border-border bg-transparent text-foreground hover:border-foreground/60 data-[selected=true]:bg-[#FF4D00] data-[selected=true]:text-white data-[selected=true]:border-[#FF4D00]",
-        default: "bg-[#FF4D00] text-white hover:bg-[#E04400] shadow-sm border border-transparent",
+        size: "border border-border bg-transparent text-foreground hover:border-foreground/60 data-[selected=true]:bg-brand data-[selected=true]:text-on-brand data-[selected=true]:border-brand",
+        default: "bg-brand text-on-brand hover:bg-brand-hover shadow-sm border border-transparent",
         destructive: "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
         outline:
           "border border-border bg-transparent text-foreground shadow-xs hover:bg-muted/30 hover:border-foreground/30",
         secondary: "bg-surface text-foreground border border-border shadow-xs hover:bg-muted",
-        ghost: "hover:bg-muted/30 hover:text-[#FF4D00] text-foreground",
-        link: "text-[#FF4D00] underline-offset-4 hover:underline",
+        ghost: "hover:bg-muted/30 hover:text-brand text-foreground",
+        link: "text-brand underline-offset-4 hover:underline",
       },
       size: {
         default: "h-10 px-5 py-2",

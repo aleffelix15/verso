@@ -147,7 +147,7 @@ function Shop() {
               value={sort}
               onChange={(e) => setSort(e.target.value)}
               aria-label="Ordenar produtos"
-              className="bg-transparent border border-black/20 dark:border-white/20 text-xs px-3 py-2 font-mono uppercase focus:outline-none focus:border-[#FF4D00] text-[#0E0E0E] dark:text-[#EDEAE4] dark:bg-[#1E1E1E]"
+              className="bg-transparent border border-black/20 dark:border-white/20 text-xs px-3 py-2 font-mono uppercase focus:outline-none focus:border-brand text-[#0E0E0E] dark:text-[#EDEAE4] dark:bg-[#1E1E1E]"
             >
               <option value="featured" className="dark:bg-[#1E1E1E]">
                 Mais relevantes

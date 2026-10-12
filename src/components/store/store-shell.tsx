@@ -138,31 +138,18 @@ export function StoreShell({ children }: { children: ReactNode }) {
               transition={{ duration: 0.3, ease: "easeOut" }}
               className="text-4xl font-display font-bold tracking-wider"
             >
-              VERSO<span className="text-[#FF4D00]">.</span>
+              VERSO<span className="text-brand">.</span>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* TOP ANNOUNCEMENT BAR — INTENSE ORANGE AS IN REFERENCE */}
-      <div
-        className="marquee bg-[#FF4D00] text-white font-mono uppercase font-semibold border-b border-black/10"
-        aria-label="Avisos da loja: frete grátis, novo drop, parcelamento"
-      >
-        <div
-          className="marquee-track"
-          style={prefersReducedMotion ? { animationPlayState: "paused" } : {}}
-        >
-          {Array.from({ length: 6 }, (_, i) => (
-            <span key={i} className="inline-flex items-center gap-2">
-              FRETE GRÁTIS ACIMA DE R$ 299 <span className="opacity-60">•</span> DROP 01 DISPONÍVEL{" "}
-              <span className="opacity-60">•</span> PARCELE EM 3X SEM JUROS
-            </span>
-          ))}
-        </div>
+      {/* 1. TOP ANNOUNCEMENT BAR */}
+      <div className="w-full bg-background text-muted-foreground text-center py-2.5 px-4 font-mono text-[11px] uppercase tracking-widest border-b border-border">
+        FRETE GRÁTIS A PARTIR DE R$ 299
       </div>
 
-      {/* MINIMALIST PREMIUM HEADER — COMPACT, DARK IN REFERENCE */}
+      {/* 2. MINIMALIST STREETWEAR HEADER */}
       <motion.header
         variants={{
           visible: { y: 0 },
@@ -170,34 +157,50 @@ export function StoreShell({ children }: { children: ReactNode }) {
         }}
         animate={hiddenHeader ? "hidden" : "visible"}
         transition={{ duration: 0.3, ease: "easeOut" }}
-        className="site-header container-verso sticky top-0 z-50 bg-[#EDEAE4]/95 dark:bg-[#0E0E0E]/95 backdrop-blur-md border-b border-black/10 dark:border-white/10"
+        className="site-header container-verso sticky top-0 z-50 bg-background/95 backdrop-blur-md border-b border-border text-foreground"
       >
         <Link
           to="/"
-          className="brand text-[#0E0E0E] dark:text-[#EDEAE4] font-display font-extrabold tracking-wider text-2xl sm:text-3xl"
+          className="brand text-foreground font-display font-extrabold tracking-wider text-2xl sm:text-3xl"
           aria-label="VERSO — início"
         >
-          VERSO<span className="text-[#FF4D00]">.</span>
+          VERSO<span className="text-brand">.</span>
         </Link>
 
-        <nav className="site-nav" aria-label="Menu principal">
+        <nav
+          className="site-nav items-center justify-center gap-7 lg:gap-10"
+          aria-label="Menu principal"
+        >
+          <Link
+            to="/drops"
+            className="text-[13px] text-foreground/85 hover:text-brand font-medium tracking-wide transition-colors"
+          >
+            Novidades
+          </Link>
           <Link
             to="/loja"
-            className="text-[#0E0E0E] dark:text-[#EDEAE4] hover:text-[#FF4D00] dark:hover:text-[#FF4D00] transition-colors"
+            className="text-[13px] text-foreground/85 hover:text-brand font-medium tracking-wide transition-colors"
           >
-            Loja
+            Roupas
           </Link>
           <Link
             to="/drops"
-            className="text-[#0E0E0E] dark:text-[#EDEAE4] hover:text-[#FF4D00] dark:hover:text-[#FF4D00] transition-colors"
+            className="text-[13px] text-foreground/85 hover:text-brand font-medium tracking-wide transition-colors"
           >
-            Drops
+            Coleções
           </Link>
           <Link
-            to="/sobre"
-            className="text-[#0E0E0E] dark:text-[#EDEAE4] hover:text-[#FF4D00] dark:hover:text-[#FF4D00] transition-colors"
+            to="/loja"
+            search={{ categoria: "Acessórios" }}
+            className="text-[13px] text-foreground/85 hover:text-brand font-medium tracking-wide transition-colors"
           >
-            Nossa Essência
+            Acessórios
+          </Link>
+          <Link
+            to="/loja"
+            className="text-[13px] text-foreground/85 hover:text-brand font-medium tracking-wide transition-colors"
+          >
+            Sale
           </Link>
         </nav>
 
@@ -209,7 +212,7 @@ export function StoreShell({ children }: { children: ReactNode }) {
             aria-label={theme === "dark" ? "Alternar para modo claro" : "Alternar para modo escuro"}
             title={theme === "dark" ? "Modo Claro" : "Modo Escuro"}
             onClick={toggleTheme}
-            className="text-[#0E0E0E] dark:text-[#EDEAE4] hover:text-[#FF4D00] dark:hover:text-[#FF4D00] hover:bg-black/5 dark:hover:bg-white/5"
+            className="text-foreground hover:text-brand hover:bg-muted"
           >
             {theme === "dark" ? <Sun size={19} /> : <Moon size={19} />}
           </Button>
@@ -220,7 +223,7 @@ export function StoreShell({ children }: { children: ReactNode }) {
             aria-label="Buscar produtos"
             title="Buscar"
             onClick={() => setSearch(true)}
-            className="text-[#0E0E0E] dark:text-[#EDEAE4] hover:text-[#FF4D00] dark:hover:text-[#FF4D00] hover:bg-black/5 dark:hover:bg-white/5"
+            className="text-foreground hover:text-brand hover:bg-muted"
           >
             <Search size={19} />
           </Button>
@@ -231,40 +234,9 @@ export function StoreShell({ children }: { children: ReactNode }) {
             aria-label="Conta do usuário"
             title="Minha Conta"
             onClick={() => setAccount(true)}
-            className="text-[#0E0E0E] dark:text-[#EDEAE4] hover:text-[#FF4D00] dark:hover:text-[#FF4D00] hover:bg-black/5 dark:hover:bg-white/5"
+            className="text-foreground hover:text-brand hover:bg-muted"
           >
             <User size={19} />
-          </Button>
-
-          <Button
-            variant="ghost"
-            size="icon"
-            asChild
-            aria-label={`Favoritos, ${wishlist.count} itens`}
-            title="Favoritos"
-            className="relative text-[#0E0E0E] dark:text-[#EDEAE4] hover:text-[#FF4D00] dark:hover:text-[#FF4D00] hover:bg-black/5 dark:hover:bg-white/5"
-          >
-            <Link to="/favoritos">
-              <Heart
-                size={19}
-                fill={wishlist.count > 0 ? "#FF4D00" : "none"}
-                stroke={wishlist.count > 0 ? "#FF4D00" : "currentColor"}
-              />
-              <AnimatePresence>
-                {wishlist.count > 0 && (
-                  <motion.span
-                    key={wishlist.count}
-                    initial={{ scale: 0 }}
-                    animate={{ scale: [1, 1.3, 1] }}
-                    exit={{ scale: 0 }}
-                    transition={{ duration: 0.25 }}
-                    className="absolute -top-1 -right-1 grid min-w-4 h-4 px-1 place-items-center bg-[#FF4D00] text-[10px] font-bold text-white rounded-full leading-none"
-                  >
-                    {wishlist.count}
-                  </motion.span>
-                )}
-              </AnimatePresence>
-            </Link>
           </Button>
 
           <Button
@@ -273,7 +245,7 @@ export function StoreShell({ children }: { children: ReactNode }) {
             aria-label={`Abrir sacola, ${cart.count} itens`}
             title="Sacola"
             onClick={() => cart.setOpen(true)}
-            className="relative text-[#0E0E0E] dark:text-[#EDEAE4] hover:text-[#FF4D00] dark:hover:text-[#FF4D00] hover:bg-black/5 dark:hover:bg-white/5"
+            className="relative text-foreground hover:text-brand hover:bg-muted"
           >
             <ShoppingBag size={19} />
             <AnimatePresence>
@@ -284,7 +256,7 @@ export function StoreShell({ children }: { children: ReactNode }) {
                   animate={{ scale: [1, 1.3, 1] }}
                   exit={{ scale: 0 }}
                   transition={{ duration: 0.25 }}
-                  className="absolute -top-1 -right-1 grid min-w-4 h-4 px-1 place-items-center bg-[#0E0E0E] dark:bg-[#FF4D00] text-[10px] font-bold text-white rounded-full leading-none"
+                  className="absolute -top-1 -right-1 grid min-w-4 h-4 px-1 place-items-center bg-brand text-[10px] font-bold text-white rounded-full leading-none"
                 >
                   {cart.count}
                 </motion.span>
@@ -295,7 +267,7 @@ export function StoreShell({ children }: { children: ReactNode }) {
           <Button
             variant="ghost"
             size="icon"
-            className="sm:hidden text-[#0E0E0E] dark:text-[#EDEAE4] hover:bg-black/5 dark:hover:bg-white/5"
+            className="sm:hidden text-foreground hover:bg-muted"
             aria-label="Abrir menu"
             onClick={() => setMenu(true)}
           >
@@ -304,56 +276,143 @@ export function StoreShell({ children }: { children: ReactNode }) {
         </div>
       </motion.header>
       <main>{children}</main>
-      <footer className="site-footer">
+      {/* 8. FOOTER COM 4 COLUNAS E DIVISORES VERTICAIS */}
+      <footer className="site-footer bg-background text-foreground border-t border-border">
         <div className="container-verso">
-          <div className="footer-main">
-            <div className="footer-brand">
-              <Link to="/" className="brand">
-                VERSO<span className="text-primary">.</span>
-              </Link>
-              <p className="mt-4 text-xs text-chalk">Fé que veste. Propósito que fica.</p>
-              <p className="eyebrow mt-5 text-chalk">FEITO PARA A RUA. NÃO PARA UMA CAIXA.</p>
-            </div>
-            <div className="footer-links">
-              <p className="footer-heading">COLEÇÕES</p>
-              <Link to="/loja">Todas as peças</Link>
-              <Link to="/drops">Drop 01</Link>
-            </div>
-            <div className="footer-links">
-              <p className="footer-heading">AJUDA</p>
-              <Button
-                variant="header"
-                className="h-auto justify-start p-0 text-[11px]"
-                onClick={() => setPolicy("Entrega e frete")}
+          <div className="grid grid-cols-1 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-border py-12 lg:py-16">
+            {/* Col 1: Marca VERSO. + Tagline */}
+            <div className="pb-8 md:pb-0 md:pr-8">
+              <Link
+                to="/"
+                className="brand text-3xl font-display font-extrabold tracking-wider text-foreground"
               >
-                Entrega e frete
-              </Button>
-              <Link to="/trocas">Trocas e devoluções</Link>
-              <Link to="/contato">Fale com a gente</Link>
-              <Link to="/contato" className="flex items-center gap-2">
-                <MessageCircle size={14} /> WhatsApp <ArrowUpRight size={12} />
+                VERSO<span className="text-brand">.</span>
               </Link>
+              <p className="font-mono text-[11px] text-muted-foreground uppercase tracking-widest mt-4 leading-relaxed">
+                MAIS QUE ROUPAS.
+                <br />
+                UMA FORMA DE VIVER.
+              </p>
             </div>
-            <div className="footer-links">
-              <p className="footer-heading">MARCA</p>
-              <Link to="/sobre">Nossa história</Link>
-              <Link to="/contato" className="flex items-center gap-2">
-                <Instagram size={14} /> Instagram <ArrowUpRight size={12} />
-              </Link>
-              <Link to="/privacidade">Privacidade</Link>
-              <Link to="/termos">Termos de uso</Link>
-              <p className="footer-heading mt-4">FORMAS DE PAGAMENTO</p>
-              <div className="flex flex-wrap gap-3 text-[10px]">
-                <CreditCard size={15} />
-                <span>VISA</span>
-                <span>Mastercard</span>
-                <span>PIX</span>
+
+            {/* Col 2: Navegação */}
+            <div className="py-8 md:py-0 md:px-8">
+              <p className="font-semibold text-xs text-foreground uppercase tracking-wider mb-4">
+                Navegação
+              </p>
+              <div className="flex flex-col gap-2.5 text-xs text-muted-foreground">
+                <Link to="/drops" className="hover:text-foreground transition-colors">
+                  Novidades
+                </Link>
+                <Link to="/loja" className="hover:text-foreground transition-colors">
+                  Roupas
+                </Link>
+                <Link to="/drops" className="hover:text-foreground transition-colors">
+                  Coleções
+                </Link>
+                <Link
+                  to="/loja"
+                  search={{ categoria: "Acessórios" }}
+                  className="hover:text-foreground transition-colors"
+                >
+                  Acessórios
+                </Link>
+                <Link to="/loja" className="hover:text-foreground transition-colors">
+                  Sale
+                </Link>
+              </div>
+            </div>
+
+            {/* Col 3: Institucional */}
+            <div className="py-8 md:py-0 md:px-8">
+              <p className="font-semibold text-xs text-foreground uppercase tracking-wider mb-4">
+                Institucional
+              </p>
+              <div className="flex flex-col gap-2.5 text-xs text-muted-foreground">
+                <Link to="/sobre" className="hover:text-foreground transition-colors">
+                  Nossa Essência
+                </Link>
+                <Link to="/sobre" className="hover:text-foreground transition-colors">
+                  Sobre a Verso
+                </Link>
+                <Link to="/contato" className="hover:text-foreground transition-colors">
+                  Contato
+                </Link>
+                <Link to="/privacidade" className="hover:text-foreground transition-colors">
+                  Política de Privacidade
+                </Link>
+                <Link to="/trocas" className="hover:text-foreground transition-colors">
+                  Trocas e Devoluções
+                </Link>
+              </div>
+            </div>
+
+            {/* Col 4: Redes sociais e Formas de pagamento */}
+            <div className="pt-8 md:pt-0 md:pl-8">
+              <p className="font-semibold text-xs text-foreground uppercase tracking-wider mb-3">
+                Acompanhe a Verso
+              </p>
+              <div className="flex items-center gap-4 text-muted-foreground mb-6">
+                <a
+                  href="https://instagram.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Instagram"
+                  className="hover:text-foreground transition-colors"
+                >
+                  <Instagram size={17} />
+                </a>
+                <a
+                  href="https://tiktok.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="TikTok"
+                  className="hover:text-foreground transition-colors"
+                >
+                  <svg className="size-4 fill-current" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.24 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z" />
+                  </svg>
+                </a>
+                <a
+                  href="https://youtube.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="YouTube"
+                  className="hover:text-foreground transition-colors"
+                >
+                  <svg className="size-4 fill-current" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+                  </svg>
+                </a>
+                <a
+                  href="https://x.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="X (Twitter)"
+                  className="hover:text-foreground transition-colors"
+                >
+                  <svg className="size-3.5 fill-current" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                  </svg>
+                </a>
+              </div>
+
+              <p className="font-semibold text-xs text-foreground uppercase tracking-wider mb-2.5">
+                Formas de pagamento
+              </p>
+              <div className="flex flex-wrap gap-2 text-[10px] font-mono text-muted-foreground">
+                <span className="border border-border bg-surface px-2 py-1">VISA</span>
+                <span className="border border-border bg-surface px-2 py-1">MASTERCARD</span>
+                <span className="border border-border bg-surface px-2 py-1">BOLETO</span>
+                <span className="border border-border bg-surface px-2 py-1">PIX</span>
               </div>
             </div>
           </div>
-          <div className="footer-bottom">
-            <span>© 2026 VERSO. Todos os direitos reservados.</span>
-            <span>LOJA CONCEITO · PRODUTOS E CONTEÚDO DEMONSTRATIVOS</span>
+
+          {/* Rodapé inferior */}
+          <div className="py-6 flex flex-col sm:flex-row justify-between items-center gap-3 text-xs text-muted-foreground">
+            <span>© 2025 Verso. Todos os direitos reservados.</span>
+            <span>Feito no Brasil</span>
           </div>
         </div>
       </footer>
@@ -386,26 +445,29 @@ export function StoreShell({ children }: { children: ReactNode }) {
             className="fixed inset-0 z-[100] bg-[#EDEAE4] dark:bg-[#0E0E0E] text-[#0E0E0E] dark:text-[#EDEAE4] flex flex-col p-6 touch-none"
           >
             <div className="flex justify-between items-center">
-              <span className="brand text-2xl font-display font-bold text-[#0E0E0E] dark:text-[#EDEAE4]">
-                VERSO<span className="text-[#FF4D00]">.</span>
+              <span className="brand text-2xl font-display font-bold text-foreground">
+                VERSO<span className="text-brand">.</span>
               </span>
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={() => setMenu(false)}
                 aria-label="Fechar menu"
-                className="text-[#0E0E0E] dark:text-[#EDEAE4] hover:bg-black/5 dark:hover:bg-white/5"
+                className="text-foreground hover:bg-white/5"
               >
                 <X size={24} />
               </Button>
             </div>
-            <p className="text-xs font-mono text-[#0E0E0E]/60 dark:text-[#EDEAE4]/60 mt-1 uppercase tracking-wider">
-              FÉ QUE VESTE.
+            <p className="text-xs font-mono text-muted-foreground mt-1 uppercase tracking-wider">
+              STREETWEAR COM IDENTIDADE.
             </p>
-            <nav className="mt-12 flex flex-col gap-6 font-display text-4xl sm:text-5xl">
+            <nav className="mt-8 flex flex-col gap-4 font-display text-3xl sm:text-4xl">
               {[
-                { name: "LOJA", path: "/loja" },
-                { name: "DROPS", path: "/drops" },
+                { name: "NOVIDADES", path: "/drops" },
+                { name: "ROUPAS", path: "/loja" },
+                { name: "COLEÇÕES", path: "/drops" },
+                { name: "ACESSÓRIOS", path: "/loja" },
+                { name: "SALE", path: "/loja" },
                 { name: "NOSSA ESSÊNCIA", path: "/sobre" },
                 {
                   name: `FAVORITOS ${wishlist.count > 0 ? `(${wishlist.count})` : ""}`,
@@ -418,12 +480,12 @@ export function StoreShell({ children }: { children: ReactNode }) {
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
-                  transition={{ delay: 0.1 + i * 0.05, duration: 0.3, ease: "easeOut" }}
+                  transition={{ delay: 0.05 + i * 0.04, duration: 0.25, ease: "easeOut" }}
                 >
                   <Link
                     to={item.path}
                     onClick={() => setMenu(false)}
-                    className="block w-full hover:text-[#FF4D00] transition-colors"
+                    className="block w-full hover:text-brand transition-colors uppercase"
                   >
                     {item.name}
                   </Link>
@@ -435,17 +497,17 @@ export function StoreShell({ children }: { children: ReactNode }) {
             <button
               type="button"
               onClick={toggleTheme}
-              className="mt-6 flex items-center justify-between w-full py-4 border-t border-black/10 dark:border-white/10 font-mono text-sm tracking-wider uppercase text-left text-[#0E0E0E] dark:text-[#EDEAE4] hover:text-[#FF4D00] transition-colors"
+              className="mt-6 flex items-center justify-between w-full py-4 border-t border-border font-mono text-xs tracking-wider uppercase text-left text-foreground hover:text-brand transition-colors cursor-pointer"
             >
               <span>{theme === "dark" ? "MODO CLARO" : "MODO ESCURO"}</span>
               {theme === "dark" ? (
-                <Sun size={20} className="text-[#FF4D00]" />
+                <Sun size={18} className="text-brand" />
               ) : (
-                <Moon size={20} className="text-[#FF4D00]" />
+                <Moon size={18} className="text-brand" />
               )}
             </button>
 
-            <div className="mt-auto text-center text-xs text-[#0E0E0E]/40 dark:text-[#EDEAE4]/40 pb-4 font-mono uppercase tracking-widest">
+            <div className="mt-auto text-center text-xs text-muted-foreground pb-4 font-mono uppercase tracking-widest">
               Arraste para fechar
             </div>
           </motion.div>
@@ -454,28 +516,28 @@ export function StoreShell({ children }: { children: ReactNode }) {
 
       {/* SEARCH DIALOG */}
       <Dialog open={search} onOpenChange={setSearch}>
-        <DialogContent className="max-h-[85svh] overflow-y-auto bg-[#EDEAE4] dark:bg-[#1E1E1E] text-[#0E0E0E] dark:text-[#EDEAE4] border-black/10 dark:border-white/10 sm:max-w-xl">
-          <DialogTitle className="font-display text-3xl font-bold uppercase text-[#0E0E0E] dark:text-[#EDEAE4]">
+        <DialogContent className="max-h-[85svh] overflow-y-auto bg-card text-foreground border-border sm:max-w-xl">
+          <DialogTitle className="font-display text-3xl font-bold uppercase text-foreground">
             ENCONTRE SEU VERSO.
           </DialogTitle>
-          <DialogDescription className="text-xs text-[#0E0E0E]/70 dark:text-[#EDEAE4]/70">
+          <DialogDescription className="text-xs text-muted-foreground">
             Busque por nome da peça, categoria, versículo ou estampa.
           </DialogDescription>
           <div className="relative my-2">
             <input
               autoFocus
               aria-label="Buscar peças"
-              placeholder="Ex: Luz, Salmo 23, Moletom..."
+              placeholder="Ex: Moletom, Camiseta, Salmo 23..."
               value={query}
               onChange={(e) => setQuery(e.target.value.slice(0, 100))}
-              className="w-full pr-16 pl-3 py-3 text-sm bg-white dark:bg-[#262626] border border-black/20 dark:border-white/20 text-[#0E0E0E] dark:text-[#EDEAE4] placeholder:text-black/40 dark:placeholder:text-white/40 focus:outline-none focus:border-[#FF4D00]"
+              className="w-full pr-16 pl-3 py-3 text-sm bg-background border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-brand rounded-none"
             />
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5 text-[#0E0E0E]/50 dark:text-[#EDEAE4]/50">
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5 text-muted-foreground">
               {query && (
                 <button
                   type="button"
                   onClick={() => setQuery("")}
-                  className="p-1 hover:text-[#0E0E0E] dark:hover:text-white transition-colors"
+                  className="p-1 hover:text-foreground transition-colors"
                   aria-label="Limpar busca"
                 >
                   <X size={15} />
@@ -491,7 +553,7 @@ export function StoreShell({ children }: { children: ReactNode }) {
                 to="/produto/$slug"
                 params={{ slug: p.slug }}
                 onClick={() => setSearch(false)}
-                className="grid grid-cols-[55px_minmax(0,1fr)_auto] items-center gap-3 p-2 bg-[#F5F2EB] dark:bg-[#262626] hover:bg-[#EAE6DE] dark:hover:bg-[#2F2F2F] border border-black/10 dark:border-white/10 transition-colors"
+                className="grid grid-cols-[55px_minmax(0,1fr)_auto] items-center gap-3 p-2 bg-surface hover:bg-muted/40 border border-border transition-colors rounded-none"
               >
                 <img
                   src={p.images[0]}
@@ -501,25 +563,25 @@ export function StoreShell({ children }: { children: ReactNode }) {
                   className="h-16 w-14 object-cover"
                 />
                 <div className="min-w-0">
-                  <span className="text-[10px] font-mono text-[#FF4D00] block uppercase">
+                  <span className="text-[10px] font-mono text-brand block uppercase font-semibold">
                     {p.verse} · {p.category}
                   </span>
-                  <span className="text-xs font-semibold text-[#0E0E0E] dark:text-[#EDEAE4] block truncate">
+                  <span className="text-xs font-semibold text-foreground block truncate">
                     {p.name}
                   </span>
                 </div>
-                <span className="text-xs font-semibold text-[#0E0E0E] dark:text-[#EDEAE4] shrink-0">
+                <span className="text-xs font-semibold text-foreground shrink-0">
                   {money(p.priceCents)}
                 </span>
               </Link>
             ))}
             {query.trim() && results.length === 0 && (
-              <div className="py-8 text-center text-sm text-[#0E0E0E]/70 dark:text-[#EDEAE4]/70">
+              <div className="py-8 text-center text-sm text-muted-foreground">
                 Nenhuma peça encontrada para "{query}". Tente outro nome ou versículo.
               </div>
             )}
             {!query.trim() && (
-              <p className="py-4 text-center text-xs font-mono text-[#0E0E0E]/50 dark:text-[#EDEAE4]/50 uppercase tracking-wider">
+              <p className="py-4 text-center text-xs font-mono text-muted-foreground uppercase tracking-wider">
                 Digite para buscar peças da coleção Drop 01
               </p>
             )}
@@ -529,33 +591,27 @@ export function StoreShell({ children }: { children: ReactNode }) {
 
       {/* USER ACCOUNT DIALOG */}
       <Dialog open={account} onOpenChange={setAccount}>
-        <DialogContent className="max-w-md bg-[#EDEAE4] dark:bg-[#1E1E1E] text-[#0E0E0E] dark:text-[#EDEAE4] border-black/10 dark:border-white/10">
-          <DialogTitle className="font-display text-3xl font-bold uppercase text-[#0E0E0E] dark:text-[#EDEAE4]">
+        <DialogContent className="max-w-md bg-card text-foreground border-border">
+          <DialogTitle className="font-display text-3xl font-bold uppercase text-foreground">
             CONTA VERSO
           </DialogTitle>
-          <DialogDescription className="text-xs text-[#0E0E0E]/70 dark:text-[#EDEAE4]/70">
+          <DialogDescription className="text-xs text-muted-foreground">
             Sua experiência personalizada de compra e navegação.
           </DialogDescription>
           <div className="space-y-4 pt-2">
-            <div className="p-4 bg-[#F5F2EB] dark:bg-[#262626] border border-black/10 dark:border-white/10">
-              <span className="font-mono text-[10px] uppercase tracking-wider text-[#FF4D00] font-semibold block mb-1">
+            <div className="p-4 bg-surface border border-border">
+              <span className="font-mono text-[10px] uppercase tracking-wider text-brand font-semibold block mb-1">
                 STATUS DA SESSÃO
               </span>
-              <p className="text-sm font-semibold text-[#0E0E0E] dark:text-[#EDEAE4]">
-                Visitante Convidado
-              </p>
-              <p className="text-xs text-[#0E0E0E]/70 dark:text-[#EDEAE4]/70 mt-1 leading-relaxed">
+              <p className="text-sm font-semibold text-foreground">Visitante Convidado</p>
+              <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
                 Suas peças favoritas e itens na sacola são salvos com segurança no seu navegador.
                 Quando você finaliza uma compra pelo Mercado Pago, os dados do pedido são
                 confirmados no checkout.
               </p>
             </div>
             <div className="grid grid-cols-2 gap-3 pt-2">
-              <Button
-                asChild
-                variant="outline"
-                className="border-black/20 dark:border-white/20 text-xs"
-              >
+              <Button asChild variant="outline" className="border-border text-xs">
                 <Link to="/favoritos" onClick={() => setAccount(false)}>
                   Favoritos ({wishlist.count})
                 </Link>

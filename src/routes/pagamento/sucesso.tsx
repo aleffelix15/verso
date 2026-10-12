@@ -65,9 +65,9 @@ function SuccessPage() {
   return (
     <section className="container-verso section-space flex flex-col items-center text-center max-w-2xl mx-auto">
       {isFullyApproved ? (
-        <CheckCircle2 size={72} className="text-[#FF4D00] mb-6" />
+        <CheckCircle2 size={72} className="text-brand mb-6" />
       ) : (
-        <Clock size={72} className="text-[#FF4D00] mb-6 animate-pulse" />
+        <Clock size={72} className="text-brand mb-6 animate-pulse" />
       )}
 
       <h1 className="text-4xl sm:text-5xl font-display font-bold uppercase tracking-wider mb-3">
@@ -88,7 +88,7 @@ function SuccessPage() {
               <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-widest block">
                 NÚMERO DO PEDIDO
               </span>
-              <span className="font-mono text-sm font-bold text-[#FF4D00]">{order.id}</span>
+              <span className="font-mono text-sm font-bold text-brand">{order.id}</span>
             </div>
             <div className="text-right">
               <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-widest block">
@@ -118,7 +118,7 @@ function SuccessPage() {
 
           <div className="border-t border-black/10 dark:border-white/10 pt-3 flex justify-between text-sm font-semibold">
             <span>Total com frete ({order.shipping.name})</span>
-            <span className="font-mono text-[#FF4D00]">{money(order.financial.totalCents)}</span>
+            <span className="font-mono text-brand">{money(order.financial.totalCents)}</span>
           </div>
         </div>
       )}
