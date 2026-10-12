@@ -9,20 +9,22 @@
   --color-brand: var(--brand);
   --color-on-brand: var(--on-brand);
   --color-surface: var(--surface);
-  --color-muted: var(--border);
+  --color-card: var(--card);
+  --color-muted: var(--muted);
   --color-muted-foreground: var(--chalk);
   --color-border: var(--border);
 
   --color-ink: var(--ink);
   --color-paper: var(--paper);
   --color-chalk: var(--chalk);
-  --color-accent: var(--border);
-  --color-accent-foreground: var(--ink);
+  --color-accent: var(--muted);
+  --color-accent-foreground: var(--foreground);
 
   --color-off-black: #0E0E0E;
   --color-off-white: #EDEAE4;
-  --color-burnt-orange: #E4572E;
+  --color-burnt-orange: #FF4D00;
   --color-lead-gray: #1E1E1E;
+  --color-overlay: rgba(0, 0, 0, 0.75);
 
   --font-sans:
     "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -54,25 +56,50 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @layer base {
-  :root,
-  .dark {
-    color-scheme: light dark;
+  :root {
+    color-scheme: light;
     --background: #EDEAE4;
     --paper: #EDEAE4;
     --surface: #F5F2EB;
-    --card: #F9F7F2;
+    --card: #FFFFFF;
+    --header-bg: #EDEAE4;
+    --footer-bg: #0E0E0E;
     --foreground: #0E0E0E;
     --ink: #0E0E0E;
     --chalk: rgba(14, 14, 14, 0.65);
     --border: rgba(14, 14, 14, 0.12);
     --muted: rgba(14, 14, 14, 0.06);
-    --brand: #E4572E;
+    --brand: #FF4D00;
+    --brand-hover: #E04400;
     --on-brand: #FFFFFF;
     --off-black: #0E0E0E;
     --off-white: #EDEAE4;
-    --burnt-orange: #E4572E;
+    --burnt-orange: #FF4D00;
     --lead-gray: #1E1E1E;
     --shadow-float: 0 10px 40px -10px rgba(0, 0, 0, 0.15);
+  }
+
+  .dark {
+    color-scheme: dark;
+    --background: #1E1E1E;
+    --paper: #1E1E1E;
+    --surface: #262626;
+    --card: #262626;
+    --header-bg: #0E0E0E;
+    --footer-bg: #0E0E0E;
+    --foreground: #F5F5F5;
+    --ink: #FFFFFF;
+    --chalk: #A0A0A0;
+    --border: rgba(255, 255, 255, 0.12);
+    --muted: rgba(255, 255, 255, 0.08);
+    --brand: #FF4D00;
+    --brand-hover: #E04400;
+    --on-brand: #FFFFFF;
+    --off-black: #0E0E0E;
+    --off-white: #EDEAE4;
+    --burnt-orange: #FF4D00;
+    --lead-gray: #1E1E1E;
+    --shadow-float: 0 10px 40px -10px rgba(0, 0, 0, 0.5);
   }
 
   /* 
@@ -140,9 +167,9 @@
 }
 
 .marquee {
-  background: #0E0E0E;
-  color: #EDEAE4;
-  height: clamp(30px, 4.5vh, 36px);
+  background: #FF4D00;
+  color: #FFFFFF;
+  height: clamp(32px, 4.5vh, 38px);
   display: flex;
   align-items: center;
   overflow: hidden;
@@ -150,7 +177,8 @@
   font: 11px var(--font-mono);
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+  font-weight: 600;
 }
 
 .marquee-track {
@@ -168,16 +196,18 @@
 }
 
 .site-header {
-  height: clamp(72px, 10vh, 82px);
+  height: clamp(68px, 9vh, 78px);
   display: grid;
   grid-template-columns: 1fr auto;
   align-items: center;
   border-bottom: 1px solid var(--border);
   position: sticky;
   top: 0;
-  background: var(--paper);
+  background: var(--header-bg);
+  color: var(--foreground);
   z-index: 40;
   padding-top: env(safe-area-inset-top);
+  transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
 @media (min-width: 640px) {
@@ -688,6 +718,13 @@
   border: 1px solid var(--border);
   padding: 15px 10px;
   font-size: 16px; /* Min 16px to avoid iOS zoom */
+  background: transparent;
+  color: var(--foreground);
+}
+
+.newsletter-form input:focus {
+  outline: none;
+  border-color: var(--brand);
 }
 
 @media (min-width: 640px) {
@@ -699,11 +736,12 @@
 
 /* Footer */
 .site-footer {
-  background: var(--ink);
-  color: var(--paper);
-  padding-top: clamp(40px, 8vw, 55px);
-  padding-bottom: clamp(24px, 5vw, 24px);
-  padding-bottom: max(clamp(24px, 5vw, 24px), env(safe-area-inset-bottom));
+  background: #0E0E0E;
+  color: #EDEAE4;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: clamp(48px, 8vw, 64px);
+  padding-bottom: clamp(24px, 5vw, 32px);
+  padding-bottom: max(clamp(24px, 5vw, 32px), env(safe-area-inset-bottom));
 }
 
 .footer-main {

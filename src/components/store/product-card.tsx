@@ -51,10 +51,10 @@ export function ProductCard({ product }: { product: Product }) {
         to="/produto/$slug"
         params={{ slug: product.slug }}
         aria-label={`Ver ${product.name}`}
-        className="block relative focus-visible:outline-2 focus-visible:outline-[#E4572E]"
+        className="block relative focus-visible:outline-2 focus-visible:outline-[#FF4D00]"
       >
         <div
-          className="product-photo relative aspect-[4/5] overflow-hidden bg-[#E7E4DC] border border-[rgba(14,14,14,0.08)] transition-colors duration-300 group-hover:border-[#0E0E0E]/40"
+          className="product-photo relative aspect-[4/5] overflow-hidden bg-[#E8E6E1] border border-black/10 dark:border-white/10 transition-colors duration-300 group-hover:border-black/30 dark:group-hover:border-white/30"
         >
           {/* Main image & Hover secondary image */}
           <div className="relative w-full h-full overflow-hidden">
@@ -128,7 +128,7 @@ export function ProductCard({ product }: { product: Product }) {
                 animate={{ opacity: 1, scale: 1.4, y: -15 }}
                 exit={{ opacity: 0, scale: 1.1 }}
                 transition={{ duration: 0.4, ease: "easeOut" }}
-                className="absolute inset-0 m-auto flex items-center justify-center text-[#E4572E] z-30 pointer-events-none"
+                className="absolute inset-0 m-auto flex items-center justify-center text-[#FF4D00] z-30 pointer-events-none"
               >
                 <Heart size={44} fill="currentColor" />
               </motion.div>
@@ -137,7 +137,7 @@ export function ProductCard({ product }: { product: Product }) {
 
           {/* Badge */}
           {product.badge && (
-            <span className="product-badge absolute top-3 left-3 z-10 bg-[#0E0E0E] text-[#EDEAE4] font-mono text-[9px] uppercase tracking-wider px-2 py-1">
+            <span className="product-badge absolute top-3 left-3 z-10 bg-[#0E0E0E] text-white font-mono text-[9px] uppercase tracking-wider px-2 py-1">
               {product.badge}
             </span>
           )}
@@ -145,7 +145,7 @@ export function ProductCard({ product }: { product: Product }) {
           {/* Wishlist toggle button */}
           <button
             type="button"
-            className="absolute top-2.5 right-2.5 z-20 p-2 rounded-full bg-white/70 hover:bg-white text-[#0E0E0E] transition-all backdrop-blur-xs shadow-xs"
+            className="absolute top-2.5 right-2.5 z-20 p-2 rounded-full bg-white/80 dark:bg-black/60 hover:bg-white dark:hover:bg-black/90 text-[#0E0E0E] dark:text-[#EDEAE4] transition-all backdrop-blur-xs shadow-xs"
             onClick={toggleFav}
             aria-label={isFav ? `Remover ${product.name} dos favoritos` : `Adicionar ${product.name} aos favoritos`}
             aria-pressed={isFav}
@@ -153,15 +153,15 @@ export function ProductCard({ product }: { product: Product }) {
             <Heart
               size={18}
               className="transition-transform duration-200 hover:scale-110"
-              fill={isFav ? "#E4572E" : "transparent"}
-              stroke={isFav ? "#E4572E" : "#0E0E0E"}
+              fill={isFav ? "#FF4D00" : "transparent"}
+              stroke={isFav ? "#FF4D00" : "currentColor"}
               strokeWidth={1.75}
             />
           </button>
 
           {/* Hover overlay CTA */}
           <div className="absolute bottom-0 left-0 w-full p-3 translate-y-3 opacity-0 transition-all duration-200 ease-out sm:group-hover:translate-y-0 sm:group-hover:opacity-100 hidden sm:block z-20">
-            <div className="bg-[#0E0E0E] text-[#EDEAE4] text-center py-2.5 text-[11px] font-semibold tracking-wider uppercase w-full">
+            <div className="bg-[#0E0E0E] dark:bg-[#FF4D00] text-white text-center py-2.5 text-[11px] font-semibold tracking-wider uppercase w-full">
               VER PEÇA
             </div>
           </div>
@@ -170,10 +170,10 @@ export function ProductCard({ product }: { product: Product }) {
         {/* Product meta & info */}
         <div className="product-info mt-3 flex justify-between items-start gap-2">
           <div className="min-w-0 flex-1">
-            <span className="block font-mono text-[10px] tracking-widest text-[#0E0E0E]/60 uppercase mb-1">
+            <span className="block font-mono text-[10px] tracking-widest text-[#0E0E0E]/60 dark:text-[#A0A0A0] uppercase mb-1">
               {product.category}
             </span>
-            <h3 className="product-name font-semibold text-xs sm:text-sm text-[#0E0E0E] truncate">
+            <h3 className="product-name font-semibold text-xs sm:text-sm text-[#0E0E0E] dark:text-[#F5F5F5] truncate">
               {product.shortName}
             </h3>
             {/* Color swatches */}
@@ -189,7 +189,7 @@ export function ProductCard({ product }: { product: Product }) {
             </div>
           </div>
           <div className="text-right shrink-0">
-            <span className="product-price text-xs sm:text-sm font-semibold text-[#0E0E0E]">
+            <span className="product-price text-xs sm:text-sm font-semibold text-[#0E0E0E] dark:text-[#F5F5F5]">
               {money(product.priceCents)}
             </span>
           </div>

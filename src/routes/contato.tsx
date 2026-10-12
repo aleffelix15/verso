@@ -17,12 +17,12 @@ export const Route = createFileRoute("/contato")({
 function Contact() {
   const [message, setMessage] = useState("");
   return (
-    <div className="bg-[#EDEAE4] text-[#0E0E0E] min-h-[75vh]">
-      <div className="container-verso page-heading border-b border-[#0E0E0E]/10 pb-8">
-        <p className="font-mono text-xs uppercase tracking-widest text-[#0E0E0E]/60 mb-2 font-medium">
+    <div className="bg-[#EDEAE4] dark:bg-[#1E1E1E] text-[#0E0E0E] dark:text-[#EDEAE4] min-h-[75vh] transition-colors duration-200">
+      <div className="container-verso page-heading border-b border-black/10 dark:border-white/10 pb-8">
+        <p className="font-mono text-xs uppercase tracking-widest text-[#0E0E0E]/60 dark:text-[#A0A0A0] mb-2 font-medium">
           VERSO / CONTATO
         </p>
-        <h1 className="font-display text-5xl sm:text-7xl font-bold uppercase tracking-tight text-[#0E0E0E]">
+        <h1 className="font-display text-5xl sm:text-7xl font-bold uppercase tracking-tight text-[#0E0E0E] dark:text-[#F5F5F5]">
           SEM ROTEIRO.
           <br />
           PODE CHEGAR.

@@ -11,6 +11,7 @@ import {
 import { type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
+import { ThemeProvider } from "@/components/store/theme-context";
 import { CartProvider } from "@/components/store/cart-context";
 import { WishlistProvider } from "@/components/store/wishlist-context";
 import { StoreShell } from "@/components/store/store-shell";
@@ -78,12 +79,26 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { name: "theme-color", content: "#EDEAE4" },
+      { name: "theme-color", content: "#0E0E0E" },
       { property: "og:site_name", content: "VERSO" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
-    scripts: [],
+    scripts: [
+      {
+        children: `
+          try {
+            const saved = localStorage.getItem('verso-theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (saved === 'light') {
+              document.documentElement.classList.remove('dark');
+            } else {
+              document.documentElement.classList.add('dark');
+            }
+          } catch (e) {}
+        `,
+      },
+    ],
     links: [
       {
         rel: "stylesheet",
@@ -123,13 +138,15 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <WishlistProvider>
-        <CartProvider>
-          <StoreShell>
-            <Outlet />
-          </StoreShell>
-        </CartProvider>
-      </WishlistProvider>
+      <ThemeProvider>
+        <WishlistProvider>
+          <CartProvider>
+            <StoreShell>
+              <Outlet />
+            </StoreShell>
+          </CartProvider>
+        </WishlistProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }

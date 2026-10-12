@@ -106,7 +106,7 @@ function ProductDetails({ product: p }: { product: Product }) {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.4 }}
-      className="bg-[#EDEAE4] text-[#0E0E0E]"
+      className="bg-[#EDEAE4] dark:bg-[#1E1E1E] text-[#0E0E0E] dark:text-[#EDEAE4] min-h-[75vh] transition-colors duration-200"
     >
       <div className="container-verso pt-7">
         <Link to="/loja" className="eyebrow">

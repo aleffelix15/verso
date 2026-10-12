@@ -15,12 +15,15 @@ import {
   X,
   Heart,
   User,
+  Sun,
+  Moon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useCart } from "./cart-context";
 import { useWishlist } from "./wishlist-context";
+import { useTheme } from "./theme-context";
 import { products, money, storeConfig } from "@/data/products";
 import {
   motion,
@@ -59,6 +62,7 @@ export function StoreShell({ children }: { children: ReactNode }) {
   const [policy, setPolicy] = useState("");
   const cart = useCart();
   const wishlist = useWishlist();
+  const { theme, toggleTheme } = useTheme();
   const results = query.trim()
     ? products.filter((p) =>
         `${p.name} ${p.verse} ${p.category} ${p.statement}`.toLowerCase().includes(query.toLowerCase()),
@@ -124,7 +128,7 @@ export function StoreShell({ children }: { children: ReactNode }) {
             initial={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.35, ease: "easeOut" }}
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-[#EDEAE4] text-[#0E0E0E] pointer-events-none"
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-[#0E0E0E] text-[#EDEAE4] pointer-events-none"
           >
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
@@ -132,15 +136,15 @@ export function StoreShell({ children }: { children: ReactNode }) {
               transition={{ duration: 0.3, ease: "easeOut" }}
               className="text-4xl font-display font-bold tracking-wider"
             >
-              VERSO<span className="text-[#E4572E]">.</span>
+              VERSO<span className="text-[#FF4D00]">.</span>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* TOP ANNOUNCEMENT BAR */}
+      {/* TOP ANNOUNCEMENT BAR — INTENSE ORANGE AS IN REFERENCE */}
       <div
-        className="marquee bg-[#0E0E0E] text-[#EDEAE4]"
+        className="marquee bg-[#FF4D00] text-white font-mono uppercase font-semibold border-b border-black/10"
         aria-label="Avisos da loja: frete grátis, novo drop, parcelamento"
       >
         <div
@@ -149,14 +153,14 @@ export function StoreShell({ children }: { children: ReactNode }) {
         >
           {Array.from({ length: 6 }, (_, i) => (
             <span key={i} className="inline-flex items-center gap-2">
-              FRETE GRÁTIS ACIMA DE R$ 299 <span className="text-[#E4572E]">•</span> DROP 01 DISPONÍVEL{" "}
-              <span className="text-[#E4572E]">•</span> PARCELE EM 3X SEM JUROS
+              FRETE GRÁTIS ACIMA DE R$ 299 <span className="opacity-60">•</span> DROP 01 DISPONÍVEL{" "}
+              <span className="opacity-60">•</span> PARCELE EM 3X SEM JUROS
             </span>
           ))}
         </div>
       </div>
 
-      {/* MINIMALIST PREMIUM HEADER */}
+      {/* MINIMALIST PREMIUM HEADER — COMPACT, DARK IN REFERENCE */}
       <motion.header
         variants={{
           visible: { y: 0 },
@@ -164,26 +168,38 @@ export function StoreShell({ children }: { children: ReactNode }) {
         }}
         animate={hiddenHeader ? "hidden" : "visible"}
         transition={{ duration: 0.3, ease: "easeOut" }}
-        className="site-header container-verso sticky top-0 z-50 bg-[#EDEAE4]/95 backdrop-blur-md border-b border-[#0E0E0E]/10"
+        className="site-header container-verso sticky top-0 z-50 bg-[#EDEAE4]/95 dark:bg-[#0E0E0E]/95 backdrop-blur-md border-b border-black/10 dark:border-white/10"
       >
-        <Link to="/" className="brand text-[#0E0E0E] font-display font-extrabold tracking-wider text-2xl sm:text-3xl" aria-label="VERSO — início">
-          VERSO<span className="text-[#E4572E]">.</span>
+        <Link to="/" className="brand text-[#0E0E0E] dark:text-[#EDEAE4] font-display font-extrabold tracking-wider text-2xl sm:text-3xl" aria-label="VERSO — início">
+          VERSO<span className="text-[#FF4D00]">.</span>
         </Link>
 
         <nav className="site-nav" aria-label="Menu principal">
-          <Link to="/loja" className="text-[#0E0E0E] hover:text-[#E4572E] transition-colors">Loja</Link>
-          <Link to="/drops" className="text-[#0E0E0E] hover:text-[#E4572E] transition-colors">Drops</Link>
-          <Link to="/sobre" className="text-[#0E0E0E] hover:text-[#E4572E] transition-colors">Nossa Essência</Link>
+          <Link to="/loja" className="text-[#0E0E0E] dark:text-[#EDEAE4] hover:text-[#FF4D00] dark:hover:text-[#FF4D00] transition-colors">Loja</Link>
+          <Link to="/drops" className="text-[#0E0E0E] dark:text-[#EDEAE4] hover:text-[#FF4D00] dark:hover:text-[#FF4D00] transition-colors">Drops</Link>
+          <Link to="/sobre" className="text-[#0E0E0E] dark:text-[#EDEAE4] hover:text-[#FF4D00] dark:hover:text-[#FF4D00] transition-colors">Nossa Essência</Link>
         </nav>
 
         <div className="header-actions items-center">
+          {/* THEME TOGGLE (SOL / LUA) */}
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label={theme === "dark" ? "Alternar para modo claro" : "Alternar para modo escuro"}
+            title={theme === "dark" ? "Modo Claro" : "Modo Escuro"}
+            onClick={toggleTheme}
+            className="text-[#0E0E0E] dark:text-[#EDEAE4] hover:text-[#FF4D00] dark:hover:text-[#FF4D00] hover:bg-black/5 dark:hover:bg-white/5"
+          >
+            {theme === "dark" ? <Sun size={19} /> : <Moon size={19} />}
+          </Button>
+
           <Button
             variant="ghost"
             size="icon"
             aria-label="Buscar produtos"
             title="Buscar"
             onClick={() => setSearch(true)}
-            className="text-[#0E0E0E] hover:text-[#E4572E] hover:bg-black/5"
+            className="text-[#0E0E0E] dark:text-[#EDEAE4] hover:text-[#FF4D00] dark:hover:text-[#FF4D00] hover:bg-black/5 dark:hover:bg-white/5"
           >
             <Search size={19} />
           </Button>
@@ -194,7 +210,7 @@ export function StoreShell({ children }: { children: ReactNode }) {
             aria-label="Conta do usuário"
             title="Minha Conta"
             onClick={() => setAccount(true)}
-            className="text-[#0E0E0E] hover:text-[#E4572E] hover:bg-black/5"
+            className="text-[#0E0E0E] dark:text-[#EDEAE4] hover:text-[#FF4D00] dark:hover:text-[#FF4D00] hover:bg-black/5 dark:hover:bg-white/5"
           >
             <User size={19} />
           </Button>
@@ -205,13 +221,13 @@ export function StoreShell({ children }: { children: ReactNode }) {
             asChild
             aria-label={`Favoritos, ${wishlist.count} itens`}
             title="Favoritos"
-            className="relative text-[#0E0E0E] hover:text-[#E4572E] hover:bg-black/5"
+            className="relative text-[#0E0E0E] dark:text-[#EDEAE4] hover:text-[#FF4D00] dark:hover:text-[#FF4D00] hover:bg-black/5 dark:hover:bg-white/5"
           >
             <Link to="/favoritos">
               <Heart
                 size={19}
-                fill={wishlist.count > 0 ? "#E4572E" : "none"}
-                stroke={wishlist.count > 0 ? "#E4572E" : "currentColor"}
+                fill={wishlist.count > 0 ? "#FF4D00" : "none"}
+                stroke={wishlist.count > 0 ? "#FF4D00" : "currentColor"}
               />
               <AnimatePresence>
                 {wishlist.count > 0 && (
@@ -221,7 +237,7 @@ export function StoreShell({ children }: { children: ReactNode }) {
                     animate={{ scale: [1, 1.3, 1] }}
                     exit={{ scale: 0 }}
                     transition={{ duration: 0.25 }}
-                    className="absolute -top-1 -right-1 grid min-w-4 h-4 px-1 place-items-center bg-[#E4572E] text-[10px] font-bold text-white rounded-full leading-none"
+                    className="absolute -top-1 -right-1 grid min-w-4 h-4 px-1 place-items-center bg-[#FF4D00] text-[10px] font-bold text-white rounded-full leading-none"
                   >
                     {wishlist.count}
                   </motion.span>
@@ -236,7 +252,7 @@ export function StoreShell({ children }: { children: ReactNode }) {
             aria-label={`Abrir sacola, ${cart.count} itens`}
             title="Sacola"
             onClick={() => cart.setOpen(true)}
-            className="relative text-[#0E0E0E] hover:text-[#E4572E] hover:bg-black/5"
+            className="relative text-[#0E0E0E] dark:text-[#EDEAE4] hover:text-[#FF4D00] dark:hover:text-[#FF4D00] hover:bg-black/5 dark:hover:bg-white/5"
           >
             <ShoppingBag size={19} />
             <AnimatePresence>
@@ -247,7 +263,7 @@ export function StoreShell({ children }: { children: ReactNode }) {
                   animate={{ scale: [1, 1.3, 1] }}
                   exit={{ scale: 0 }}
                   transition={{ duration: 0.25 }}
-                  className="absolute -top-1 -right-1 grid min-w-4 h-4 px-1 place-items-center bg-[#0E0E0E] text-[10px] font-bold text-[#EDEAE4] rounded-full leading-none"
+                  className="absolute -top-1 -right-1 grid min-w-4 h-4 px-1 place-items-center bg-[#0E0E0E] dark:bg-[#FF4D00] text-[10px] font-bold text-white rounded-full leading-none"
                 >
                   {cart.count}
                 </motion.span>
@@ -258,7 +274,7 @@ export function StoreShell({ children }: { children: ReactNode }) {
           <Button
             variant="ghost"
             size="icon"
-            className="sm:hidden text-[#0E0E0E] hover:bg-black/5"
+            className="sm:hidden text-[#0E0E0E] dark:text-[#EDEAE4] hover:bg-black/5 dark:hover:bg-white/5"
             aria-label="Abrir menu"
             onClick={() => setMenu(true)}
           >
@@ -346,15 +362,23 @@ export function StoreShell({ children }: { children: ReactNode }) {
                 setMenu(false);
               }
             }}
-            className="fixed inset-0 z-[100] bg-background flex flex-col p-6 touch-none"
+            className="fixed inset-0 z-[100] bg-[#EDEAE4] dark:bg-[#0E0E0E] text-[#0E0E0E] dark:text-[#EDEAE4] flex flex-col p-6 touch-none"
           >
             <div className="flex justify-between items-center">
-              <span className="brand text-2xl font-display font-bold text-[#0E0E0E]">VERSO.</span>
-              <Button variant="ghost" size="icon" onClick={() => setMenu(false)} aria-label="Fechar menu">
+              <span className="brand text-2xl font-display font-bold text-[#0E0E0E] dark:text-[#EDEAE4]">
+                VERSO<span className="text-[#FF4D00]">.</span>
+              </span>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setMenu(false)}
+                aria-label="Fechar menu"
+                className="text-[#0E0E0E] dark:text-[#EDEAE4] hover:bg-black/5 dark:hover:bg-white/5"
+              >
                 <X size={24} />
               </Button>
             </div>
-            <p className="text-xs font-mono text-[#0E0E0E]/60 mt-1 uppercase tracking-wider">FÉ QUE VESTE.</p>
+            <p className="text-xs font-mono text-[#0E0E0E]/60 dark:text-[#EDEAE4]/60 mt-1 uppercase tracking-wider">FÉ QUE VESTE.</p>
             <nav className="mt-12 flex flex-col gap-6 font-display text-4xl sm:text-5xl">
               {[
                 { name: "LOJA", path: "/loja" },
@@ -373,14 +397,25 @@ export function StoreShell({ children }: { children: ReactNode }) {
                   <Link
                     to={item.path}
                     onClick={() => setMenu(false)}
-                    className="block w-full hover:text-[#E4572E] transition-colors"
+                    className="block w-full hover:text-[#FF4D00] transition-colors"
                   >
                     {item.name}
                   </Link>
                 </motion.div>
               ))}
             </nav>
-            <div className="mt-auto text-center text-xs text-[#0E0E0E]/40 pb-4 font-mono uppercase tracking-widest">
+
+            {/* THEME SWITCH IN MOBILE MENU */}
+            <button
+              type="button"
+              onClick={toggleTheme}
+              className="mt-6 flex items-center justify-between w-full py-4 border-t border-black/10 dark:border-white/10 font-mono text-sm tracking-wider uppercase text-left text-[#0E0E0E] dark:text-[#EDEAE4] hover:text-[#FF4D00] transition-colors"
+            >
+              <span>{theme === "dark" ? "MODO CLARO" : "MODO ESCURO"}</span>
+              {theme === "dark" ? <Sun size={20} className="text-[#FF4D00]" /> : <Moon size={20} className="text-[#FF4D00]" />}
+            </button>
+
+            <div className="mt-auto text-center text-xs text-[#0E0E0E]/40 dark:text-[#EDEAE4]/40 pb-4 font-mono uppercase tracking-widest">
               Arraste para fechar
             </div>
           </motion.div>
@@ -389,11 +424,11 @@ export function StoreShell({ children }: { children: ReactNode }) {
 
       {/* SEARCH DIALOG */}
       <Dialog open={search} onOpenChange={setSearch}>
-        <DialogContent className="max-h-[85svh] overflow-y-auto bg-[#EDEAE4] text-[#0E0E0E] border-[#0E0E0E]/10 sm:max-w-xl">
-          <DialogTitle className="font-display text-3xl font-bold uppercase text-[#0E0E0E]">
+        <DialogContent className="max-h-[85svh] overflow-y-auto bg-[#EDEAE4] dark:bg-[#1E1E1E] text-[#0E0E0E] dark:text-[#EDEAE4] border-black/10 dark:border-white/10 sm:max-w-xl">
+          <DialogTitle className="font-display text-3xl font-bold uppercase text-[#0E0E0E] dark:text-[#EDEAE4]">
             ENCONTRE SEU VERSO.
           </DialogTitle>
-          <DialogDescription className="text-xs text-[#0E0E0E]/70">
+          <DialogDescription className="text-xs text-[#0E0E0E]/70 dark:text-[#EDEAE4]/70">
             Busque por nome da peça, categoria, versículo ou estampa.
           </DialogDescription>
           <div className="relative my-2">
@@ -403,14 +438,14 @@ export function StoreShell({ children }: { children: ReactNode }) {
               placeholder="Ex: Luz, Salmo 23, Moletom..."
               value={query}
               onChange={(e) => setQuery(e.target.value.slice(0, 100))}
-              className="w-full pr-16 pl-3 py-3 text-sm bg-white border border-[#0E0E0E]/20 text-[#0E0E0E] placeholder:text-[#0E0E0E]/40 focus:outline-none focus:border-[#E4572E]"
+              className="w-full pr-16 pl-3 py-3 text-sm bg-white dark:bg-[#262626] border border-black/20 dark:border-white/20 text-[#0E0E0E] dark:text-[#EDEAE4] placeholder:text-black/40 dark:placeholder:text-white/40 focus:outline-none focus:border-[#FF4D00]"
             />
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5 text-[#0E0E0E]/50">
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5 text-[#0E0E0E]/50 dark:text-[#EDEAE4]/50">
               {query && (
                 <button
                   type="button"
                   onClick={() => setQuery("")}
-                  className="p-1 hover:text-[#0E0E0E] transition-colors"
+                  className="p-1 hover:text-[#0E0E0E] dark:hover:text-white transition-colors"
                   aria-label="Limpar busca"
                 >
                   <X size={15} />
@@ -426,7 +461,7 @@ export function StoreShell({ children }: { children: ReactNode }) {
                 to="/produto/$slug"
                 params={{ slug: p.slug }}
                 onClick={() => setSearch(false)}
-                className="grid grid-cols-[55px_minmax(0,1fr)_auto] items-center gap-3 p-2 bg-[#F5F2EB] hover:bg-[#EAE6DE] border border-[#0E0E0E]/10 transition-colors"
+                className="grid grid-cols-[55px_minmax(0,1fr)_auto] items-center gap-3 p-2 bg-[#F5F2EB] dark:bg-[#262626] hover:bg-[#EAE6DE] dark:hover:bg-[#2F2F2F] border border-black/10 dark:border-white/10 transition-colors"
               >
                 <img
                   src={p.images[0]}
@@ -436,19 +471,19 @@ export function StoreShell({ children }: { children: ReactNode }) {
                   className="h-16 w-14 object-cover"
                 />
                 <div className="min-w-0">
-                  <span className="text-[10px] font-mono text-[#E4572E] block uppercase">{p.verse} · {p.category}</span>
-                  <span className="text-xs font-semibold text-[#0E0E0E] block truncate">{p.name}</span>
+                  <span className="text-[10px] font-mono text-[#FF4D00] block uppercase">{p.verse} · {p.category}</span>
+                  <span className="text-xs font-semibold text-[#0E0E0E] dark:text-[#EDEAE4] block truncate">{p.name}</span>
                 </div>
-                <span className="text-xs font-semibold text-[#0E0E0E] shrink-0">{money(p.priceCents)}</span>
+                <span className="text-xs font-semibold text-[#0E0E0E] dark:text-[#EDEAE4] shrink-0">{money(p.priceCents)}</span>
               </Link>
             ))}
             {query.trim() && results.length === 0 && (
-              <div className="py-8 text-center text-sm text-[#0E0E0E]/70">
+              <div className="py-8 text-center text-sm text-[#0E0E0E]/70 dark:text-[#EDEAE4]/70">
                 Nenhuma peça encontrada para "{query}". Tente outro nome ou versículo.
               </div>
             )}
             {!query.trim() && (
-              <p className="py-4 text-center text-xs font-mono text-[#0E0E0E]/50 uppercase tracking-wider">
+              <p className="py-4 text-center text-xs font-mono text-[#0E0E0E]/50 dark:text-[#EDEAE4]/50 uppercase tracking-wider">
                 Digite para buscar peças da coleção Drop 01
               </p>
             )}
@@ -458,25 +493,25 @@ export function StoreShell({ children }: { children: ReactNode }) {
 
       {/* USER ACCOUNT DIALOG */}
       <Dialog open={account} onOpenChange={setAccount}>
-        <DialogContent className="max-w-md bg-[#EDEAE4] text-[#0E0E0E] border-[#0E0E0E]/10">
-          <DialogTitle className="font-display text-3xl font-bold uppercase text-[#0E0E0E]">
+        <DialogContent className="max-w-md bg-[#EDEAE4] dark:bg-[#1E1E1E] text-[#0E0E0E] dark:text-[#EDEAE4] border-black/10 dark:border-white/10">
+          <DialogTitle className="font-display text-3xl font-bold uppercase text-[#0E0E0E] dark:text-[#EDEAE4]">
             CONTA VERSO
           </DialogTitle>
-          <DialogDescription className="text-xs text-[#0E0E0E]/70">
+          <DialogDescription className="text-xs text-[#0E0E0E]/70 dark:text-[#EDEAE4]/70">
             Sua experiência personalizada de compra e navegação.
           </DialogDescription>
           <div className="space-y-4 pt-2">
-            <div className="p-4 bg-[#F5F2EB] border border-[#0E0E0E]/10">
-              <span className="font-mono text-[10px] uppercase tracking-wider text-[#E4572E] font-semibold block mb-1">
+            <div className="p-4 bg-[#F5F2EB] dark:bg-[#262626] border border-black/10 dark:border-white/10">
+              <span className="font-mono text-[10px] uppercase tracking-wider text-[#FF4D00] font-semibold block mb-1">
                 STATUS DA SESSÃO
               </span>
-              <p className="text-sm font-semibold text-[#0E0E0E]">Visitante Convidado</p>
-              <p className="text-xs text-[#0E0E0E]/70 mt-1 leading-relaxed">
+              <p className="text-sm font-semibold text-[#0E0E0E] dark:text-[#EDEAE4]">Visitante Convidado</p>
+              <p className="text-xs text-[#0E0E0E]/70 dark:text-[#EDEAE4]/70 mt-1 leading-relaxed">
                 Suas peças favoritas e itens na sacola são salvos com segurança no seu navegador. Quando você finaliza uma compra pelo Mercado Pago, os dados do pedido são confirmados no checkout.
               </p>
             </div>
             <div className="grid grid-cols-2 gap-3 pt-2">
-              <Button asChild variant="outline" className="border-[#0E0E0E]/20 text-xs">
+              <Button asChild variant="outline" className="border-black/20 dark:border-white/20 text-xs">
                 <Link to="/favoritos" onClick={() => setAccount(false)}>
                   Favoritos ({wishlist.count})
                 </Link>
