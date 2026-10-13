@@ -1058,9 +1058,14 @@
   background-color: #878787;
 }
 
-.swatch[data-color="laranja"],
-.swatch-dot[data-color="laranja"] {
-  background-color: #e4572e;
+.swatch[data-color="vermelho"],
+.swatch-dot[data-color="vermelho"] {
+  background-color: #c8102e;
+}
+
+.swatch[data-color="areia"],
+.swatch-dot[data-color="areia"] {
+  background-color: #c9b79c;
 }
 
 .swatch-dot {

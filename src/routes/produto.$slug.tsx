@@ -16,7 +16,7 @@ import {
   RefreshCcw,
   ShieldCheck,
 } from "lucide-react";
-import { products, pageHead, money, type Product } from "@/data/products";
+import { products, pageHead, money, getProductImages, type Product } from "@/data/products";
 import { useCart } from "@/components/store/cart-context";
 import { useWishlist } from "@/components/store/wishlist-context";
 import { ProductCard } from "@/components/store/product-card";
@@ -171,6 +171,8 @@ function ProductDetails({ product: p }: { product: Product }) {
     y.set(0);
   }
 
+  const activeImages = getProductImages(p, color);
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -199,7 +201,7 @@ function ProductDetails({ product: p }: { product: Product }) {
       <section className="container-verso product-layout">
         <div className="flex flex-col-reverse md:flex-row gap-3 items-start w-full">
           <div className="flex flex-row md:flex-col gap-3 overflow-x-auto snap-x snap-mandatory w-full md:w-[80px] md:shrink-0 hide-scrollbar pb-2 md:pb-0">
-            {p.images.map((img, i) => (
+            {activeImages.map((img, i) => (
               <Button
                 variant="size"
                 className="h-[100px] min-w-[80px] p-0 relative shrink-0 snap-center overflow-hidden rounded-md"
@@ -249,7 +251,7 @@ function ProductDetails({ product: p }: { product: Product }) {
                   <Suspense
                     fallback={
                       <img
-                        src={p.images[0]}
+                        src={activeImages[0]}
                         alt="Carregando 3D"
                         className="opacity-50 object-cover w-full h-full"
                       />
@@ -258,7 +260,7 @@ function ProductDetails({ product: p }: { product: Product }) {
                     <LazyThreeViewer
                       key={p.slug}
                       slug={p.slug}
-                      fallbackImage={p.images[0] ?? ""}
+                      fallbackImage={activeImages[0] ?? ""}
                       animated={!prefersReducedMotion}
                       color={color}
                     />
@@ -274,13 +276,13 @@ function ProductDetails({ product: p }: { product: Product }) {
               >
                 <AnimatePresence mode="wait">
                   <motion.img
-                    key={image as number}
+                    key={`${color}-${image}`}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.3 }}
-                    src={p.images[image as number]}
-                    alt={p.name}
+                    src={activeImages[typeof image === "number" ? image : 0] ?? activeImages[0]}
+                    alt={`${p.name} na cor ${color}`}
                     className="w-full h-full object-cover"
                     width={1008}
                     height={1200}
@@ -317,6 +319,9 @@ function ProductDetails({ product: p }: { product: Product }) {
                 className="relative"
                 onClick={() => {
                   setColor(c);
+                  if (typeof image === "number") {
+                    setImage(0);
+                  }
                   setError("");
                 }}
                 aria-label={`Cor ${c}`}

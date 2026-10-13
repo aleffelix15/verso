@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, ShoppingBag, Check } from "lucide-react";
-import { money, type Product } from "@/data/products";
+import { money, getProductImages, type Product } from "@/data/products";
 import { useCart } from "@/components/store/cart-context";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -24,6 +24,7 @@ export function QuickView({
 
   const currentSize = selectedSize || product.sizes[0] || "Único";
   const currentColor = selectedColor || product.colors[0] || "";
+  const displayImages = getProductImages(product, currentColor);
 
   const handleAddToCart = () => {
     cart.add(product, currentSize, currentColor, 1);
@@ -46,7 +47,7 @@ export function QuickView({
           <div className="flex flex-col gap-3">
             <div className="relative aspect-[4/5] bg-surface overflow-hidden border border-border">
               <img
-                src={product.images[activeImg] ?? product.images[0]}
+                src={displayImages[activeImg] ?? displayImages[0]}
                 alt={product.name}
                 width={500}
                 height={600}
@@ -58,9 +59,9 @@ export function QuickView({
                 </span>
               )}
             </div>
-            {product.images.length > 1 && (
+            {displayImages.length > 1 && (
               <div className="flex gap-2">
-                {product.images.map((img, i) => (
+                {displayImages.map((img, i) => (
                   <button
                     key={img}
                     type="button"
@@ -108,7 +109,10 @@ export function QuickView({
                       <button
                         key={c}
                         type="button"
-                        onClick={() => setSelectedColor(c)}
+                        onClick={() => {
+                          setSelectedColor(c);
+                          setActiveImg(0);
+                        }}
                         className={`relative size-7 rounded-full flex items-center justify-center border transition-all ${
                           isSelected
                             ? "border-brand ring-2 ring-brand ring-offset-2 ring-offset-card"

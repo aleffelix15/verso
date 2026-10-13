@@ -41,6 +41,7 @@ export type Product = {
   images: string[];
   sizes: string[];
   colors: string[];
+  colorImages?: Record<string, string[]>;
   verse: string;
   meaning: string;
   statement: string;
@@ -797,3 +798,10 @@ export function pageHead(title: string, description: string, path: string) {
 }
 
 export const getProductBySlug = (slug: string) => products.find((p) => p.slug === slug);
+
+export function getProductImages(product: Product, color?: string): string[] {
+  if (color && product.colorImages?.[color] && product.colorImages[color]!.length > 0) {
+    return product.colorImages[color]!;
+  }
+  return product.images;
+}

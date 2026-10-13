@@ -5,6 +5,8 @@ describe("color-map", () => {
   it("should return correct hex for known colors", () => {
     expect(getHexColor("Preto lavado")).toBe("#1f1f1f");
     expect(getHexColor("Off-white")).toBe("#f5f5f0");
+    expect(getHexColor("Vermelho")).toBe("#C8102E");
+    expect(getHexColor("Areia")).toBe("#C9B79C");
   });
 
   it("should return default hex for unknown colors", () => {

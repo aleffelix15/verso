@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { money, type Product } from "@/data/products";
+import { money, getProductImages, type Product } from "@/data/products";
 import { motion, useReducedMotion, AnimatePresence, type PanInfo } from "framer-motion";
 import { useState } from "react";
 import { Heart, Eye } from "lucide-react";
@@ -14,16 +14,19 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
   const prefersReducedMotion = useReducedMotion();
   const wishlist = useWishlist();
   const isFav = wishlist?.isFavorite(product.slug) ?? false;
+  const [activeColor, setActiveColor] = useState<string>(product.colors[0] ?? "");
   const [imgIndex, setImgIndex] = useState(0);
   const [showHeart, setShowHeart] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [quickViewOpen, setQuickViewOpen] = useState(false);
 
+  const displayImages = getProductImages(product, activeColor);
+
   const handleDragEnd = (_event: MouseEvent | TouchEvent | PointerEvent, { offset }: PanInfo) => {
     const swipe = offset.x;
-    if (swipe < -40 && product.images[1]) {
+    if (swipe < -40 && displayImages[1]) {
       setImgIndex(1);
-    } else if (swipe > 40 && product.images[1]) {
+    } else if (swipe > 40 && displayImages[1]) {
       setImgIndex(0);
     }
   };
@@ -81,7 +84,7 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
               {/* Main image & Hover secondary image with crossfade and smooth scale */}
               <div className="relative w-full h-full overflow-hidden">
                 <img
-                  src={product.images[0]}
+                  src={displayImages[0]}
                   sizes="(min-width: 1280px) 25vw, (min-width: 768px) 33vw, 50vw"
                   alt={product.name}
                   loading="lazy"
@@ -89,12 +92,12 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
                   width={1008}
                   height={1200}
                   className={`w-full h-full object-cover transition-all duration-500 ease-out sm:group-hover:scale-[1.04] will-change-transform ${
-                    product.images[1] && isHovered ? "sm:opacity-0" : "opacity-100"
+                    displayImages[1] && isHovered ? "sm:opacity-0" : "opacity-100"
                   }`}
                 />
-                {product.images[1] && (
+                {displayImages[1] && (
                   <img
-                    src={product.images[1]}
+                    src={displayImages[1]}
                     sizes="(min-width: 1280px) 25vw, (min-width: 768px) 33vw, 50vw"
                     alt={`${product.name} - detalhe`}
                     loading="lazy"
@@ -109,7 +112,7 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
               </div>
 
               {/* Swipeable on mobile if second image exists */}
-              {product.images[1] && (
+              {displayImages[1] && (
                 <motion.div
                   className="absolute inset-0 w-full h-full flex sm:hidden"
                   drag="x"
@@ -205,35 +208,50 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
         </div>
 
         {/* Product meta & info: Name, Price, Colors */}
-        <Link
-          to="/produto/$slug"
-          params={{ slug: product.slug }}
-          className="product-info mt-3 flex flex-col items-start gap-1 focus-visible:outline-none"
-        >
-          <h3 className="product-name font-semibold text-xs sm:text-sm text-foreground uppercase tracking-wide truncate w-full">
-            {product.shortName}
-          </h3>
-          <span className="product-price text-xs sm:text-sm font-semibold text-foreground/90">
-            {money(product.priceCents)}
-          </span>
+        <div className="product-info mt-3 flex flex-col items-start gap-1">
+          <Link
+            to="/produto/$slug"
+            params={{ slug: product.slug }}
+            className="focus-visible:outline-none w-full"
+          >
+            <h3 className="product-name font-semibold text-xs sm:text-sm text-foreground uppercase tracking-wide truncate w-full">
+              {product.shortName}
+            </h3>
+            <span className="product-price text-xs sm:text-sm font-semibold text-foreground/90">
+              {money(product.priceCents)}
+            </span>
+          </Link>
 
-          {/* Color swatches with animated ring */}
+          {/* Color swatches with animated ring and interactive switch */}
           <div
             className="flex items-center gap-1.5 mt-1.5"
             role="list"
             aria-label="Cores disponíveis"
           >
             {product.colors.map((c) => (
-              <span
+              <button
+                type="button"
                 key={c}
                 role="listitem"
-                className="swatch-dot transition-transform hover:scale-125 focus-visible:ring-2 focus-visible:ring-brand"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setActiveColor(c);
+                  setImgIndex(0);
+                }}
+                onMouseEnter={() => {
+                  setActiveColor(c);
+                  setImgIndex(0);
+                }}
+                className={`swatch-dot transition-transform hover:scale-125 focus-visible:ring-2 focus-visible:ring-brand ${
+                  activeColor === c ? "ring-2 ring-brand scale-110" : ""
+                }`}
                 data-color={c.toLowerCase().replace(" ", "-")}
                 title={c}
+                aria-label={`Selecionar cor ${c}`}
               />
             ))}
           </div>
-        </Link>
+        </div>
       </motion.article>
 
       {/* Quick View Dialog */}
