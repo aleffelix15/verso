@@ -15,6 +15,7 @@ import { ThemeProvider } from "@/components/store/theme-context";
 import { CartProvider } from "@/components/store/cart-context";
 import { WishlistProvider } from "@/components/store/wishlist-context";
 import { StoreShell } from "@/components/store/store-shell";
+import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
   return (
@@ -78,7 +79,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
       { name: "theme-color", content: "#0E0E0E" },
       { property: "og:site_name", content: "VERSO" },
       { property: "og:type", content: "website" },
@@ -144,6 +145,7 @@ function RootComponent() {
             <StoreShell>
               <Outlet />
             </StoreShell>
+            <Toaster position="top-right" />
           </CartProvider>
         </WishlistProvider>
       </ThemeProvider>

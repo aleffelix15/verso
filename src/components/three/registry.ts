@@ -2,6 +2,18 @@ import React from "react";
 
 import type { ModelProps } from "./types";
 
+export const SUPPORTED_3D_SLUGS = [
+  "camiseta-luz",
+  "moletom-salmo-23",
+  "bone-verso",
+  "jaqueta-graca",
+  "calca-firme",
+] as const;
+
+export function has3dModel(slug: string): boolean {
+  return (SUPPORTED_3D_SLUGS as readonly string[]).includes(slug);
+}
+
 export const modelsRegistry: Record<
   string,
   React.LazyExoticComponent<React.ComponentType<ModelProps>>

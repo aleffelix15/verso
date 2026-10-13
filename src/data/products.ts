@@ -779,6 +779,7 @@ export const storeConfig = {
   instagram: "versostreetwear",
   email: "contato@verso.com",
   dropDeadline: "2026-10-18T23:59:59-03:00",
+  freeShippingThresholdCents: 29900,
 };
 export function pageHead(title: string, description: string, path: string) {
   return {

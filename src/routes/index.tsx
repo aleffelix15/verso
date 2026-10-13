@@ -5,6 +5,7 @@ import { Featured } from "@/components/store/home/featured";
 import { TrustStrip } from "@/components/store/home/trust-strip";
 import { Collections } from "@/components/store/home/collections";
 import { Newsletter } from "@/components/store/newsletter";
+import { RecentlyViewed } from "@/components/store/recently-viewed";
 
 export const Route = createFileRoute("/")({
   staticData: { sitemap: true },
@@ -31,6 +32,9 @@ export function Home() {
 
       {/* 6. NOSSAS COLEÇÕES */}
       <Collections />
+
+      {/* HISTÓRICO RECENTE */}
+      <RecentlyViewed />
 
       {/* 7. NEWSLETTER */}
       <Newsletter />

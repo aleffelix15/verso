@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState, useRef, Suspense } from "react";
+import { useState, useRef, Suspense, useEffect } from "react";
 import {
   Minus,
   Plus,
@@ -10,6 +10,8 @@ import {
   Check,
   Box,
   Heart,
+  Share2,
+  MessageCircle,
   Truck,
   RefreshCcw,
   ShieldCheck,
@@ -21,8 +23,13 @@ import { ProductCard } from "@/components/store/product-card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { modelsRegistry } from "@/components/three/registry";
+import { has3dModel } from "@/components/three/registry";
 import { ClientOnly } from "@/components/three/client-only";
+import { toast } from "sonner";
+import { SizeGuideDialog } from "@/components/store/size-guide-dialog";
+import { RecentlyViewed } from "@/components/store/recently-viewed";
+import { addRecentlyViewed } from "@/lib/recently-viewed";
+import { buildWhatsAppProductInquiryUrl } from "@/lib/whatsapp";
 import React from "react";
 
 const LazyThreeViewer = React.lazy(() =>
@@ -78,7 +85,71 @@ function ProductDetails({ product: p }: { product: Product }) {
   const [error, setError] = useState("");
   const [added, setAdded] = useState(false);
 
-  const Model = modelsRegistry[p.slug];
+  const has3D = has3dModel(p.slug);
+
+  useEffect(() => {
+    addRecentlyViewed(p.slug);
+  }, [p.slug]);
+
+  const handleShare = async () => {
+    const url =
+      typeof window !== "undefined"
+        ? window.location.href
+        : `https://verso.com.br/produto/${p.slug}`;
+    const shareData = {
+      title: `${p.name} | VERSO`,
+      text: `${p.name} — ${p.meaning}`,
+      url,
+    };
+    if (typeof navigator !== "undefined" && navigator.share && navigator.canShare?.(shareData)) {
+      try {
+        await navigator.share(shareData);
+      } catch {
+        // Ignorado se o usuário cancelou o compartilhamento
+      }
+    } else if (typeof navigator !== "undefined" && navigator.clipboard) {
+      try {
+        await navigator.clipboard.writeText(url);
+        toast.success("Link copiado para a área de transferência!");
+      } catch {
+        toast.error("Não foi possível copiar o link.");
+      }
+    }
+  };
+
+  const productJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: p.name,
+    description: `${p.name}. ${p.meaning}`,
+    image: p.images.map((img) => (img.startsWith("http") ? img : `https://verso.com.br${img}`)),
+    offers: {
+      "@type": "Offer",
+      price: (p.priceCents / 100).toFixed(2),
+      priceCurrency: "BRL",
+      availability: "https://schema.org/InStock",
+      url: `https://verso.com.br/produto/${p.slug}`,
+    },
+    brand: {
+      "@type": "Brand",
+      name: "VERSO",
+    },
+  };
+
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Início", item: "https://verso.com.br" },
+      { "@type": "ListItem", position: 2, name: "Loja", item: "https://verso.com.br/loja" },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: p.name,
+        item: `https://verso.com.br/produto/${p.slug}`,
+      },
+    ],
+  };
 
   const addToCartRef = useRef(null);
   const isAddToCartInView = useInView(addToCartRef, { margin: "0px 0px -100px 0px" });
@@ -108,6 +179,14 @@ function ProductDetails({ product: p }: { product: Product }) {
       transition={{ duration: 0.4 }}
       className="bg-[#EDEAE4] dark:bg-[#1E1E1E] text-[#0E0E0E] dark:text-[#EDEAE4] min-h-[75vh] transition-colors duration-200"
     >
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
       <div className="container-verso pt-7">
         <Link to="/loja" className="eyebrow">
           LOJA
@@ -143,7 +222,7 @@ function ProductDetails({ product: p }: { product: Product }) {
                 />
               </Button>
             ))}
-            {Model && (
+            {has3D && (
               <Button
                 variant="size"
                 className="h-[100px] min-w-[80px] p-0 relative flex flex-col items-center justify-center bg-muted/30 shrink-0 snap-center rounded-md"
@@ -164,7 +243,7 @@ function ProductDetails({ product: p }: { product: Product }) {
             )}
           </div>
           <div className="flex-1 w-full shrink-0 min-w-0">
-            {image === "3d" && Model ? (
+            {image === "3d" && has3D ? (
               <div className="relative w-full overflow-hidden bg-muted flex aspect-[4/5] md:aspect-[5/6] rounded-md">
                 <ClientOnly>
                   <Suspense
@@ -373,6 +452,15 @@ function ProductDetails({ product: p }: { product: Product }) {
                 stroke={isFav ? "var(--brand)" : "currentColor"}
               />
             </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-12 w-12 shrink-0 border-border rounded-none"
+              onClick={handleShare}
+              aria-label="Compartilhar peça"
+            >
+              <Share2 className="size-5" />
+            </Button>
           </div>
           <div className="mt-6 flex flex-col gap-4">
             <div className="flex gap-4 p-4 border border-border bg-muted/50 rounded-md">
@@ -396,6 +484,15 @@ function ProductDetails({ product: p }: { product: Product }) {
                 <span className="text-xs text-muted-foreground">Transação via Mercado Pago</span>
               </div>
             </div>
+            <a
+              href={buildWhatsAppProductInquiryUrl(p, size || undefined, color || undefined)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 w-full py-3 px-4 text-xs font-mono uppercase tracking-wider border border-border hover:border-foreground/30 transition-colors text-muted-foreground hover:text-foreground rounded-md bg-muted/30"
+            >
+              <MessageCircle className="size-4 text-[#25D366]" />
+              Dúvidas sobre a peça? Fale no WhatsApp
+            </a>
           </div>
         </div>
       </section>
@@ -494,6 +591,9 @@ function ProductDetails({ product: p }: { product: Product }) {
             ))}
         </div>
       </section>
+
+      <RecentlyViewed excludeSlug={p.slug} />
+
       <Dialog open={zoom} onOpenChange={setZoom}>
         <DialogContent className="max-w-3xl">
           <DialogTitle className="sr-only">{p.name} — foto ampliada</DialogTitle>
@@ -507,47 +607,14 @@ function ProductDetails({ product: p }: { product: Product }) {
           />
         </DialogContent>
       </Dialog>
-      <Dialog open={guide} onOpenChange={setGuide}>
-        <DialogContent>
-          <DialogTitle className="font-display text-3xl">GUIA DE MEDIDAS</DialogTitle>
-          <DialogDescription>
-            Medidas demonstrativas em centímetros. Meça uma peça sua de corte semelhante.
-          </DialogDescription>
-          {p.sizes.length === 1 ? (
-            <p className="text-sm">Tamanho único. Circunferência ajustável: 54–60 cm.</p>
-          ) : (
-            <table className="w-full text-left text-xs">
-              <thead>
-                <tr className="border-b border-border">
-                  <th className="py-3">Tamanho</th>
-                  <th>Largura</th>
-                  <th>Comprimento</th>
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  ["P", "56", "70"],
-                  ["M", "59", "73"],
-                  ["G", "62", "76"],
-                  ["GG", "65", "79"],
-                ].map((row) => (
-                  <tr className="border-b border-border" key={row[0]}>
-                    {row.map((c) => (
-                      <td className="py-3" key={c}>
-                        {c}
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-          <p className="text-xs text-muted-foreground">
-            Para a calça, largura corresponde à cintura da peça aberta. Tolerância de ±2 cm. Medidas
-            finais precisam de confirmação.
-          </p>
-        </DialogContent>
-      </Dialog>
+      <SizeGuideDialog
+        open={guide}
+        onOpenChange={setGuide}
+        onSelectSize={(s) => {
+          setSize(s);
+          setError("");
+        }}
+      />
       <AnimatePresence>
         {!isAddToCartInView && (
           <motion.div
@@ -615,6 +682,15 @@ function ProductDetails({ product: p }: { product: Product }) {
                   fill={isFav ? "var(--brand)" : "none"}
                   stroke={isFav ? "var(--brand)" : "currentColor"}
                 />
+              </Button>
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-12 w-12 shrink-0 border-border rounded-none bg-background"
+                onClick={handleShare}
+                aria-label="Compartilhar peça"
+              >
+                <Share2 className="size-5" />
               </Button>
             </div>
           </motion.div>

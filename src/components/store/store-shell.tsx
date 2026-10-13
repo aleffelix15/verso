@@ -17,6 +17,7 @@ import {
   User,
   Sun,
   Moon,
+  HelpCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle, SheetDescription } from "@/components/ui/sheet";
@@ -24,7 +25,7 @@ import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/compone
 import { useCart } from "./cart-context";
 import { useWishlist } from "./wishlist-context";
 import { useTheme } from "./theme-context";
-import { products, money, storeConfig } from "@/data/products";
+import { money, storeConfig } from "@/data/products";
 import {
   motion,
   useScroll,
@@ -40,6 +41,11 @@ import { lookupCep } from "@/lib/viacep";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { SearchDialog } from "./search-dialog";
+import { ShortcutsDialog } from "./shortcuts-dialog";
+import { OfflineBanner } from "./offline-banner";
+import { Progress } from "@/components/ui/progress";
+import { buildWhatsAppOrderUrl } from "@/lib/whatsapp";
 
 const checkoutFormSchema = z.object({
   name: z.string().min(2, "Nome muito curto"),
@@ -58,38 +64,79 @@ export function StoreShell({ children }: { children: ReactNode }) {
   const [menu, setMenu] = useState(false);
   const [search, setSearch] = useState(false);
   const [account, setAccount] = useState(false);
-  const [query, setQuery] = useState("");
+  const [shortcuts, setShortcuts] = useState(false);
+  const [manualReduce, setManualReduce] = useState(false);
   const [policy, setPolicy] = useState("");
   const cart = useCart();
   const wishlist = useWishlist();
   const { theme, toggleTheme } = useTheme();
-  const results = query.trim()
-    ? products.filter((p) =>
-        `${p.name} ${p.verse} ${p.category} ${p.statement}`
-          .toLowerCase()
-          .includes(query.toLowerCase()),
-      )
-    : [];
 
   const [hiddenHeader, setHiddenHeader] = useState(false);
-  const { scrollY } = useScroll();
+  const [scrolled, setScrolled] = useState(false);
+  const { scrollY, scrollYProgress } = useScroll();
   const prefersReducedMotion = useReducedMotion();
+  const shouldReduceMotion = prefersReducedMotion || manualReduce;
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("verso-reduced-motion");
+      if (saved === "true") setManualReduce(true);
+    } catch {
+      // Ignora
+    }
+  }, []);
+
+  const toggleManualReduce = () => {
+    setManualReduce((prev) => {
+      const next = !prev;
+      try {
+        localStorage.setItem("verso-reduced-motion", String(next));
+      } catch {
+        // Ignora
+      }
+      return next;
+    });
+  };
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
+      const isInput =
+        event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement;
+
       if (event.key === "Escape") {
         setMenu(false);
         setSearch(false);
         setAccount(false);
+        setShortcuts(false);
+      } else if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        setSearch((prev) => !prev);
+      } else if (event.key === "/" && !isInput) {
+        event.preventDefault();
+        setSearch(true);
+      } else if (event.key === "?" && !isInput) {
+        event.preventDefault();
+        setShortcuts(true);
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
+
+  // Marquee pause on tab hidden
+  useEffect(() => {
+    const handleVisibility = () => {
+      document.documentElement.setAttribute("data-tab-hidden", document.hidden ? "true" : "false");
+    };
+    document.addEventListener("visibilitychange", handleVisibility);
+    return () => document.removeEventListener("visibilitychange", handleVisibility);
+  }, []);
+
   const [loading, setLoading] = useState(true);
 
   useMotionValueEvent(scrollY, "change", (latest) => {
     const previous = scrollY.getPrevious() ?? 0;
+    setScrolled(latest > 8);
     if (latest > previous && latest > 150) {
       setHiddenHeader(true);
     } else {
@@ -100,7 +147,12 @@ export function StoreShell({ children }: { children: ReactNode }) {
   useEffect(() => {
     let lenis: Lenis | undefined;
     let rafId: number;
-    if (window.matchMedia("(min-width: 768px)").matches && !prefersReducedMotion) {
+    const isDesktop =
+      typeof window !== "undefined" &&
+      window.matchMedia("(min-width: 1024px)").matches &&
+      !("ontouchstart" in window);
+
+    if (isDesktop && !shouldReduceMotion) {
       lenis = new Lenis({
         lerp: 0.1,
         smoothWheel: true,
@@ -120,10 +172,26 @@ export function StoreShell({ children }: { children: ReactNode }) {
       cancelAnimationFrame(rafId);
       clearTimeout(t);
     };
-  }, [prefersReducedMotion]);
+  }, [shouldReduceMotion]);
 
   return (
     <>
+      <OfflineBanner />
+
+      {/* Red Scroll Progress Bar */}
+      <motion.div
+        className="fixed top-0 left-0 right-0 h-[2px] bg-brand origin-left z-[70] pointer-events-none"
+        style={{ scaleX: shouldReduceMotion ? 0 : scrollYProgress }}
+      />
+
+      {/* Skip to Content Link for Accessibility */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:px-4 focus:py-2.5 focus:bg-brand focus:text-white focus:font-mono focus:text-xs uppercase focus:outline-none"
+      >
+        Pular para o conteúdo principal
+      </a>
+
       <AnimatePresence>
         {loading && (
           <motion.div
@@ -157,7 +225,11 @@ export function StoreShell({ children }: { children: ReactNode }) {
         }}
         animate={hiddenHeader ? "hidden" : "visible"}
         transition={{ duration: 0.3, ease: "easeOut" }}
-        className="site-header container-verso sticky top-0 z-50 bg-background/95 backdrop-blur-md border-b border-border text-foreground"
+        className={`site-header container-verso sticky top-0 z-50 text-foreground transition-all duration-200 ${
+          scrolled
+            ? "bg-background/95 backdrop-blur-md border-b border-border shadow-sm"
+            : "bg-background/80 border-b border-border/60"
+        }`}
       >
         <Link
           to="/"
@@ -220,12 +292,23 @@ export function StoreShell({ children }: { children: ReactNode }) {
           <Button
             variant="ghost"
             size="icon"
-            aria-label="Buscar produtos"
-            title="Buscar"
+            aria-label="Buscar produtos (Ctrl+K)"
+            title="Buscar (Ctrl+K)"
             onClick={() => setSearch(true)}
             className="text-foreground hover:text-brand hover:bg-muted"
           >
             <Search size={19} />
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label="Atalhos de teclado (?)"
+            title="Atalhos (?)"
+            onClick={() => setShortcuts(true)}
+            className="hidden md:inline-flex text-foreground hover:text-brand hover:bg-muted"
+          >
+            <HelpCircle size={18} />
           </Button>
 
           <Button
@@ -247,16 +330,24 @@ export function StoreShell({ children }: { children: ReactNode }) {
             onClick={() => cart.setOpen(true)}
             className="relative text-foreground hover:text-brand hover:bg-muted"
           >
-            <ShoppingBag size={19} />
+            <motion.div
+              key={cart.bumpCount}
+              animate={
+                cart.bumpCount > 0 && !shouldReduceMotion ? { x: [0, -3, 3, -2, 2, 0] } : { x: 0 }
+              }
+              transition={{ duration: 0.3 }}
+            >
+              <ShoppingBag size={19} />
+            </motion.div>
             <AnimatePresence>
               {cart.count > 0 && (
                 <motion.span
-                  key={cart.count}
+                  key={cart.bumpCount || cart.count}
                   initial={{ scale: 0 }}
-                  animate={{ scale: [1, 1.3, 1] }}
+                  animate={shouldReduceMotion ? { scale: 1 } : { scale: [1, 1.35, 1] }}
                   exit={{ scale: 0 }}
                   transition={{ duration: 0.25 }}
-                  className="absolute -top-1 -right-1 grid min-w-4 h-4 px-1 place-items-center bg-brand text-[10px] font-bold text-white rounded-full leading-none"
+                  className="absolute -top-1 -right-1 grid min-w-4 h-4 px-1 place-items-center bg-brand text-[10px] font-bold text-white rounded-full leading-none pointer-events-none"
                 >
                   {cart.count}
                 </motion.span>
@@ -275,7 +366,9 @@ export function StoreShell({ children }: { children: ReactNode }) {
           </Button>
         </div>
       </motion.header>
-      <main>{children}</main>
+      <main id="main-content" tabIndex={-1} className="focus:outline-none">
+        {children}
+      </main>
       {/* 8. FOOTER COM 4 COLUNAS E DIVISORES VERTICAIS */}
       <footer className="site-footer bg-background text-foreground border-t border-border">
         <div className="container-verso">
@@ -514,80 +607,11 @@ export function StoreShell({ children }: { children: ReactNode }) {
         )}
       </AnimatePresence>
 
-      {/* SEARCH DIALOG */}
-      <Dialog open={search} onOpenChange={setSearch}>
-        <DialogContent className="max-h-[85svh] overflow-y-auto bg-card text-foreground border-border sm:max-w-xl">
-          <DialogTitle className="font-display text-3xl font-bold uppercase text-foreground">
-            ENCONTRE SEU VERSO.
-          </DialogTitle>
-          <DialogDescription className="text-xs text-muted-foreground">
-            Busque por nome da peça, categoria, versículo ou estampa.
-          </DialogDescription>
-          <div className="relative my-2">
-            <input
-              autoFocus
-              aria-label="Buscar peças"
-              placeholder="Ex: Moletom, Camiseta, Salmo 23..."
-              value={query}
-              onChange={(e) => setQuery(e.target.value.slice(0, 100))}
-              className="w-full pr-16 pl-3 py-3 text-sm bg-background border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-brand rounded-none"
-            />
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5 text-muted-foreground">
-              {query && (
-                <button
-                  type="button"
-                  onClick={() => setQuery("")}
-                  className="p-1 hover:text-foreground transition-colors"
-                  aria-label="Limpar busca"
-                >
-                  <X size={15} />
-                </button>
-              )}
-              <Search size={18} />
-            </div>
-          </div>
-          <div className="space-y-3 mt-4 max-h-[50vh] overflow-y-auto pr-1">
-            {results.map((p) => (
-              <Link
-                key={p.slug}
-                to="/produto/$slug"
-                params={{ slug: p.slug }}
-                onClick={() => setSearch(false)}
-                className="grid grid-cols-[55px_minmax(0,1fr)_auto] items-center gap-3 p-2 bg-surface hover:bg-muted/40 border border-border transition-colors rounded-none"
-              >
-                <img
-                  src={p.images[0]}
-                  alt={p.name}
-                  width={55}
-                  height={65}
-                  className="h-16 w-14 object-cover"
-                />
-                <div className="min-w-0">
-                  <span className="text-[10px] font-mono text-brand block uppercase font-semibold">
-                    {p.verse} · {p.category}
-                  </span>
-                  <span className="text-xs font-semibold text-foreground block truncate">
-                    {p.name}
-                  </span>
-                </div>
-                <span className="text-xs font-semibold text-foreground shrink-0">
-                  {money(p.priceCents)}
-                </span>
-              </Link>
-            ))}
-            {query.trim() && results.length === 0 && (
-              <div className="py-8 text-center text-sm text-muted-foreground">
-                Nenhuma peça encontrada para "{query}". Tente outro nome ou versículo.
-              </div>
-            )}
-            {!query.trim() && (
-              <p className="py-4 text-center text-xs font-mono text-muted-foreground uppercase tracking-wider">
-                Digite para buscar peças da coleção Drop 01
-              </p>
-            )}
-          </div>
-        </DialogContent>
-      </Dialog>
+      {/* SEARCH DIALOG WITH CMDK */}
+      <SearchDialog open={search} onOpenChange={setSearch} />
+
+      {/* KEYBOARD SHORTCUTS DIALOG */}
+      <ShortcutsDialog open={shortcuts} onOpenChange={setShortcuts} />
 
       {/* USER ACCOUNT DIALOG */}
       <Dialog open={account} onOpenChange={setAccount}>
@@ -610,6 +634,27 @@ export function StoreShell({ children }: { children: ReactNode }) {
                 confirmados no checkout.
               </p>
             </div>
+
+            <div className="p-3 bg-surface border border-border flex items-center justify-between">
+              <div>
+                <p className="text-xs font-semibold text-foreground">Reduzir animações</p>
+                <p className="text-[10px] text-muted-foreground">
+                  Desativa movimentos contínuos e efeitos parallax
+                </p>
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={toggleManualReduce}
+                className={`font-mono text-[10px] uppercase h-7 px-2.5 rounded-none ${
+                  manualReduce ? "border-brand text-brand" : "border-border text-muted-foreground"
+                }`}
+              >
+                {manualReduce ? "Ativado" : "Desativado"}
+              </Button>
+            </div>
+
             <div className="grid grid-cols-2 gap-3 pt-2">
               <Button asChild variant="outline" className="border-border text-xs">
                 <Link to="/favoritos" onClick={() => setAccount(false)}>
@@ -644,6 +689,7 @@ export function StoreShell({ children }: { children: ReactNode }) {
 }
 function CartDrawer() {
   const cart = useCart();
+  const wishlist = useWishlist();
   const [shippingOptions, setShippingOptions] = useState<FreightOption[] | null>(null);
   const [selectedShipping, setSelectedShipping] = useState<FreightOption | null>(null);
   const [error, setError] = useState("");
@@ -769,7 +815,10 @@ function CartDrawer() {
   return (
     <>
       <Sheet open={cart.open} onOpenChange={cart.setOpen}>
-        <SheetContent className="flex w-full flex-col sm:max-w-[450px]">
+        <SheetContent
+          data-lenis-prevent
+          className="flex w-full flex-col sm:max-w-[480px] max-w-[100vw] overflow-hidden"
+        >
           <SheetTitle className="font-display text-3xl">
             SUA SACOLA <span className="text-muted-foreground">({cart.count})</span>
           </SheetTitle>
@@ -778,6 +827,33 @@ function CartDrawer() {
               ? "Suas próximas peças favoritas."
               : "Seu próximo verso começa aqui."}
           </SheetDescription>
+
+          {/* Free Shipping Progress Bar */}
+          {cart.items.length > 0 && (
+            <div className="py-2.5 px-3 bg-surface border border-border mt-1 mb-2">
+              <div className="flex justify-between items-center text-[11px] mb-1.5 font-mono">
+                <span className="text-muted-foreground uppercase">
+                  {cart.subtotal >= storeConfig.freeShippingThresholdCents
+                    ? "Frete grátis garantido!"
+                    : `Faltam ${money(storeConfig.freeShippingThresholdCents - cart.subtotal)} para frete grátis`}
+                </span>
+                <span className="font-bold text-brand">
+                  {Math.round(
+                    Math.min(100, (cart.subtotal / storeConfig.freeShippingThresholdCents) * 100),
+                  )}
+                  %
+                </span>
+              </div>
+              <Progress
+                value={Math.min(
+                  100,
+                  (cart.subtotal / storeConfig.freeShippingThresholdCents) * 100,
+                )}
+                className="h-1 bg-muted [&>div]:bg-brand"
+              />
+            </div>
+          )}
+
           <div className="min-h-0 flex-1 overflow-y-auto">
             {cart.items.length === 0 ? (
               <div className="flex h-full flex-col items-center justify-center gap-5 py-14">
@@ -790,80 +866,101 @@ function CartDrawer() {
                 </Button>
               </div>
             ) : (
-              cart.items.map((item, i) => (
-                <div className="bag-line" key={`${item.product.slug}-${item.size}-${item.color}`}>
-                  <img
-                    src={item.product.images[0]}
-                    alt={item.product.name}
-                    width={78}
-                    height={98}
-                  />
-                  <div className="min-w-0">
-                    <div className="flex justify-between gap-2">
-                      <Link
-                        to="/produto/$slug"
-                        params={{ slug: item.product.slug }}
-                        onClick={() => cart.setOpen(false)}
-                        className="text-xs leading-5"
-                      >
-                        {item.product.name}
-                      </Link>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="size-6 shrink-0"
-                        aria-label={`Remover ${item.product.name}`}
-                        onClick={() => cart.remove(i)}
-                      >
-                        <Trash2 size={13} />
-                      </Button>
-                    </div>
-                    <p className="mt-1 text-[10px] text-muted-foreground">
-                      {item.color} · {item.size}
-                    </p>
-                    <div className="mt-3 flex items-center justify-between">
-                      <div className="flex items-center border border-border">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="size-7"
-                          aria-label={`Diminuir quantidade de ${item.product.name}`}
-                          onClick={() => cart.update(i, item.quantity - 1)}
-                          disabled={item.quantity === 1}
+              <AnimatePresence initial={false}>
+                {cart.items.map((item, i) => (
+                  <motion.div
+                    layout
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0, overflow: "hidden" }}
+                    transition={{ duration: 0.25 }}
+                    className="bag-line"
+                    key={`${item.product.slug}-${item.size}-${item.color}`}
+                  >
+                    <img
+                      src={item.product.images[0]}
+                      alt={item.product.name}
+                      width={78}
+                      height={98}
+                      className="object-cover"
+                    />
+                    <div className="min-w-0 flex flex-col justify-between">
+                      <div>
+                        <div className="flex justify-between gap-2">
+                          <Link
+                            to="/produto/$slug"
+                            params={{ slug: item.product.slug }}
+                            onClick={() => cart.setOpen(false)}
+                            className="text-xs leading-5 font-semibold text-foreground hover:text-brand transition-colors"
+                          >
+                            {item.product.name}
+                          </Link>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="size-6 shrink-0 text-muted-foreground hover:text-foreground"
+                            aria-label={`Remover ${item.product.name}`}
+                            onClick={() => cart.remove(i)}
+                          >
+                            <Trash2 size={13} />
+                          </Button>
+                        </div>
+                        <p className="mt-0.5 text-[10px] text-muted-foreground">
+                          {item.color} · {item.size}
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => cart.saveForLater(i, wishlist.addFavorite)}
+                          className="mt-1 text-[10px] text-muted-foreground hover:text-brand underline cursor-pointer text-left"
                         >
-                          <Minus />
-                        </Button>
-                        <span className="w-5 text-center text-xs">{item.quantity}</span>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="size-7"
-                          aria-label={`Aumentar quantidade de ${item.product.name}`}
-                          onClick={() => cart.update(i, item.quantity + 1)}
-                          disabled={item.quantity === 10}
-                        >
-                          <Plus />
-                        </Button>
+                          Salvar para depois
+                        </button>
                       </div>
-                      <span className="text-xs">
-                        {money(item.product.priceCents * item.quantity)}
-                      </span>
+
+                      <div className="mt-3 flex items-center justify-between">
+                        <div className="flex items-center border border-border">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="size-7"
+                            aria-label={`Diminuir quantidade de ${item.product.name}`}
+                            onClick={() => cart.update(i, item.quantity - 1)}
+                            disabled={item.quantity === 1}
+                          >
+                            <Minus size={12} />
+                          </Button>
+                          <span className="w-5 text-center text-xs">{item.quantity}</span>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="size-7"
+                            aria-label={`Aumentar quantidade de ${item.product.name}`}
+                            onClick={() => cart.update(i, item.quantity + 1)}
+                            disabled={item.quantity === 10}
+                          >
+                            <Plus size={12} />
+                          </Button>
+                        </div>
+                        <span className="text-xs font-mono font-semibold">
+                          {money(item.product.priceCents * item.quantity)}
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                </div>
-              ))
+                  </motion.div>
+                ))}
+              </AnimatePresence>
             )}
           </div>
           {cart.items.length > 0 && (
-            <div className="border-t border-border pt-5">
+            <div className="border-t border-border pt-4">
               <div className="flex justify-between text-sm">
                 <span>Subtotal</span>
                 <strong>{money(cart.subtotal)}</strong>
               </div>
-              <p className="mt-2 text-[10px] text-muted-foreground">
-                {cart.subtotal >= 29900
+              <p className="mt-1 text-[10px] text-muted-foreground">
+                {cart.subtotal >= storeConfig.freeShippingThresholdCents
                   ? "Seu pedido tem frete grátis."
-                  : `Faltam ${money(29900 - cart.subtotal)} para frete grátis.`}
+                  : `Faltam ${money(storeConfig.freeShippingThresholdCents - cart.subtotal)} para frete grátis.`}
               </p>
               <form onSubmit={finish} className="mt-5 space-y-3">
                 <label className="block text-xs font-semibold">DADOS DO COMPRADOR</label>
@@ -976,16 +1073,36 @@ function CartDrawer() {
                 <Button
                   type="submit"
                   variant="brand"
-                  className="mt-5 h-12 w-full"
+                  className="mt-5 h-12 w-full font-mono text-xs uppercase tracking-wider"
                   disabled={!selectedShipping || loading}
                 >
                   <CreditCard size={17} />{" "}
                   {loading ? "Gerando Pagamento..." : "Ir para o Pagamento Seguro"}{" "}
                   <ArrowUpRight size={17} />
                 </Button>
+
+                <a
+                  href={buildWhatsAppOrderUrl({
+                    items: cart.items.map((it) => ({
+                      name: it.product.name,
+                      size: it.size,
+                      color: it.color,
+                      quantity: it.quantity,
+                      priceCents: it.product.priceCents,
+                    })),
+                    subtotalCents: cart.subtotal,
+                    shippingOption: selectedShipping,
+                  })}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 w-full py-3 mt-2.5 border border-border text-xs uppercase font-mono tracking-wider text-foreground hover:bg-muted transition-colors rounded-none"
+                >
+                  <MessageCircle size={15} /> Finalizar via WhatsApp
+                </a>
               </form>
               <p className="mt-3 text-center text-[10px] text-muted-foreground">
-                Checkout seguro processado pelo Mercado Pago.
+                Checkout seguro processado pelo Mercado Pago ou direto com nossa equipe via
+                WhatsApp.
               </p>
             </div>
           )}

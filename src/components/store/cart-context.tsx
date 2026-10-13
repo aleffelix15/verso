@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, useRef, type ReactNode } from "react";
 import { getProductBySlug, type Product } from "@/data/products";
+import { toast } from "sonner";
 
 export type CartItem = {
   product: Product;
@@ -8,7 +9,7 @@ export type CartItem = {
   quantity: number;
 };
 
-type CartContextValue = {
+export type CartContextValue = {
   items: CartItem[];
   open: boolean;
   setOpen: (open: boolean) => void;
@@ -16,91 +17,147 @@ type CartContextValue = {
   update: (index: number, quantity: number) => void;
   remove: (index: number) => void;
   clear: () => void;
+  saveForLater: (index: number, addToWishlist: (slug: string) => void) => void;
   subtotal: number;
   count: number;
+  bumpCount: number;
 };
 
 const CartContext = createContext<CartContextValue | null>(null);
 
-const STORAGE_KEY = "verso-cart";
+export const STORAGE_KEY = "verso-cart";
+export const CART_SCHEMA_VERSION = 1;
+
+/**
+ * Validates, migrates, and deduplicates raw storage input into valid CartItem array.
+ */
+export function parseStoredCart(rawString: string | null): CartItem[] {
+  if (!rawString) return [];
+  try {
+    const parsed = JSON.parse(rawString);
+    let rawList: unknown[] = [];
+
+    // Support both envelope { version: 1, items: [...] } and direct array [...]
+    if (
+      parsed &&
+      typeof parsed === "object" &&
+      "items" in parsed &&
+      Array.isArray((parsed as Record<string, unknown>)["items"])
+    ) {
+      rawList = (parsed as Record<string, unknown>)["items"] as unknown[];
+    } else if (Array.isArray(parsed)) {
+      rawList = parsed;
+    } else {
+      return [];
+    }
+
+    const validatedItems: CartItem[] = [];
+
+    for (const raw of rawList) {
+      if (!raw || typeof raw !== "object") continue;
+      const r = raw as Record<string, unknown>;
+
+      const rawProduct =
+        r["product"] && typeof r["product"] === "object"
+          ? (r["product"] as Record<string, unknown>)
+          : null;
+
+      const slug =
+        typeof r["slug"] === "string"
+          ? r["slug"]
+          : typeof rawProduct?.["slug"] === "string"
+            ? rawProduct["slug"]
+            : null;
+
+      if (!slug) continue;
+
+      // 1. Valida se o produto ainda existe no catálogo oficial
+      const currentProduct = getProductBySlug(slug);
+      if (!currentProduct) continue; // Remove itens descontinuados
+
+      const rawSize = typeof r["size"] === "string" ? r["size"] : "";
+      const size = currentProduct.sizes.includes(rawSize)
+        ? rawSize
+        : (currentProduct.sizes[0] ?? "Único");
+
+      const rawColor = typeof r["color"] === "string" ? r["color"] : "";
+      const color = currentProduct.colors.includes(rawColor)
+        ? rawColor
+        : (currentProduct.colors[0] ?? "");
+
+      const rawQty = typeof r["quantity"] === "number" ? r["quantity"] : 1;
+      const quantity = Math.max(1, Math.min(10, Math.floor(rawQty)));
+
+      // 2. Agrupa itens idênticos (mesmo slug, tamanho e cor)
+      const existingIndex = validatedItems.findIndex(
+        (it) => it.product.slug === slug && it.size === size && it.color === color,
+      );
+
+      if (existingIndex >= 0) {
+        const existing = validatedItems[existingIndex];
+        if (existing) {
+          existing.quantity = Math.min(10, existing.quantity + quantity);
+        }
+      } else {
+        validatedItems.push({
+          product: currentProduct,
+          size,
+          color,
+          quantity,
+        });
+      }
+    }
+
+    return validatedItems;
+  } catch {
+    return [];
+  }
+}
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [open, setOpen] = useState(false);
+  const [bumpCount, setBumpCount] = useState(0);
   const hydrated = useRef(false);
 
-  // Hidratação segura a partir do localStorage com validação de catálogo e migração
+  // Hidratação segura a partir do localStorage
   useEffect(() => {
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed)) {
-          const validatedItems: CartItem[] = [];
-
-          for (const raw of parsed) {
-            if (!raw || typeof raw !== "object") continue;
-
-            const slug =
-              typeof raw.slug === "string"
-                ? raw.slug
-                : typeof raw.product?.slug === "string"
-                  ? raw.product.slug
-                  : null;
-
-            if (!slug) continue;
-
-            // 1. Valida se o produto ainda existe no catálogo atual
-            const currentProduct = getProductBySlug(slug);
-            if (!currentProduct) continue; // Remove itens descontinuados
-
-            const rawSize = typeof raw.size === "string" ? raw.size : "";
-            const size = currentProduct.sizes.includes(rawSize)
-              ? rawSize
-              : (currentProduct.sizes[0] ?? "Único");
-
-            const rawColor = typeof raw.color === "string" ? raw.color : "";
-            const color = currentProduct.colors.includes(rawColor)
-              ? rawColor
-              : (currentProduct.colors[0] ?? "");
-
-            const rawQty = typeof raw.quantity === "number" ? raw.quantity : 1;
-            const quantity = Math.max(1, Math.min(10, Math.floor(rawQty)));
-
-            // 2. Agrupa itens idênticos (mesmo slug, tamanho e cor)
-            const existingIndex = validatedItems.findIndex(
-              (it) => it.product.slug === slug && it.size === size && it.color === color,
-            );
-
-            if (existingIndex >= 0) {
-              const existing = validatedItems[existingIndex];
-              if (existing) {
-                existing.quantity = Math.min(10, existing.quantity + quantity);
-              }
-            } else {
-              validatedItems.push({
-                product: currentProduct, // Preço e fotos sempre atualizados do catálogo oficial
-                size,
-                color,
-                quantity,
-              });
-            }
-          }
-
-          setItems(validatedItems);
-        }
-      }
+      const validated = parseStoredCart(stored);
+      setItems(validated);
     } catch {
-      // Ignora erro de JSON corrompido e inicia sacola limpa
+      // Ignora erro de JSON corrompido
     }
     hydrated.current = true;
   }, []);
 
-  // Persistência com tratamento de cota de armazenamento
+  // Sincronização entre abas (storage event)
+  useEffect(() => {
+    const handleStorage = (event: StorageEvent) => {
+      if (event.key === STORAGE_KEY) {
+        const updated = parseStoredCart(event.newValue);
+        setItems(updated);
+      }
+    };
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
+  }, []);
+
+  // Persistência com schema versioning e tratamento de cota
   useEffect(() => {
     if (!hydrated.current) return;
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+      // Array com schema version flag em cada registro para compatibilidade total
+      const payload = items.map((it) => ({
+        product: { slug: it.product.slug },
+        slug: it.product.slug,
+        size: it.size,
+        color: it.color,
+        quantity: it.quantity,
+        _schemaVersion: CART_SCHEMA_VERSION,
+      }));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
     } catch {
       // Ignora erro de cota ou bloqueio de storage privado
     }
@@ -117,7 +174,20 @@ export function CartProvider({ children }: { children: ReactNode }) {
         i === index ? { ...item, quantity: Math.min(10, item.quantity + validQty) } : item,
       );
     });
+    setBumpCount((b) => b + 1);
     setOpen(true);
+
+    try {
+      toast.success("Adicionado à sacola", {
+        description: `${product.name} (${size} · ${color})`,
+        action: {
+          label: "Ver sacola",
+          onClick: () => setOpen(true),
+        },
+      });
+    } catch {
+      // safe fallback if toast fails in testing env
+    }
   }
 
   function update(index: number, quantity: number) {
@@ -129,7 +199,40 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }
 
   function remove(index: number) {
+    const removedItem = items[index];
+    if (!removedItem) return;
+
     setItems((prev) => prev.filter((_, i) => i !== index));
+
+    try {
+      toast("Item removido da sacola", {
+        description: removedItem.product.name,
+        action: {
+          label: "Desfazer",
+          onClick: () => {
+            add(removedItem.product, removedItem.size, removedItem.color, removedItem.quantity);
+          },
+        },
+      });
+    } catch {
+      // safe fallback
+    }
+  }
+
+  function saveForLater(index: number, addToWishlist: (slug: string) => void) {
+    const item = items[index];
+    if (!item) return;
+
+    addToWishlist(item.product.slug);
+    setItems((prev) => prev.filter((_, i) => i !== index));
+
+    try {
+      toast.success("Salvo nos favoritos", {
+        description: `${item.product.name} foi movido para sua lista de desejos.`,
+      });
+    } catch {
+      // safe fallback
+    }
   }
 
   function clear() {
@@ -146,8 +249,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
         update,
         remove,
         clear,
+        saveForLater,
         subtotal: items.reduce((sum, item) => sum + item.product.priceCents * item.quantity, 0),
         count: items.reduce((sum, item) => sum + item.quantity, 0),
+        bumpCount,
       }}
     >
       {children}
